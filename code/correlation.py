@@ -463,18 +463,41 @@ print()
 
 mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean(cross_react_count[2])]
 
-fig = plt.figure()
-ax = fig.add_axes([0,0,1,1])
-ax.scatter(coef_sim_matrix[2],coef_sim_matrix[0])
-plt.xlabel("% Sequence identity")
-plt.ylabel("Pearson corr. coeff.")
+#fig = plt.figure()
+#ax = fig.add_axes([0,0,1,1])
+#ax.scatter(coef_sim_matrix[2],coef_sim_matrix[0])
+#plt.xlabel("% Sequence identity")
+#plt.ylabel("Pearson corr. coeff.")
+#plt.show()
+
+#fig = plt.figure()
+#ax = fig.add_axes([0,0,1,1])
+#ax.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+#plt.xlabel("% Sequence identity")
+#plt.ylabel("Fraction significant")
+#plt.show()
+
+x1 = []
+x2 = []
+y1 = []
+y2 = []
+for i in range(len(coef_sim_matrix[0])):
+    if coef_sim_matrix[0][i] > 0.5:
+        y1.append(coef_sim_matrix[0][i])
+        x1.append(coef_sim_matrix[2][i])
+    else:
+        y2.append(coef_sim_matrix[0][i])
+        x2.append(coef_sim_matrix[2][i])
+
+fig, (ax1, ax2) = plt.subplots(2, 1)
+ax1.scatter(x1,y1, c="blue")
+ax1.scatter(x2,y2, c="black")
+ax1.set_ylabel("Pearson corr. coeff.")
+ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+ax2.set_xlabel("% Sequence identity", labelpad=5)
+ax2.set_ylabel("Fraction significant")
 plt.show()
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
 print("PCC for scatterplot.",sim_v_PCC_PCC)
 
-fig = plt.figure()
-ax = fig.add_axes([0,0,1,1])
-ax.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
-plt.xlabel("% Sequence identity")
-plt.ylabel("Fraction significant")
-plt.show()
+

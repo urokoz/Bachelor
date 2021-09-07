@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3782bb2d-0475-43da-95da-f983f86a7c16" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Bachelor.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/correlation.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/correlation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -73,22 +69,22 @@
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state x="184" y="91" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.815@0.25.1440.815" timestamp="1631013504476" />
-    <state width="1419" height="208" key="GridCell.Tab.0.bottom" timestamp="1631014657235">
+    <state width="1419" height="203" key="GridCell.Tab.0.bottom" timestamp="1631024493272">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="208" key="GridCell.Tab.0.bottom/0.25.1440.815@0.25.1440.815" timestamp="1631014657235" />
-    <state width="1419" height="208" key="GridCell.Tab.0.center" timestamp="1631014657234">
+    <state width="1419" height="203" key="GridCell.Tab.0.bottom/0.25.1440.815@0.25.1440.815" timestamp="1631024493272" />
+    <state width="1419" height="203" key="GridCell.Tab.0.center" timestamp="1631024493272">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="208" key="GridCell.Tab.0.center/0.25.1440.815@0.25.1440.815" timestamp="1631014657234" />
-    <state width="1419" height="208" key="GridCell.Tab.0.left" timestamp="1631014657234">
+    <state width="1419" height="203" key="GridCell.Tab.0.center/0.25.1440.815@0.25.1440.815" timestamp="1631024493272" />
+    <state width="1419" height="203" key="GridCell.Tab.0.left" timestamp="1631024493271">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="208" key="GridCell.Tab.0.left/0.25.1440.815@0.25.1440.815" timestamp="1631014657234" />
-    <state width="1419" height="208" key="GridCell.Tab.0.right" timestamp="1631014657235">
+    <state width="1419" height="203" key="GridCell.Tab.0.left/0.25.1440.815@0.25.1440.815" timestamp="1631024493271" />
+    <state width="1419" height="203" key="GridCell.Tab.0.right" timestamp="1631024493272">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="208" key="GridCell.Tab.0.right/0.25.1440.815@0.25.1440.815" timestamp="1631014657235" />
+    <state width="1419" height="203" key="GridCell.Tab.0.right/0.25.1440.815@0.25.1440.815" timestamp="1631024493272" />
     <state x="323" y="25" key="SettingsEditor" timestamp="1631014068850">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
