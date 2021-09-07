@@ -10,27 +10,22 @@ Original file is located at
 #!/usr/bin/env python
 
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import math
 import scipy.stats as st
 import pandas as pd
 from scipy.stats import spearmanr
 
-from google.colab import files
 
-uploaded = files.upload()
-
-for fn in uploaded.keys():
-  print('User uploaded file "{name}" with length {length} bytes'.format(
-      name=fn, length=len(uploaded[fn])))
 
 #alphabet_file = alphabet_upload.values()
 #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
-alphabet_file = "alphabet"
+alphabet_file = "Matrices/alphabet"
 alphabet = np.loadtxt(alphabet_file, dtype=str)
 
+
 #blosum_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/blosum50"
-blosum_file = "BLOSUM50"
+blosum_file = "Matrices/BLOSUM50"
 _blosum50 = np.loadtxt(blosum_file, dtype=float).reshape((24, -1)).T
 
 blosum50 = {}
@@ -42,6 +37,7 @@ for i, letter_1 in enumerate(alphabet):
     for j, letter_2 in enumerate(alphabet):
 
         blosum50[letter_1][letter_2] = _blosum50[i, j]
+
 
 def smith_waterman_alignment(query="VLLP", database="VLILP", scoring_scheme={}, gap_open=-5, gap_extension=-1):
 
@@ -125,6 +121,21 @@ def smith_waterman_alignment(query="VLLP", database="VLILP", scoring_scheme={}, 
                 D_matrix_j_max = j
 
     return P_matrix, Q_matrix, D_matrix, E_matrix, D_matrix_i_max, D_matrix_j_max, D_matrix_max_score
+
+
+def pearsons_cc(y_est, y_true):
+    """ Calucates the Pearson's correlation coefficient.
+    Author: Mathias Rahbek-Borre, Fall 2020.
+    """
+    n = len(y_est)
+    sum_x = sum(y_est)
+    sum_y = sum(y_true)
+    sum_xy = sum([x*y for x,y in zip(y_est,y_true)])
+    sum_xx = sum([x*x for x in y_est])
+    sum_yy = sum([y*y for y in y_true])
+
+    r_xy = (n*sum_xy - sum_x*sum_y)/(math.sqrt(n*sum_xx-sum_x**2)*math.sqrt(n*sum_yy-sum_y**2))
+    return r_xy
 
 
 # ## Alignment Matrix Traceback
@@ -213,7 +224,7 @@ def smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, query="VLLP", dat
     return aligned_query, aligned_database, matches
 
 def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
-  """ Aligns two sequences using Needleman-Wunsch alignment. 
+  """ Aligns two sequences using Needleman-Wunsch alignment.
       Outputs the two aligned sequences, number of matches and a percent
       similarity.
 
@@ -239,14 +250,14 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
         diag = D[i,j] + match
       else:
         diag = D[i,j] + mismatch
-      
+
       up = D[i+1,j] + gap
       left = D[i,j+1] + gap
 
       max_score = max(diag,up,left)
 
       D[i+1,j+1] = max_score
-      
+
       if diag == max_score:
         P[i+1,j+1] = 2
       elif up == max_score:
@@ -280,33 +291,20 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
       i -= 1
       ori_align = ori[i] + ori_align
       var_align = "-" + var_align
-  
+
   aligned_similarity = 0
   matches = 0
   for j in range(len(ori_align)):
       if ori_align[j] == var_align[j]:
           aligned_similarity += 100/len(ori_align)
           matches += 1
-    
+
   return ori_align, var_align, aligned_similarity, matches
 
-infile = open("ragweed_Tcell_pairwise.MNi.tab", "r")
+infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
 
 infile.readline()
 
-def pearsons_cc(y_est, y_true):
-    """ Calucates the Pearson's correlation coefficient.
-        Author: Mathias Rahbek-Borre, Fall 2020.
-    """
-    n = len(y_est)
-    sum_x = sum(y_est)
-    sum_y = sum(y_true)
-    sum_xy = sum([x*y for x,y in zip(y_est,y_true)])
-    sum_xx = sum([x*x for x in y_est])
-    sum_yy = sum([y*y for y in y_true])
-
-    r_xy = (n*sum_xy - sum_x*sum_y)/(math.sqrt(n*sum_xx-sum_x**2)*math.sqrt(n*sum_yy-sum_y**2))
-    return r_xy
 
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
 #          'Amb', 'a', '1.0201', 'NSDKTIDGRGVKVNIVNAGL', '1.12407']
@@ -317,15 +315,13 @@ old_var_seq = ""
 charts = []
 wanted_charts = 100000
 n = 0
-unique_seqs = set()
+seqs_for_FASTA = []
 
 for line in infile:
     line = line.split()
 
     ori_pepseq = line[4]
     var_pepseq = line[9]
-
-    unique_seqs.update([ori_pepseq, var_pepseq])
 
     ori_SI = float(line[5])
     var_SI = float(line[10])
@@ -338,7 +334,9 @@ for line in infile:
         var_name = line[6] + " " + line[7] + " " + line[8]
 
         title = ori_pepseq + "(" + ori_name + ")" + " vs. " + var_pepseq + "(" + var_name + ")"
-        
+
+        seqs_for_FASTA.append([ori_name, ori_pepseq])
+        seqs_for_FASTA.append([var_name, var_pepseq])
 
         ## Similarity measurements
 
@@ -353,8 +351,8 @@ for line in infile:
         # Dumb version of percent identity, where early gaps ruin similarity
         # while len(ori_pepseq) > len(var_pepseq):
         #     var_pepseq = var_pepseq + "x"
-        
-        
+
+
         # while len(ori_pepseq) < len(var_pepseq):
         #     ori_pepseq = ori_pepseq + "x"
 
@@ -387,7 +385,9 @@ for line in infile:
     charts[i][1].append(var_SI)
     charts[i][4] += 1
 
-print(len(unique_seqs))
+# output sequences in fasta format for HLA profiling.
+
+
 
 coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
