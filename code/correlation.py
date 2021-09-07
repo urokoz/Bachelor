@@ -367,12 +367,12 @@ for line in infile:
         if i > wanted_charts-1:
             break
 
-        scoring_scheme = blosum50
-        gap_open = -11
-        gap_extension = -1
+        # scoring_scheme = blosum50
+        # gap_open = -11
+        # gap_extension = -1
 
-        P_matrix, Q_matrix, D_matrix, E_matrix, i_max, j_max, max_score = smith_waterman_alignment(ori_pepseq, var_pepseq, scoring_scheme, gap_open, gap_extension)
-        aligned_query, aligned_database, matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
+        # P_matrix, Q_matrix, D_matrix, E_matrix, i_max, j_max, max_score = smith_waterman_alignment(ori_pepseq, var_pepseq, scoring_scheme, gap_open, gap_extension)
+        # aligned_query, aligned_database, matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
 
         # print("ALN", "Origin", len(ori_pepseq), "Variant", len(var_pepseq), len(aligned_query), matches, max_score)
         # print("QAL", i_max, ''.join(aligned_query))
@@ -499,5 +499,3 @@ ax2.set_ylabel("Fraction significant")
 plt.show()
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
 print("PCC for scatterplot.",sim_v_PCC_PCC)
-
-
