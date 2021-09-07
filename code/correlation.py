@@ -406,6 +406,7 @@ for line in infile:
 
 coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
+PCC_bins = [[],[],[]]
 for chart in charts:
     # fig = plt.figure()
     # ax=fig.add_axes([0,0,1,1])
@@ -415,7 +416,7 @@ for chart in charts:
     # ax.set_title(chart[2])
     # plt.show()
 
-    n_sim = chart[3]
+    percent_sim = chart[3]
 
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
@@ -423,17 +424,42 @@ for chart in charts:
 
     coef_sim_matrix[0].append(PCC)
     coef_sim_matrix[1].append(SRC)
-    coef_sim_matrix[2].append(n_sim)
+    coef_sim_matrix[2].append(percent_sim)
 
     CR = 1 if PCC > 0.5 else 0
 
-    if n_sim < 50:
+    if percent_sim < 50:
         cross_react_count[0].append(CR)
-    elif n_sim >= 80:
+        PCC_bins[0].append(PCC)
+    elif percent_sim >= 80:
         cross_react_count[2].append(CR)
+        PCC_bins[2].append(PCC)
     else:
         cross_react_count[1].append(CR)
+        PCC_bins[1].append(PCC)
 
+
+# Are the bins statistically significant different?
+print()
+print("ttest crossreacting <50% vs. 50%-80%:")
+print(st.ttest_ind(cross_react_count[0], cross_react_count[1], equal_var=False))
+print()
+print("ttest crossreacting <50% vs. >80%:")
+print(st.ttest_ind(cross_react_count[0], cross_react_count[2], equal_var=False))
+print()
+print("ttest crossreacting 50%-80% vs. >80%:")
+print(st.ttest_ind(cross_react_count[1], cross_react_count[2], equal_var=False))
+print()
+print()
+print("ttest PCC <50% vs. 50%-80%:")
+print(st.ttest_ind(PCC_bins[0], PCC_bins[1], equal_var=False))
+print()
+print("ttest PCC <50% vs. >80%:")
+print(st.ttest_ind(PCC_bins[0], PCC_bins[2], equal_var=False))
+print()
+print("ttest PCC 50%-80% vs. >80%:")
+print(st.ttest_ind(PCC_bins[1], PCC_bins[2], equal_var=False))
+print()
 
 mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean(cross_react_count[2])]
 
@@ -444,7 +470,7 @@ plt.xlabel("% Sequence identity")
 plt.ylabel("Pearson corr. coeff.")
 plt.show()
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
-print(sim_v_PCC_PCC)
+print("PCC for scatterplot.",sim_v_PCC_PCC)
 
 fig = plt.figure()
 ax = fig.add_axes([0,0,1,1])
