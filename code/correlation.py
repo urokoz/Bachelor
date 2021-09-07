@@ -17,7 +17,6 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 
-
 #alphabet_file = alphabet_upload.values()
 #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
 alphabet_file = "Matrices/alphabet"
@@ -232,75 +231,77 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
       Inspired by: https://gist.github.com/slowkow/06c6dba9180d013dfd82bec217d22eb5
   """
 
-  n_ori = len(ori)
-  n_var = len(var)
+    n_ori = len(ori)
+    n_var = len(var)
 
-  D = np.zeros((n_ori+1, n_var+1))
-  P = np.zeros((n_ori+1, n_var+1))
+    D = np.zeros((n_ori+1, n_var+1))
+    P = np.zeros((n_ori+1, n_var+1))
 
-  D[:,0] = np.arange(0,-(n_ori+1),-1)
-  D[0,:] = np.arange(0,-(n_var+1),-1)
-  P[:,0] = 4
-  P[0,:] = 3
-  P[0,0] = 0
+    D[:,0] = np.arange(0,-(n_ori+1),-1)
+    D[0,:] = np.arange(0,-(n_var+1),-1)
+    P[:,0] = 4
+    P[0,:] = 3
+    P[0,0] = 0
 
-  for i in range(n_ori):
-    for j in range(n_var):
-      if ori[i] == var[j]:
-        diag = D[i,j] + match
-      else:
-        diag = D[i,j] + mismatch
+    for i in range(n_ori):
+        for j in range(n_var):
+            if ori[i] == var[j]:
+                diag = D[i,j] + match
+            else:
+                diag = D[i,j] + mismatch
 
-      up = D[i+1,j] + gap
-      left = D[i,j+1] + gap
+            up = D[i+1,j] + gap
+            left = D[i,j+1] + gap
 
-      max_score = max(diag,up,left)
+            max_score = max(diag,up,left)
 
-      D[i+1,j+1] = max_score
+            D[i+1,j+1] = max_score
 
-      if diag == max_score:
-        P[i+1,j+1] = 2
-      elif up == max_score:
-        P[i+1,j+1] = 3
-      elif left == max_score:
-        P[i+1,j+1] = 4
+            if diag == max_score:
+                P[i+1,j+1] = 2
+            elif up == max_score:
+                P[i+1,j+1] = 3
+            elif left == max_score:
+                P[i+1,j+1] = 4
 
-  # print(D)
-  # print(P)
+    # print(D)
+    # print(P)
 
-  # traceback
-  ori_align = ""
-  var_align = ""
+    # traceback
+    ori_align = ""
+    var_align = ""
 
-  i = n_ori
-  j = n_var
+    i = n_ori
+    j = n_var
 
-  while i > 0 or j > 0:
-    # print(i,j,P[i,j])
+    while i > 0 or j > 0:
+        # print(i,j,P[i,j])
 
-    if P[i,j] == 2:
-      i -= 1
-      j -= 1
-      ori_align = ori[i] + ori_align
-      var_align = var[j] + var_align
-    elif P[i,j] == 3:
-      j -= 1
-      ori_align = "-" + ori_align
-      var_align = var[j] + var_align
-    elif P[i,j] == 4:
-      i -= 1
-      ori_align = ori[i] + ori_align
-      var_align = "-" + var_align
+        if P[i,j] == 2:
+            i -= 1
+            j -= 1
+            ori_align = ori[i] + ori_align
+            var_align = var[j] + var_align
+        elif P[i,j] == 3:
+            j -= 1
+            ori_align = "-" + ori_align
+            var_align = var[j] + var_align
+        elif P[i,j] == 4:
+            i -= 1
+            ori_align = ori[i] + ori_align
+            var_align = "-" + var_align
 
-  aligned_similarity = 0
-  matches = 0
-  for j in range(len(ori_align)):
-      if ori_align[j] == var_align[j]:
-          aligned_similarity += 100/len(ori_align)
-          matches += 1
+      aligned_similarity = 0
+      matches = 0
+      for j in range(len(ori_align)):
+          if ori_align[j] == var_align[j]:
+              aligned_similarity += 100/len(ori_align)
+              matches += 1
 
-  return ori_align, var_align, aligned_similarity, matches
+      return ori_align, var_align, aligned_similarity, matches
 
+
+## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
 
 infile.readline()
