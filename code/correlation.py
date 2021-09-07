@@ -386,8 +386,22 @@ for line in infile:
     charts[i][1].append(var_SI)
     charts[i][4] += 1
 
-# output sequences in fasta format for HLA profiling.
-
+# # output sequences in fasta format for HLA profiling.
+# outfile = open("seqs_for_HLA_profiling.fsa","w")
+#
+# unique_seqs = set()
+# allergen_dict = dict()
+# for pair in seqs_for_FASTA:
+#     if pair[1] not in unique_seqs:
+#         unique_seqs.add(pair[1])
+#
+#         if pair[0] in allergen_dict:
+#             allergen_dict[pair[0]] += 1
+#         else:
+#             allergen_dict[pair[0]] = 1
+#
+#         print(">" + pair[0] + " peptide " + str(allergen_dict[pair[0]]), file=outfile)
+#         print(pair[1], file = outfile)
 
 
 coef_sim_matrix = [[],[],[]]
