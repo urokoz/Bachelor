@@ -223,13 +223,13 @@ def smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, query="VLLP", dat
     return aligned_query, aligned_database, matches
 
 def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
-  """ Aligns two sequences using Needleman-Wunsch alignment.
-      Outputs the two aligned sequences, number of matches and a percent
-      similarity.
+    """ Aligns two sequences using Needleman-Wunsch alignment.
+        Outputs the two aligned sequences, number of matches and a percent
+        similarity.
 
-      Author: Mathias Rahbek-Borre, 6-9-2021
-      Inspired by: https://gist.github.com/slowkow/06c6dba9180d013dfd82bec217d22eb5
-  """
+        Author: Mathias Rahbek-Borre, 6-9-2021
+        Inspired by: https://gist.github.com/slowkow/06c6dba9180d013dfd82bec217d22eb5
+    """
 
     n_ori = len(ori)
     n_var = len(var)
@@ -291,14 +291,14 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
             ori_align = ori[i] + ori_align
             var_align = "-" + var_align
 
-      aligned_similarity = 0
-      matches = 0
-      for j in range(len(ori_align)):
-          if ori_align[j] == var_align[j]:
-              aligned_similarity += 100/len(ori_align)
-              matches += 1
+    aligned_similarity = 0
+    matches = 0
+    for j in range(len(ori_align)):
+        if ori_align[j] == var_align[j]:
+            aligned_similarity += 100/len(ori_align)
+            matches += 1
 
-      return ori_align, var_align, aligned_similarity, matches
+    return ori_align, var_align, aligned_similarity, matches
 
 
 ## Main
@@ -426,6 +426,8 @@ mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean
 fig = plt.figure()
 ax = fig.add_axes([0,0,1,1])
 ax.scatter(coef_sim_matrix[2],coef_sim_matrix[0])
+plt.xlabel("% Sequence identity")
+plt.ylabel("Pearson corr. coeff.")
 plt.show()
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
 print(sim_v_PCC_PCC)
@@ -433,6 +435,6 @@ print(sim_v_PCC_PCC)
 fig = plt.figure()
 ax = fig.add_axes([0,0,1,1])
 ax.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+plt.xlabel("% Sequence identity")
+plt.ylabel("Fraction significant")
 plt.show()
-
-#hey
