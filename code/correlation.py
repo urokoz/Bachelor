@@ -315,11 +315,7 @@ i = -1
 old_ori_seq = ""
 old_var_seq = ""
 charts = []
-<<<<<<< Updated upstream
-wanted_charts = 25000
-=======
 wanted_charts = 10000
->>>>>>> Stashed changes
 n = 0
 seqs_for_FASTA = []
 
@@ -367,11 +363,11 @@ for line in infile:
         #     if ori_pepseq[j] == var_pepseq[j]:
         #         naive_similarity += 100/len(ori_pepseq)
 
-        # local alignment? with Smith-Waterman (O2)
+
         i += 1
         if i > wanted_charts-1:
             break
-
+        # local alignment? with Smith-Waterman (O2)
         # scoring_scheme = blosum50
         # gap_open = -11
         # gap_extension = -1
@@ -414,16 +410,6 @@ cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 
 for chart in charts:
-<<<<<<< Updated upstream
-    # fig, ax = plt.subplots()
-    # ax.scatter(chart[0], chart[1])
-    # ax.set_xlabel("Ori SI")
-    # ax.set_ylabel("Var SI")
-    # ax.set_title(chart[2])
-    # fig.savefig("Figures/{}.png".format(chart[2].replace("\n", " ")))
-    # #plt.show()
-    # plt.close(fig)
-=======
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
 
@@ -434,7 +420,6 @@ for chart in charts:
     ax.set_title(chart[2])
     fig.savefig("Figures/{}.png".format(chart[2]))
     plt.close()
->>>>>>> Stashed changes
 
     percent_sim = chart[3]
 
