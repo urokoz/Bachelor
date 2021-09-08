@@ -318,9 +318,16 @@ charts = []
 wanted_charts = 10000
 n = 0
 seqs_for_FASTA = []
+donor_reaction_dict = dict()
+donor_list = []
+
 
 for line in infile:
     line = line.split()
+
+    donor_id = line[0]
+    if donor_id not in donor_list:
+        donor_list.append(donor_id)
 
     ori_pepseq = line[4]
     var_pepseq = line[9]
@@ -329,6 +336,7 @@ for line in infile:
     var_SI = float(line[10])
 
     if ori_pepseq != old_ori_seq or var_pepseq != old_var_seq:
+        n += 1
         old_ori_seq = ori_pepseq
         old_var_seq = var_pepseq
 
@@ -387,19 +395,39 @@ for line in infile:
     charts[i][1].append(var_SI)
     charts[i][4] += 1
 
+    if donor_id not in donor_reaction_dict:
+        donor_reaction_dict[donor_id] = dict()
+
+    donor_reaction_dict[donor_id][ori_pepseq] = ori_SI
+    donor_reaction_dict[donor_id][var_pepseq] = var_SI
+
+
 # # output sequences in fasta format for HLA profiling.
 # outfile = open("seqs_for_HLA_profiling.fsa","w")
 #
-# unique_seqs = set()
-# allergen_dict = dict()
-# for pair in seqs_for_FASTA:
-#     if pair[1] not in unique_seqs:
-#         unique_seqs.add(pair[1])
-#
-#         if pair[0] in allergen_dict:
-#             allergen_dict[pair[0]] += 1
-#         else:
-#             allergen_dict[pair[0]] = 1
+unique_seqs = set()
+allergen_dict = dict()
+pep_list = []
+for [name, seq] in seqs_for_FASTA:
+    if seq not in unique_seqs:
+        unique_seqs.add(seq)
+
+        if name in allergen_dict:
+            allergen_dict[name] += 1
+        else:
+            allergen_dict[name] = 1
+
+        pep_list.append([name + " " + str(allergen_dict[name]), seq])
+
+
+
+donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
+for i in range(len(pep_list)):
+    for j in range(len(donor_list)):
+        donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
+
+plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=20)
+plt.show()
 
 #         print(">" + pair[0] + " peptide " + str(allergen_dict[pair[0]]), file=outfile)
 #         print(pair[1], file = outfile)
@@ -413,13 +441,13 @@ for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
 
-    fig, ax = plt.subplots()
-    ax.scatter(chart[0], chart[1])
-    ax.set_xlabel("Ori SI")
-    ax.set_ylabel("Var SI")
-    ax.set_title(chart[2])
-    fig.savefig("Figures/{}.png".format(chart[2]))
-    plt.close()
+    # fig, ax = plt.subplots()
+    # ax.scatter(chart[0], chart[1])
+    # ax.set_xlabel("Ori SI")
+    # ax.set_ylabel("Var SI")
+    # ax.set_title(chart[2])
+    # fig.savefig("Figures/{}.png".format(chart[2]))
+    # plt.close()
 
     percent_sim = chart[3]
 
@@ -443,26 +471,27 @@ for chart in charts:
 
 
 # Are the bins statistically significant different?
-print()
-print("ttest crossreacting <50% vs. 50%-80%:")
-print(st.ttest_ind(cross_react_count[0], cross_react_count[1], equal_var=False))
-print()
-print("ttest crossreacting <50% vs. >80%:")
-print(st.ttest_ind(cross_react_count[0], cross_react_count[2], equal_var=False))
-print()
-print("ttest crossreacting 50%-80% vs. >80%:")
-print(st.ttest_ind(cross_react_count[1], cross_react_count[2], equal_var=False))
-print()
-print()
-print("ttest PCC <50% vs. 50%-80%:")
-print(st.ttest_ind(PCC_bins[0], PCC_bins[1], equal_var=False))
-print()
-print("ttest PCC <50% vs. >80%:")
-print(st.ttest_ind(PCC_bins[0], PCC_bins[2], equal_var=False))
-print()
-print("ttest PCC 50%-80% vs. >80%:")
-print(st.ttest_ind(PCC_bins[1], PCC_bins[2], equal_var=False))
-print()
+if 0:
+    print()
+    print("ttest crossreacting <50% vs. 50%-80%:")
+    print(st.ttest_ind(cross_react_count[0], cross_react_count[1], equal_var=False))
+    print()
+    print("ttest crossreacting <50% vs. >80%:")
+    print(st.ttest_ind(cross_react_count[0], cross_react_count[2], equal_var=False))
+    print()
+    print("ttest crossreacting 50%-80% vs. >80%:")
+    print(st.ttest_ind(cross_react_count[1], cross_react_count[2], equal_var=False))
+    print()
+    print()
+    print("ttest PCC <50% vs. 50%-80%:")
+    print(st.ttest_ind(PCC_bins[0], PCC_bins[1], equal_var=False))
+    print()
+    print("ttest PCC <50% vs. >80%:")
+    print(st.ttest_ind(PCC_bins[0], PCC_bins[2], equal_var=False))
+    print()
+    print("ttest PCC 50%-80% vs. >80%:")
+    print(st.ttest_ind(PCC_bins[1], PCC_bins[2], equal_var=False))
+    print()
 
 mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean(cross_react_count[2])]
 
@@ -492,15 +521,15 @@ for i in range(len(coef_sim_matrix[0])):
         y2.append(coef_sim_matrix[0][i])
         x2.append(coef_sim_matrix[2][i])
 
-fig, (ax1, ax2) = plt.subplots(2, 1)
-ax1.scatter(x1,y1, c="blue")
-ax1.scatter(x2,y2, c="black")
-ax1.set_ylabel("Pearson corr. coeff.")
-ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
-ax2.set_xlabel("% Sequence identity", labelpad=5)
-ax2.set_ylabel("Fraction significant")
-plt.savefig("Figures/PCC_v_sim.png")
-sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
-print("PCC for scatterplot.",sim_v_PCC_PCC)
+# fig, (ax1, ax2) = plt.subplots(2, 1)
+# ax1.scatter(x1,y1, c="blue")
+# ax1.scatter(x2,y2, c="black")
+# ax1.set_ylabel("Pearson corr. coeff.")
+# ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+# ax2.set_xlabel("% Sequence identity", labelpad=5)
+# ax2.set_ylabel("Fraction significant")
+# plt.savefig("Figures/PCC_v_sim.png")
+# sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
+# print("PCC for scatterplot.",sim_v_PCC_PCC)
 
 
