@@ -315,7 +315,7 @@ i = -1
 old_ori_seq = ""
 old_var_seq = ""
 charts = []
-wanted_charts = 100000
+wanted_charts = 25000
 n = 0
 seqs_for_FASTA = []
 
@@ -335,7 +335,7 @@ for line in infile:
         ori_name = line[1] + " " + line[2] + " " + line[3]
         var_name = line[6] + " " + line[7] + " " + line[8]
 
-        title = ori_pepseq + "(" + ori_name + ")" + " vs. " + var_pepseq + "(" + var_name + ")"
+        title = ori_pepseq + "(" + ori_name + ")" + " vs.\n" + var_pepseq + "(" + var_name + ")"
 
         seqs_for_FASTA.append([ori_name, ori_pepseq])
         seqs_for_FASTA.append([var_name, var_pepseq])
@@ -400,7 +400,7 @@ for line in infile:
 #             allergen_dict[pair[0]] += 1
 #         else:
 #             allergen_dict[pair[0]] = 1
-#
+
 #         print(">" + pair[0] + " peptide " + str(allergen_dict[pair[0]]), file=outfile)
 #         print(pair[1], file = outfile)
 
@@ -409,14 +409,14 @@ coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 for chart in charts:
-    fig = plt.figure()
-    ax=fig.add_axes([0,0,1,1])
-    ax.scatter(chart[0], chart[1])
-    ax.set_xlabel("Ori SI")
-    ax.set_ylabel("Var SI")
-    ax.set_title(chart[2])
-    fig.savefig("Figures/{}.png".format(chart[2]))
-    plt.close(fig)
+    # fig, ax = plt.subplots()
+    # ax.scatter(chart[0], chart[1])
+    # ax.set_xlabel("Ori SI")
+    # ax.set_ylabel("Var SI")
+    # ax.set_title(chart[2])
+    # fig.savefig("Figures/{}.png".format(chart[2].replace("\n", " ")))
+    # #plt.show()
+    # plt.close(fig)
 
     percent_sim = chart[3]
 
@@ -498,6 +498,6 @@ ax1.set_ylabel("Pearson corr. coeff.")
 ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
 ax2.set_xlabel("% Sequence identity", labelpad=5)
 ax2.set_ylabel("Fraction significant")
-plt.show()
+plt.savefig("Figures/PCC_v_sim.png")
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
 print("PCC for scatterplot.",sim_v_PCC_PCC)
