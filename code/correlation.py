@@ -363,11 +363,11 @@ for line in infile:
         #     if ori_pepseq[j] == var_pepseq[j]:
         #         naive_similarity += 100/len(ori_pepseq)
 
-        # local alignment? with Smith-Waterman (O2)
+
         i += 1
         if i > wanted_charts-1:
             break
-
+        # local alignment? with Smith-Waterman (O2)
         # scoring_scheme = blosum50
         # gap_open = -11
         # gap_extension = -1
