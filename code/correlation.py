@@ -518,4 +518,4 @@ plt.savefig("Figures/PCC_v_sim.png")
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
 print("PCC for scatterplot.",sim_v_PCC_PCC)
 
-#PCC histogram
+
