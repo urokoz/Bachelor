@@ -449,6 +449,14 @@ for chart in charts:
     # fig.savefig("Figures/{}.png".format(chart[2]))
     # plt.close()
 
+    #fig, ax = plt.subplots()
+    #ax.scatter(chart[0], chart[1])
+    #ax.set_xlabel("Ori SI")
+    #ax.set_ylabel("Var SI")
+    #ax.set_title(chart[2])
+    #fig.savefig("Figures/{}.png".format(chart[2]))
+    #plt.close()
+
     percent_sim = chart[3]
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
@@ -468,7 +476,6 @@ for chart in charts:
     else:
         cross_react_count[1].append(CR)
         PCC_bins[1].append(PCC)
-
 
 # Are the bins statistically significant different?
 if 0:
@@ -509,6 +516,7 @@ mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean
 #plt.ylabel("Fraction significant")
 #plt.show()
 
+
 x1 = []
 x2 = []
 y1 = []
@@ -521,15 +529,55 @@ for i in range(len(coef_sim_matrix[0])):
         y2.append(coef_sim_matrix[0][i])
         x2.append(coef_sim_matrix[2][i])
 
-# fig, (ax1, ax2) = plt.subplots(2, 1)
-# ax1.scatter(x1,y1, c="blue")
-# ax1.scatter(x2,y2, c="black")
-# ax1.set_ylabel("Pearson corr. coeff.")
-# ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
-# ax2.set_xlabel("% Sequence identity", labelpad=5)
-# ax2.set_ylabel("Fraction significant")
-# plt.savefig("Figures/PCC_v_sim.png")
-# sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
-# print("PCC for scatterplot.",sim_v_PCC_PCC)
 
+fig, (ax1, ax2) = plt.subplots(2, 1)
+ax1.scatter(x1,y1, c="blue")
+ax1.scatter(x2,y2, c="black")
+ax1.set_ylabel("Pearson corr. coeff.")
+ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+ax2.set_xlabel("% Sequence identity", labelpad=5)
+ax2.set_ylabel("Fraction significant")
+plt.savefig("Figures/PCC_v_sim.png")
+sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
+print("PCC for scatterplot.",sim_v_PCC_PCC)
+plt.show()
 
+#PCC histogram
+#calculation of optimal number of bins
+q25, q75 = np.percentile(coef_sim_matrix[0],[.25,.75])
+bin_width = 2*(q75 - q25)*len(coef_sim_matrix)**(-1/3)
+bins = round((max(coef_sim_matrix[0]) - min(coef_sim_matrix[0]))/bin_width)
+
+#Histograms (PCC & SRC)
+fig, (ax1, ax2) = plt.subplots(2, 1)
+ax1.hist(coef_sim_matrix[0], density = False, bins = bins)
+ax1.set_xlabel("PCC value")
+ax1.set_ylabel("Count")
+ax2.hist(coef_sim_matrix[1], density = False, bins = bins)
+ax2.set_xlabel("SRC value")
+ax2.set_ylabel("Count")
+
+#SCR/PCC scatterplot
+fig, ax1 = plt.subplots()
+ax1.scatter(coef_sim_matrix[0],coef_sim_matrix[1])
+ax1.set_xlabel("PCC")
+ax1.set_ylabel("SRC")
+plt.show()
+
+#cross-reaction table
+CR_table = []
+CR_SRC = []
+none_CR_SRC = []
+dim_coef_matrix = np.shape(coef_sim_matrix)
+CR_table.append(dim_coef_matrix[1])
+CR_table.append(len(y1))
+
+#Calculation of cross-reactive patients (SRC)
+for i in range(len(coef_sim_matrix[1])):
+    if coef_sim_matrix[1][i] > 0.5:
+        CR_SRC.append(coef_sim_matrix[1][i])
+    else:
+        none_CR_SRC.append(coef_sim_matrix[1][i])
+
+CR_table.append(len(CR_SRC))
+print(CR_table)
