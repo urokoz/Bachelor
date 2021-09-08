@@ -315,7 +315,11 @@ i = -1
 old_ori_seq = ""
 old_var_seq = ""
 charts = []
+<<<<<<< Updated upstream
 wanted_charts = 25000
+=======
+wanted_charts = 10000
+>>>>>>> Stashed changes
 n = 0
 seqs_for_FASTA = []
 
@@ -408,7 +412,9 @@ for line in infile:
 coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
+
 for chart in charts:
+<<<<<<< Updated upstream
     # fig, ax = plt.subplots()
     # ax.scatter(chart[0], chart[1])
     # ax.set_xlabel("Ori SI")
@@ -417,11 +423,21 @@ for chart in charts:
     # fig.savefig("Figures/{}.png".format(chart[2].replace("\n", " ")))
     # #plt.show()
     # plt.close(fig)
+=======
+    PCC = pearsons_cc(chart[0], chart[1])
+    SRC, p = spearmanr(chart[0], chart[1])
+
+    fig, ax = plt.subplots()
+    ax.scatter(chart[0], chart[1])
+    ax.set_xlabel("Ori SI")
+    ax.set_ylabel("Var SI")
+    ax.set_title(chart[2])
+    fig.savefig("Figures/{}.png".format(chart[2]))
+    plt.close()
+>>>>>>> Stashed changes
 
     percent_sim = chart[3]
 
-    PCC = pearsons_cc(chart[0], chart[1])
-    SRC, p = spearmanr(chart[0], chart[1])
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
     coef_sim_matrix[0].append(PCC)
@@ -501,3 +517,5 @@ ax2.set_ylabel("Fraction significant")
 plt.savefig("Figures/PCC_v_sim.png")
 sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
 print("PCC for scatterplot.",sim_v_PCC_PCC)
+
+#PCC histogram
