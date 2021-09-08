@@ -222,6 +222,7 @@ def smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, query="VLLP", dat
 
     return aligned_query, aligned_database, matches
 
+
 def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
     """ Aligns two sequences using Needleman-Wunsch alignment.
         Outputs the two aligned sequences, number of matches and a percent
@@ -408,13 +409,14 @@ coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 for chart in charts:
-    # fig = plt.figure()
-    # ax=fig.add_axes([0,0,1,1])
-    # ax.scatter(chart[0], chart[1])
-    # ax.set_xlabel("Ori SI")
-    # ax.set_ylabel("Var SI")
-    # ax.set_title(chart[2])
-    # plt.show()
+    fig = plt.figure()
+    ax=fig.add_axes([0,0,1,1])
+    ax.scatter(chart[0], chart[1])
+    ax.set_xlabel("Ori SI")
+    ax.set_ylabel("Var SI")
+    ax.set_title(chart[2])
+    fig.savefig("Figures/{}.png".format(chart[2]))
+    plt.close(fig)
 
     percent_sim = chart[3]
 
