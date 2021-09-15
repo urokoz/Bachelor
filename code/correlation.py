@@ -545,17 +545,39 @@ for chart in charts:
     #stacker data
     x_values = np.array(chart[0])
     y_values = np.array(chart[1])
-    corr_data = np.stack((x_values, y_values))
+    corr_data = [np.stack((x_values, y_values))]
 
-    for i, j in enumerate(corr_data[0]):
-        data_point = [corr_data[0][i], corr_data[1][i]]
-        data.append(data_point)
+    def LOF(array):
+        data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
+        for i, j in enumerate(array[0]):
+            data_point = [array[0][i], array[1][i]]
+            data.append(data_point)
 
-        #LOF algoritme
-    clf = LocalOutlierFactor(n_neighbors=KNN_n)
-    outliers = clf.fit_predict(data)  #Returns -1 for anomalies/outliers and 1 for inliers.
-    output2 = clf.negative_outlier_factor_  #Bliver ikke brugt, men måske brugbart? se def https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+        # Lav LOF fit
+        clf = LocalOutlierFactor(n_neighbors=KNN_n)
+        output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
+        output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+
+        return output
+
+    outliers = []  # array containing all the outputs from LOF functionen
+    for i in corr_data:
+        point = LOF(i)
+        outliers.append(point)
+
     print(outliers)
+
+    #piller lige lidt ved formatet af data
+    #for i, j in enumerate(corr_data[0]):
+        #data_point = [corr_data[0][i], corr_data[1][i]]
+        #data.append(data_point)
+
+    #LOF algoritme
+    #clf = LocalOutlierFactor(n_neighbors=KNN_n)
+    #outliers = clf.fit_predict(data)  #Returns -1 for anomalies/outliers and 1 for inliers.
+    #output2 = clf.negative_outlier_factor_  #Bliver ikke brugt, men måske brugbart? se def https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+    #print(outliers)
+
     #print_corr_plot(chart, PCC)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
@@ -575,7 +597,6 @@ for chart in charts:
     else:
         cross_react_count[1].append(CR)
         PCC_bins[1].append(PCC)
-
 
 
 
