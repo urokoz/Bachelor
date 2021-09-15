@@ -3,7 +3,42 @@
   <component name="ChangeListManager">
     <list default="true" id="3782bb2d-0475-43da-95da-f983f86a7c16" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/AVLRLTSSAGVLSSHQGAPS(Amb a 1.0201) vs. AAIKLTSSAGVLSSRPGAPS(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/AVLRLTSSAGVLSSHQGAPS(Amb a 1.0201) vs. AAIKLTSSAGVLSSRPGAPS(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/AVLRLTSSAGVLSSHQGAPS(Amb a 1.0201) vs. AVLRLTSSAGVLSSQPGAPS(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/AVLRLTSSAGVLSSHQGAPS(Amb a 1.0201) vs. AVLRLTSSAGVLSSQPGAPS(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/AVLRLTSSAGVLSSHQGAPS(Amb a 1.0201) vs. MVPQLTMNAGVLTSSPGAPS(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/AVLRLTSSAGVLSSHQGAPS(Amb a 1.0201) vs. MVPQLTMNAGVLTSSPGAPS(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/DPVLTPEQKAGMIPAEPGEA(Amb a 1.0201) vs. DPVLTAEQNAGMMQAEPGDM(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/DPVLTPEQKAGMIPAEPGEA(Amb a 1.0201) vs. DPVLTAEQNAGMMQAEPGDM(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/DPVLTPEQKAGMIPAEPGEA(Amb a 1.0201) vs. DPVLTPEQNAGMIPAEPGEA(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/DPVLTPEQKAGMIPAEPGEA(Amb a 1.0201) vs. DPVLTPEQNAGMIPAEPGEA(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/DPVLTPEQKAGMIPAEPGEA(Amb a 1.0201) vs. DPVLTPVQSAGMIPAEPGEA(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/DPVLTPEQKAGMIPAEPGEA(Amb a 1.0201) vs. DPVLTPVQSAGMIPAEPGEA(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/GMIPAEPGEAVLRLTSSAGV(Amb a 1.0201) vs. GMIPAEPGEAAIKLTSSAGV(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/GMIPAEPGEAVLRLTSSAGV(Amb a 1.0201) vs. GMIPAEPGEAAIKLTSSAGV(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/GMIPAEPGEAVLRLTSSAGV(Amb a 1.0201) vs. GMIPAEPGEAVLRLTSSAGV(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/GMIPAEPGEAVLRLTSSAGV(Amb a 1.0201) vs. GMIPAEPGEAVLRLTSSAGV(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/GMIPAEPGEAVLRLTSSAGV(Amb a 1.0201) vs. GMMQAEPGDMVPQLTMNAGV(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/GMIPAEPGEAVLRLTSSAGV(Amb a 1.0201) vs. GMMQAEPGDMVPQLTMNAGV(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/KNVLARTGTGNAESMSWNWR(Amb a 1.0201) vs. KEVVGRYGESAMSESINWNW(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/KNVLARTGTGNAESMSWNWR(Amb a 1.0201) vs. KEVVGRYGESAMSESINWNW(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/KNVLARTGTGNAESMSWNWR(Amb a 1.0201) vs. KNVLARTGTGAAESMAWNWR(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/KNVLARTGTGNAESMSWNWR(Amb a 1.0201) vs. KNVLARTGTGAAESMAWNWR(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/KNVLARTGTGNAESMSWNWR(Amb a 1.0201) vs. KNVSLRTGAQEPEWMTWNWR(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/KNVLARTGTGNAESMSWNWR(Amb a 1.0201) vs. KNVSLRTGAQEPEWMTWNWR(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NGAIFLPSGSDPVLTPEQKA(Amb a 1.0201) vs. NGAIFVASGSDPVLTAEQNA(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NGAIFLPSGSDPVLTPEQKA(Amb a 1.0201) vs. NGAIFVASGSDPVLTAEQNA(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NGAIFLPSGSDPVLTPEQKA(Amb a 1.0201) vs. NGAIFVPSGVDPVLTPEQNA(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NGAIFLPSGSDPVLTPEQKA(Amb a 1.0201) vs. NGAIFVPSGVDPVLTPEQNA(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NGAIFLPSGSDPVLTPEQKA(Amb a 1.0201) vs. NGAIFVTSGSDPVLTPVQSA(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NGAIFLPSGSDPVLTPEQKA(Amb a 1.0201) vs. NGAIFVTSGSDPVLTPVQSA(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NSDKTIDGRGVKVEIINGGL(Amb a 1.0304) vs. NNDKTIDGRGAKVEIINAGF(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NSDKTIDGRGVKVEIINGGL(Amb a 1.0304) vs. NNDKTIDGRGAKVEIINAGF(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NSDKTIDGRGVKVEIINGGL(Amb a 1.0304) vs. TSDKTIDGRGAKVELVYGGI(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NSDKTIDGRGVKVEIINGGL(Amb a 1.0304) vs. TSDKTIDGRGAKVELVYGGI(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NSKFTQHQFVLLLGADDTHY(Amb a 1.0201) vs. NSKFTHHEKAVLLGASDTHF(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NSKFTQHQFVLLLGADDTHY(Amb a 1.0201) vs. NSKFTHHEKAVLLGASDTHF(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NSKFTQHQFVLLLGADDTHY(Amb a 1.0201) vs. NSLFTQHQYLLLFWDFDERG(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NSKFTQHQFVLLLGADDTHY(Amb a 1.0201) vs. NSLFTQHQYLLLFWDFDERG(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NWRTDRDLLENGAIFLPSGS(Amb a 1.0201) vs. NWRSDKDLLENGAIFVTSGS(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NWRTDRDLLENGAIFLPSGS(Amb a 1.0201) vs. NWRSDKDLLENGAIFVTSGS(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NWRTDRDLLENGAIFLPSGS(Amb a 1.0201) vs. NWRSYMDVFENGAIFVPSGV(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NWRTDRDLLENGAIFLPSGS(Amb a 1.0201) vs. NWRSYMDVFENGAIFVPSGV(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/NWRTDRDLLENGAIFLPSGS(Amb a 1.0201) vs. NWRTQNDVLENGAIFVASGS(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/NWRTDRDLLENGAIFLPSGS(Amb a 1.0201) vs. NWRTQNDVLENGAIFVASGS(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/PLWIIFKRNMVIHLNQELVV(Amb a 1.0201) vs. PLWIIFARDMVIRLDRELAI(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/PLWIIFKRNMVIHLNQELVV(Amb a 1.0201) vs. PLWIIFARDMVIRLDRELAI(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/PLWIIFKRNMVIHLNQELVV(Amb a 1.0201) vs. PLWIIFQRDMIIYLQQEMVV(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/PLWIIFKRNMVIHLNQELVV(Amb a 1.0201) vs. PLWIIFQRDMIIYLQQEMVV(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/RFFAPDDIIKKNVLARTGTG(Amb a 1.0201) vs. KFVAPDFIYKKNVSLRTGAQ(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/RFFAPDDIIKKNVLARTGTG(Amb a 1.0201) vs. KFVAPDFIYKKNVSLRTGAQ(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/RFFAPDDIIKKNVLARTGTG(Amb a 1.0201) vs. RFLAPDDQIKKNVLARTGTG(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/RFFAPDDIIKKNVLARTGTG(Amb a 1.0201) vs. RFLAPDDQIKKNVLARTGTG(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/RFFAPDDIIKKNVLARTGTG(Amb a 1.0201) vs. RFLASDIKKEVVGRYGESAM(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/RFFAPDDIIKKNVLARTGTG(Amb a 1.0201) vs. RFLASDIKKEVVGRYGESAM(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/SAPTILSQGNRFFAPDDIIK(Amb a 1.0201) vs. AGPTILSQGNRFLASDIKKE(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/SAPTILSQGNRFFAPDDIIK(Amb a 1.0201) vs. AGPTILSQGNRFLASDIKKE(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/SAPTILSQGNRFFAPDDIIK(Amb a 1.0201) vs. SAPTILSQGNRFLAPDDQIK(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/SAPTILSQGNRFFAPDDIIK(Amb a 1.0201) vs. SAPTILSQGNRFLAPDDQIK(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/SAPTILSQGNRFFAPDDIIK(Amb a 1.0201) vs. SNPTILSQGNKFVAPDFIYK(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/SAPTILSQGNRFFAPDDIIK(Amb a 1.0201) vs. SNPTILSQGNKFVAPDFIYK(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/TLRFAAAQNRPLWIIFKRNM(Amb a 1.0201) vs. TLRFAAAQNRPLWIIFKNDM(Amb a 1.0304).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/TLRFAAAQNRPLWIIFKRNM(Amb a 1.0201) vs. TLRFAAAQNRPLWIIFKNDM(Amb a 1.0304).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/TLRFAAAQNRPLWIIFKRNM(Amb a 1.0201) vs. TLRFGAAQNRPLWIIFARDM(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/TLRFAAAQNRPLWIIFKRNM(Amb a 1.0201) vs. TLRFGAAQNRPLWIIFARDM(Amb a 1.0401).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/TLRFAAAQNRPLWIIFKRNM(Amb a 1.0201) vs. TLRFGATQDRPLWIIFQRDM(Amb a 1.0501).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/TLRFAAAQNRPLWIIFKRNM(Amb a 1.0201) vs. TLRFGATQDRPLWIIFQRDM(Amb a 1.0501).png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Figures/VKVEIINGGLTLMNVKNIII(Amb a 1.0304) vs. GDAIGISGGSQIWIDHSSLS(Amb a 1.0401).png" beforeDir="false" afterPath="$PROJECT_DIR$/code/Figures/VKVEIINGGLTLMNVKNIII(Amb a 1.0304) vs. GDAIGISGGSQIWIDHSSLS(Amb a 1.0401).png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/correlation.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/correlation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/seqs_for_HLA_profiling.fsa" beforeDir="false" afterPath="$PROJECT_DIR$/code/seqs_for_HLA_profiling.fsa" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,9 +55,11 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="full.screen.before.presentation.mode" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
@@ -69,25 +106,45 @@
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state x="184" y="91" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.815@0.25.1440.815" timestamp="1631013504476" />
-    <state width="1419" height="203" key="GridCell.Tab.0.bottom" timestamp="1631024493272">
+    <state width="1419" height="189" key="GridCell.Tab.0.bottom" timestamp="1631734310118">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.bottom/0.25.1440.815@0.25.1440.815" timestamp="1631024493272" />
-    <state width="1419" height="203" key="GridCell.Tab.0.center" timestamp="1631024493272">
+    <state width="1419" height="81" key="GridCell.Tab.0.bottom.inPresentationMode" timestamp="1631698311768">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.center/0.25.1440.815@0.25.1440.815" timestamp="1631024493272" />
-    <state width="1419" height="203" key="GridCell.Tab.0.left" timestamp="1631024493271">
+    <state width="1419" height="81" key="GridCell.Tab.0.bottom.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311768" />
+    <state width="1419" height="189" key="GridCell.Tab.0.bottom/0.25.1440.815@0.25.1440.815" timestamp="1631734310118" />
+    <state width="1419" height="189" key="GridCell.Tab.0.center" timestamp="1631734310117">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.left/0.25.1440.815@0.25.1440.815" timestamp="1631024493271" />
-    <state width="1419" height="203" key="GridCell.Tab.0.right" timestamp="1631024493272">
+    <state width="1419" height="81" key="GridCell.Tab.0.center.inPresentationMode" timestamp="1631698311767">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state width="1419" height="203" key="GridCell.Tab.0.right/0.25.1440.815@0.25.1440.815" timestamp="1631024493272" />
-    <state x="323" y="25" key="SettingsEditor" timestamp="1631014068850">
+    <state width="1419" height="81" key="GridCell.Tab.0.center.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311767" />
+    <state width="1419" height="189" key="GridCell.Tab.0.center/0.25.1440.815@0.25.1440.815" timestamp="1631734310117" />
+    <state width="1419" height="189" key="GridCell.Tab.0.left" timestamp="1631734310116">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
-    <state x="323" y="25" key="SettingsEditor/0.25.1440.815@0.25.1440.815" timestamp="1631014068850" />
+    <state width="1419" height="81" key="GridCell.Tab.0.left.inPresentationMode" timestamp="1631698311766">
+      <screen x="0" y="25" width="1440" height="815" />
+    </state>
+    <state width="1419" height="81" key="GridCell.Tab.0.left.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311766" />
+    <state width="1419" height="189" key="GridCell.Tab.0.left/0.25.1440.815@0.25.1440.815" timestamp="1631734310116" />
+    <state width="1419" height="189" key="GridCell.Tab.0.right" timestamp="1631734310118">
+      <screen x="0" y="25" width="1440" height="815" />
+    </state>
+    <state width="1419" height="81" key="GridCell.Tab.0.right.inPresentationMode" timestamp="1631698311768">
+      <screen x="0" y="25" width="1440" height="815" />
+    </state>
+    <state width="1419" height="81" key="GridCell.Tab.0.right.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311768" />
+    <state width="1419" height="189" key="GridCell.Tab.0.right/0.25.1440.815@0.25.1440.815" timestamp="1631734310118" />
+    <state x="323" y="25" key="SettingsEditor" timestamp="1631706258554">
+      <screen x="0" y="25" width="1440" height="815" />
+    </state>
+    <state x="323" y="25" key="SettingsEditor/0.25.1440.815@0.25.1440.815" timestamp="1631706258554" />
+    <state x="385" y="164" width="670" height="676" key="search.everywhere.popup" timestamp="1631705783644">
+      <screen x="0" y="25" width="1440" height="815" />
+    </state>
+    <state x="385" y="164" width="670" height="676" key="search.everywhere.popup/0.25.1440.815@0.25.1440.815" timestamp="1631705783644" />
   </component>
 </project>
