@@ -302,6 +302,140 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
     return ori_align, var_align, aligned_similarity, matches
 
 
+def name_peptides(seqs):
+    unique_seqs = set()
+    allergen_dict = dict()
+    pep_list = []
+    for [name, seq] in seqs_for_FASTA:
+        if seq not in unique_seqs:
+            unique_seqs.add(seq)
+
+            if name in allergen_dict:
+                allergen_dict[name] += 1
+            else:
+                allergen_dict[name] = 1
+
+            pep_list.append([name + "_" + str(allergen_dict[name]), seq])
+    return pep_list
+
+
+def heatmap(pep_list, donor_list, donor_reaction_dict):
+    # Heatmap generation
+    donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
+    for i in range(len(pep_list)):
+        for j in range(len(donor_list)):
+            donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
+
+    plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=20)
+    plt.show()
+
+
+def print_corr_plot(chart, corr, dest = "Figures/{}.png"):
+    fig, ax = plt.subplots()
+    ax.scatter(chart[0], chart[1], label="PCC: %.3f" % PCC)
+    ax.legend()
+    ax.set_xlabel("Ori SI")
+    ax.set_ylabel("Var SI")
+    ax.set_title(chart[2])
+    fig.savefig(dest.format(chart[2].replace("\n", " ")))
+    # plt.show()
+    plt.close()
+
+
+def print_stats(bins):
+        print("ttest <50% vs. 50%-80%:")
+        print(st.ttest_ind(bins[0], bins[1], equal_var=False))
+        print("ttest <50% vs. >80%:")
+        print(st.ttest_ind(bins[0], bins[2], equal_var=False))
+        print("ttest 50%-80% vs. >80%:")
+        print(st.ttest_ind(bins[1], bins[2], equal_var=False))
+
+
+def corr_v_sim_func(cross_react_count, coef_sim_matrix):
+    mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean(cross_react_count[2])]
+
+    x1, x2, y1, y2 = [],[],[],[]
+
+    for i in range(len(coef_sim_matrix[0])):
+        if coef_sim_matrix[0][i] > 0.5:
+            y1.append(coef_sim_matrix[0][i])
+            x1.append(coef_sim_matrix[2][i])
+        else:
+            y2.append(coef_sim_matrix[0][i])
+            x2.append(coef_sim_matrix[2][i])
+
+    fig, (ax1, ax2) = plt.subplots(2, 1)
+    ax1.scatter(x1,y1, c="blue")
+    ax1.scatter(x2,y2, c="black")
+    ax1.set_ylabel("Pearson corr. coeff.")
+    ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+    ax2.set_xlabel("% Sequence identity", labelpad=5)
+    ax2.set_ylabel("Fraction significant")
+    plt.savefig("Figures/PCC_v_sim.png")
+    sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
+    print("PCC for scatterplot.",sim_v_PCC_PCC)
+    plt.show()
+
+
+def pcc_src_comparison(coef_sim_matrix):
+    #PCC histogram
+    #calculation of optimal number of bins
+    q25, q75 = np.percentile(coef_sim_matrix[0],[.25,.75])
+    bin_width = 2*(q75 - q25)*len(coef_sim_matrix)**(-1/3)
+    bins = round((max(coef_sim_matrix[0]) - min(coef_sim_matrix[0]))/bin_width)
+
+    #Histograms (PCC & SRC)
+    fig, (ax1, ax2) = plt.subplots(2, 1)
+    ax1.hist(coef_sim_matrix[0], density = False, bins = bins)
+    ax1.set_xlabel("PCC value")
+    ax1.set_ylabel("Count")
+    ax2.hist(coef_sim_matrix[1], density = False, bins = bins)
+    ax2.set_xlabel("SRC value")
+    ax2.set_ylabel("Count")
+
+    #SCR/PCC scatterplot
+    fig, ax1 = plt.subplots()
+    ax1.scatter(coef_sim_matrix[0],coef_sim_matrix[1])
+    ax1.set_xlabel("PCC")
+    ax1.set_ylabel("SRC")
+    plt.show()
+
+    #cross-reaction table
+    total_peptide_pairs = len(coef_sim_matrix[0])
+    n_PCC_CR = sum([pcc > 0.5 for pcc in coef_sim_matrix[0]])
+    n_SRC_CR = sum([src > 0.5 for src in coef_sim_matrix[1]])
+    print("Peptide pair crossreativity overview:")
+    print("Total: {:<8} PCC:{:<12} SRC:{:<12}".format(total_peptide_pairs, n_PCC_CR, n_SRC_CR))
+
+def load_pep_HLA_data(datafile="Data/25885_NetMHCIIpan.xls"):
+    infile = open(datafile,"r")
+
+    infile.readline()
+    infile.readline()
+    pep_HLA_dict = dict()
+    old_pep = 0
+    for i, line in enumerate(infile):
+        line = line.split()
+
+        cur_pep = line[2]
+        if old_pep != cur_pep:
+            if old_pep:
+                pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
+
+            old_pep = cur_pep
+
+        HLA_bind_rank = [float(line[i]) for i in range(6,25,3)]
+
+        if cur_pep in pep_HLA_dict:
+            pep_HLA_dict[cur_pep] = [min(old, new) for old, new in zip(pep_HLA_dict[cur_pep], HLA_bind_rank)]
+        else:
+            pep_HLA_dict[cur_pep] = HLA_bind_rank
+
+    pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
+
+    return pep_HLA_dict
+
+
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
 
@@ -336,12 +470,15 @@ for line in infile:
     var_SI = float(line[10])
 
     if ori_pepseq != old_ori_seq or var_pepseq != old_var_seq:
+        i += 1
+        if i > wanted_charts-1:
+            break
         n += 1
         old_ori_seq = ori_pepseq
         old_var_seq = var_pepseq
 
-        ori_name = line[1] + " " + line[2] + " " + line[3]
-        var_name = line[6] + " " + line[7] + " " + line[8]
+        ori_name = line[1] + "_" + line[2] + "_" + line[3]
+        var_name = line[6] + "_" + line[7] + "_" + line[8]
 
         title = ori_pepseq + "(" + ori_name + ")" + " vs.\n" + var_pepseq + "(" + var_name + ")"
 
@@ -354,28 +491,7 @@ for line in infile:
 
         ori_align, var_align, aligned_similarity, nw_matches = needleman_wunsch(ori_pepseq, var_pepseq)
 
-        # print(ori_align)
-        # print(var_align)
-        # print()
-
-        # Dumb version of percent identity, where early gaps ruin similarity
-        # while len(ori_pepseq) > len(var_pepseq):
-        #     var_pepseq = var_pepseq + "x"
-
-
-        # while len(ori_pepseq) < len(var_pepseq):
-        #     ori_pepseq = ori_pepseq + "x"
-
-        # naive_similarity = 0
-        # for j in range(len(ori_pepseq)):
-        #     if ori_pepseq[j] == var_pepseq[j]:
-        #         naive_similarity += 100/len(ori_pepseq)
-
-
-        i += 1
-        if i > wanted_charts-1:
-            break
-        # local alignment? with Smith-Waterman (O2)
+        # # local alignment? with Smith-Waterman (O2)
         # scoring_scheme = blosum50
         # gap_open = -11
         # gap_extension = -1
@@ -401,36 +517,18 @@ for line in infile:
     donor_reaction_dict[donor_id][ori_pepseq] = ori_SI
     donor_reaction_dict[donor_id][var_pepseq] = var_SI
 
+infile.close()
 
-# # output sequences in fasta format for HLA profiling.
-# outfile = open("seqs_for_HLA_profiling.fsa","w")
-#
-unique_seqs = set()
-allergen_dict = dict()
-pep_list = []
-for [name, seq] in seqs_for_FASTA:
-    if seq not in unique_seqs:
-        unique_seqs.add(seq)
+pep_list = name_peptides(seqs_for_FASTA)
 
-        if name in allergen_dict:
-            allergen_dict[name] += 1
-        else:
-            allergen_dict[name] = 1
+# Print seqs for fasta format
+outfile = open("seqs_for_HLA_profiling.fsa", "w")
+for [name, seq] in pep_list:
+    print(">" + name, file=outfile)
+    print(seq, file=outfile)
+outfile.close()
 
-        pep_list.append([name + " " + str(allergen_dict[name]), seq])
-
-
-
-donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
-for i in range(len(pep_list)):
-    for j in range(len(donor_list)):
-        donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
-
-plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=20)
-plt.show()
-
-#         print(">" + pair[0] + " peptide " + str(allergen_dict[pair[0]]), file=outfile)
-#         print(pair[1], file = outfile)
+# heatmap(pep_list, donor_list, donor_reaction_dict)
 
 
 coef_sim_matrix = [[],[],[]]
@@ -440,24 +538,9 @@ PCC_bins = [[],[],[]]
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
-
-    # fig, ax = plt.subplots()
-    # ax.scatter(chart[0], chart[1])
-    # ax.set_xlabel("Ori SI")
-    # ax.set_ylabel("Var SI")
-    # ax.set_title(chart[2])
-    # fig.savefig("Figures/{}.png".format(chart[2]))
-    # plt.close()
-
-    #fig, ax = plt.subplots()
-    #ax.scatter(chart[0], chart[1])
-    #ax.set_xlabel("Ori SI")
-    #ax.set_ylabel("Var SI")
-    #ax.set_title(chart[2])
-    #fig.savefig("Figures/{}.png".format(chart[2]))
-    #plt.close()
-
     percent_sim = chart[3]
+
+    # print_corr_plot(chart, PCC)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
@@ -477,107 +560,14 @@ for chart in charts:
         cross_react_count[1].append(CR)
         PCC_bins[1].append(PCC)
 
-# Are the bins statistically significant different?
-if 0:
-    print()
-    print("ttest crossreacting <50% vs. 50%-80%:")
-    print(st.ttest_ind(cross_react_count[0], cross_react_count[1], equal_var=False))
-    print()
-    print("ttest crossreacting <50% vs. >80%:")
-    print(st.ttest_ind(cross_react_count[0], cross_react_count[2], equal_var=False))
-    print()
-    print("ttest crossreacting 50%-80% vs. >80%:")
-    print(st.ttest_ind(cross_react_count[1], cross_react_count[2], equal_var=False))
-    print()
-    print()
-    print("ttest PCC <50% vs. 50%-80%:")
-    print(st.ttest_ind(PCC_bins[0], PCC_bins[1], equal_var=False))
-    print()
-    print("ttest PCC <50% vs. >80%:")
-    print(st.ttest_ind(PCC_bins[0], PCC_bins[2], equal_var=False))
-    print()
-    print("ttest PCC 50%-80% vs. >80%:")
-    print(st.ttest_ind(PCC_bins[1], PCC_bins[2], equal_var=False))
-    print()
-
-mean_CR = [np.mean(cross_react_count[0]), np.mean(cross_react_count[1]), np.mean(cross_react_count[2])]
-
-#fig = plt.figure()
-#ax = fig.add_axes([0,0,1,1])
-#ax.scatter(coef_sim_matrix[2],coef_sim_matrix[0])
-#plt.xlabel("% Sequence identity")
-#plt.ylabel("Pearson corr. coeff.")
-#plt.show()
-
-#fig = plt.figure()
-#ax = fig.add_axes([0,0,1,1])
-#ax.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
-#plt.xlabel("% Sequence identity")
-#plt.ylabel("Fraction significant")
-#plt.show()
-
-
-x1 = []
-x2 = []
-y1 = []
-y2 = []
-for i in range(len(coef_sim_matrix[0])):
-    if coef_sim_matrix[0][i] > 0.5:
-        y1.append(coef_sim_matrix[0][i])
-        x1.append(coef_sim_matrix[2][i])
-    else:
-        y2.append(coef_sim_matrix[0][i])
-        x2.append(coef_sim_matrix[2][i])
-
-
-fig, (ax1, ax2) = plt.subplots(2, 1)
-ax1.scatter(x1,y1, c="blue")
-ax1.scatter(x2,y2, c="black")
-ax1.set_ylabel("Pearson corr. coeff.")
-ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
-ax2.set_xlabel("% Sequence identity", labelpad=5)
-ax2.set_ylabel("Fraction significant")
-plt.savefig("Figures/PCC_v_sim.png")
-sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
-print("PCC for scatterplot.",sim_v_PCC_PCC)
-plt.show()
-
-#PCC histogram
-#calculation of optimal number of bins
-q25, q75 = np.percentile(coef_sim_matrix[0],[.25,.75])
-bin_width = 2*(q75 - q25)*len(coef_sim_matrix)**(-1/3)
-bins = round((max(coef_sim_matrix[0]) - min(coef_sim_matrix[0]))/bin_width)
-
-#Histograms (PCC & SRC)
-fig, (ax1, ax2) = plt.subplots(2, 1)
-ax1.hist(coef_sim_matrix[0], density = False, bins = bins)
-ax1.set_xlabel("PCC value")
-ax1.set_ylabel("Count")
-ax2.hist(coef_sim_matrix[1], density = False, bins = bins)
-ax2.set_xlabel("SRC value")
-ax2.set_ylabel("Count")
-
-#SCR/PCC scatterplot
-fig, ax1 = plt.subplots()
-ax1.scatter(coef_sim_matrix[0],coef_sim_matrix[1])
-ax1.set_xlabel("PCC")
-ax1.set_ylabel("SRC")
-plt.show()
-
-#cross-reaction table
-CR_table = []
-CR_SRC = []
-none_CR_SRC = []
-dim_coef_matrix = np.shape(coef_sim_matrix)
-CR_table.append(dim_coef_matrix[1])
-CR_table.append(len(y1))
-
-#Calculation of cross-reactive patients (SRC)
-for i in range(len(coef_sim_matrix[1])):
-    if coef_sim_matrix[1][i] > 0.5:
-        CR_SRC.append(coef_sim_matrix[1][i])
-    else:
-        none_CR_SRC.append(coef_sim_matrix[1][i])
-
-CR_table.append(len(CR_SRC))
-print(CR_table)
+# print("Crossreaction frequency t-test")
+# print_stats(cross_react_count)
+#
+# print("PCC t-test")
+# print_stats(PCC_bins)
+#
+# print("Correlation vs. similarity + bar plot")
+# corr_v_sim_func(cross_react_count, coef_sim_matrix)
+#
+# print("PCC and SRC histogram")
+# pcc_src_comparison(coef_sim_matrix)
