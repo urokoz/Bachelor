@@ -303,21 +303,21 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
     return ori_align, var_align, aligned_similarity, matches
 
 
-def name_peptides(seqs):
-    unique_seqs = set()
-    allergen_dict = dict()
-    pep_list = []
-    for [name, seq] in seqs_for_FASTA:
-        if seq not in unique_seqs:
-            unique_seqs.add(seq)
-
-            if name in allergen_dict:
-                allergen_dict[name] += 1
-            else:
-                allergen_dict[name] = 1
-
-            pep_list.append([name + "_" + str(allergen_dict[name]), seq])
-    return pep_list
+# def name_peptides(seqs):
+#     unique_seqs = set()
+#     allergen_dict = dict()
+#     pep_list = []
+#     for [name, seq] in seqs_for_FASTA:
+#         if seq not in unique_seqs:
+#             unique_seqs.add(seq)
+#
+#             if name in allergen_dict:
+#                 allergen_dict[name] += 1
+#             else:
+#                 allergen_dict[name] = 1
+#
+#             pep_list.append([name + "_" + str(allergen_dict[name]), seq])
+#     return pep_list
 
 
 def heatmap(pep_list, donor_list, donor_reaction_dict):
@@ -408,14 +408,15 @@ def pcc_src_comparison(coef_sim_matrix):
     print("Peptide pair crossreativity overview:")
     print("Total: {:<8} PCC:{:<12} SRC:{:<12}".format(total_peptide_pairs, n_PCC_CR, n_SRC_CR))
 
-def load_pep_HLA_data(datafile="Data/25885_NetMHCIIpan.xls"):
+
+def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
     infile = open(datafile,"r")
 
     infile.readline()
     infile.readline()
     pep_HLA_dict = dict()
     old_pep = 0
-    for i, line in enumerate(infile):
+    for line in infile:
         line = line.split()
 
         cur_pep = line[2]
@@ -436,6 +437,20 @@ def load_pep_HLA_data(datafile="Data/25885_NetMHCIIpan.xls"):
 
     return pep_HLA_dict
 
+
+def LOF(array, KNN_n = 2):
+    data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
+    for i, j in enumerate(array[0]):
+        data_point = [array[0][i], array[1][i]]
+        data.append(data_point)
+
+    # Lav LOF fit
+    clf = LocalOutlierFactor(n_neighbors=KNN_n)
+    output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
+    output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+
+    return output
+
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
 
@@ -455,6 +470,11 @@ seqs_for_FASTA = []
 donor_reaction_dict = dict()
 donor_list = []
 
+pep_HLA_dict = load_pep_HLA_data()
+
+unique_seqs = set()
+allergen_dict = dict()
+pep_list = []
 
 for line in infile:
     line = line.split()
@@ -480,13 +500,32 @@ for line in infile:
         ori_name = line[1] + "_" + line[2] + "_" + line[3]
         var_name = line[6] + "_" + line[7] + "_" + line[8]
 
-        title = ori_pepseq + "(" + ori_name + ")" + " vs.\n" + var_pepseq + "(" + var_name + ")"
+        ori_id = ori_name + "_" + ori_pepseq
+        var_id = var_name + "_" + var_pepseq
 
-        seqs_for_FASTA.append([ori_name, ori_pepseq])
-        seqs_for_FASTA.append([var_name, var_pepseq])
+        if ori_id not in unique_seqs:
+            unique_seqs.add(ori_id)
+
+            if ori_name in allergen_dict:
+                allergen_dict[ori_name] += 1
+            else:
+                allergen_dict[ori_name] = 1
+
+            full_ori_name = ori_name + "_" + str(allergen_dict[ori_name])
+            pep_list.append([full_ori_name, ori_pepseq, pep_HLA_dict[full_ori_name]])
+
+        if var_id not in unique_seqs:
+            unique_seqs.add(var_id)
+
+            if var_name in allergen_dict:
+                allergen_dict[var_name] += 1
+            else:
+                allergen_dict[var_name] = 1
+
+            full_var_name = var_name + "_" + str(allergen_dict[var_name])
+            pep_list.append([full_var_name, var_pepseq, pep_HLA_dict[full_var_name]])
 
         ## Similarity measurements
-
         # Global alignment with Needleman-Wunsch
 
         ori_align, var_align, aligned_similarity, nw_matches = needleman_wunsch(ori_pepseq, var_pepseq)
@@ -505,7 +544,7 @@ for line in infile:
         # print("")
 
 
-        charts.append([[],[], title, aligned_similarity, 0])
+        charts.append([[],[], [ori_name, var_name], aligned_similarity, 0])
 
     charts[i][0].append(ori_SI)
     charts[i][1].append(var_SI)
@@ -519,14 +558,14 @@ for line in infile:
 
 infile.close()
 
-pep_list = name_peptides(seqs_for_FASTA)
+print(pep_list)
 
-# Print seqs for fasta format
-outfile = open("seqs_for_HLA_profiling.fsa", "w")
-for [name, seq] in pep_list:
-    print(">" + name, file=outfile)
-    print(seq, file=outfile)
-outfile.close()
+# # Print seqs for fasta format
+# outfile = open("seqs_for_HLA_profiling.fsa", "w")
+# for [name, seq] in pep_list:
+#     print(">" + name, file=outfile)
+#     print(seq, file=outfile)
+# outfile.close()
 
 # heatmap(pep_list, donor_list, donor_reaction_dict)
 
@@ -535,7 +574,6 @@ coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
-KNN_n = 1
 
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
@@ -545,20 +583,8 @@ for chart in charts:
     #stacker data
     x_values = np.array(chart[0])
     y_values = np.array(chart[1])
+
     corr_data = [np.stack((x_values, y_values))]
-
-    def LOF(array):
-        data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
-        for i, j in enumerate(array[0]):
-            data_point = [array[0][i], array[1][i]]
-            data.append(data_point)
-
-        # Lav LOF fit
-        clf = LocalOutlierFactor(n_neighbors=KNN_n)
-        output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
-        output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
-
-        return output
 
     outliers = []  # array containing all the outputs from LOF functionen
     for i in corr_data:
