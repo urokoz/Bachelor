@@ -339,8 +339,8 @@ def print_corr_plot(chart, corr, dest = "Figures/{}.png"):
     ax.set_ylabel("Var SI")
     ax.set_title(chart[2])
     fig.savefig(dest.format(chart[2].replace("\n", " ")))
-    # plt.show()
-    plt.close()
+    plt.show()
+    #plt.close()
 
 
 def print_stats(bins):
@@ -564,8 +564,8 @@ for chart in charts:
     for i in corr_data:
         point = LOF(i)
         outliers.append(point)
-
     print(outliers)
+    #print(corr_data)
 
     #piller lige lidt ved formatet af data
     #for i, j in enumerate(corr_data[0]):
@@ -578,7 +578,7 @@ for chart in charts:
     #output2 = clf.negative_outlier_factor_  #Bliver ikke brugt, men måske brugbart? se def https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
     #print(outliers)
 
-    #print_corr_plot(chart, PCC)
+    print_corr_plot(chart, PCC)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
