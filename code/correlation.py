@@ -437,6 +437,20 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
 
     return pep_HLA_dict
 
+
+def LOF(array, KNN_n = 2):
+    data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
+    for i, j in enumerate(array[0]):
+        data_point = [array[0][i], array[1][i]]
+        data.append(data_point)
+
+    # Lav LOF fit
+    clf = LocalOutlierFactor(n_neighbors=KNN_n)
+    output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
+    output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+
+    return output
+
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
 
@@ -560,7 +574,6 @@ coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
-KNN_n = 2
 
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
@@ -570,20 +583,8 @@ for chart in charts:
     #stacker data
     x_values = np.array(chart[0])
     y_values = np.array(chart[1])
+
     corr_data = [np.stack((x_values, y_values))]
-
-    def LOF(array):
-        data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
-        for i, j in enumerate(array[0]):
-            data_point = [array[0][i], array[1][i]]
-            data.append(data_point)
-
-        # Lav LOF fit
-        clf = LocalOutlierFactor(n_neighbors=KNN_n)
-        output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
-        output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
-
-        return output
 
     outliers = []  # array containing all the outputs from LOF functionen
     for i in corr_data:
