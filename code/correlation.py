@@ -13,9 +13,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import scipy.stats as st
-import pandas as pd
 from scipy.stats import spearmanr
-
+import pandas as pd
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.metrics import pairwise_distances
 
 #alphabet_file = alphabet_upload.values()
 #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
@@ -338,8 +339,8 @@ def print_corr_plot(chart, corr, dest = "Figures/{}.png"):
     ax.set_ylabel("Var SI")
     ax.set_title(chart[2])
     fig.savefig(dest.format(chart[2].replace("\n", " ")))
-    # plt.show()
-    plt.close()
+    plt.show()
+    #plt.close()
 
 
 def print_stats(bins):
@@ -435,7 +436,6 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
     pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
 
     return pep_HLA_dict
-
 
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
@@ -559,13 +559,51 @@ print(pep_list)
 coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
+data = []
+KNN_n = 2
 
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
     percent_sim = chart[3]
 
-    # print_corr_plot(chart, PCC)
+    #stacker data
+    x_values = np.array(chart[0])
+    y_values = np.array(chart[1])
+    corr_data = [np.stack((x_values, y_values))]
+
+    def LOF(array):
+        data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
+        for i, j in enumerate(array[0]):
+            data_point = [array[0][i], array[1][i]]
+            data.append(data_point)
+
+        # Lav LOF fit
+        clf = LocalOutlierFactor(n_neighbors=KNN_n)
+        output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
+        output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+
+        return output
+
+    outliers = []  # array containing all the outputs from LOF functionen
+    for i in corr_data:
+        point = LOF(i)
+        outliers.append(point)
+    print(outliers)
+    #print(corr_data)
+
+    #piller lige lidt ved formatet af data
+    #for i, j in enumerate(corr_data[0]):
+        #data_point = [corr_data[0][i], corr_data[1][i]]
+        #data.append(data_point)
+
+    #LOF algoritme
+    #clf = LocalOutlierFactor(n_neighbors=KNN_n)
+    #outliers = clf.fit_predict(data)  #Returns -1 for anomalies/outliers and 1 for inliers.
+    #output2 = clf.negative_outlier_factor_  #Bliver ikke brugt, men måske brugbart? se def https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+    #print(outliers)
+
+    print_corr_plot(chart, PCC)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
@@ -584,6 +622,8 @@ for chart in charts:
     else:
         cross_react_count[1].append(CR)
         PCC_bins[1].append(PCC)
+
+
 
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
