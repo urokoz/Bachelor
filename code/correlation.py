@@ -535,7 +535,7 @@ coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
-KNN_n = 2
+KNN_n = 1
 
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
