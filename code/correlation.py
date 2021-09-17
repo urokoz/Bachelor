@@ -293,12 +293,13 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
             ori_align = ori[i] + ori_align
             var_align = "-" + var_align
 
-    aligned_similarity = 0
+
     matches = 0
     for j in range(len(ori_align)):
         if ori_align[j] == var_align[j]:
-            aligned_similarity += 100/len(ori_align)
             matches += 1
+
+    aligned_similarity = matches/min(n_ori,n_var)*100
 
     return ori_align, var_align, aligned_similarity, matches
 
@@ -331,16 +332,17 @@ def heatmap(pep_list, donor_list, donor_reaction_dict):
     plt.show()
 
 
-def print_corr_plot(chart, corr, dest = "Figures/{}.png"):
+def print_corr_plot(chart, corr, dest = "../../Figures/{}.png"):
     fig, ax = plt.subplots()
     ax.scatter(chart[0], chart[1], label="PCC: %.3f" % PCC)
     ax.legend()
     ax.set_xlabel("Ori SI")
     ax.set_ylabel("Var SI")
     ax.set_title(chart[2])
-    #fig.savefig(dest.format(chart[2].replace("\n", " ")))
-    plt.show()
-    #plt.close()
+
+    # fig.savefig(dest.format("{}_v_{}".format(chart[2][0], chart[2][1])))
+    # plt.show()
+    # plt.close()
 
 
 def print_stats(bins):
@@ -462,17 +464,18 @@ i = -1
 old_ori_seq = ""
 old_var_seq = ""
 charts = []
-wanted_charts = 10000
 n = 0
 seqs_for_FASTA = []
 donor_reaction_dict = dict()
 donor_list = []
+wanted_charts = 1000
 
 pep_HLA_dict = load_pep_HLA_data()
 
 unique_seqs = set()
 allergen_dict = dict()
 pep_list = []
+pep_dict = dict()
 
 for line in infile:
     line = line.split()
@@ -511,6 +514,7 @@ for line in infile:
 
             full_ori_name = ori_name + "_" + str(allergen_dict[ori_name])
             pep_list.append([full_ori_name, ori_pepseq, pep_HLA_dict[full_ori_name]])
+            pep_dict[full_ori_name] = [ori_pepseq, pep_HLA_dict[full_ori_name]]
 
         if var_id not in unique_seqs:
             unique_seqs.add(var_id)
@@ -522,6 +526,7 @@ for line in infile:
 
             full_var_name = var_name + "_" + str(allergen_dict[var_name])
             pep_list.append([full_var_name, var_pepseq, pep_HLA_dict[full_var_name]])
+            pep_dict[full_var_name] = [var_pepseq, pep_HLA_dict[full_var_name]]
 
         ## Similarity measurements
         # Global alignment with Needleman-Wunsch
@@ -542,7 +547,7 @@ for line in infile:
         # print("")
 
 
-        charts.append([[],[], [ori_name, var_name], aligned_similarity, 0])
+        charts.append([[],[], [full_ori_name, full_var_name], aligned_similarity, 0])
 
     charts[i][0].append(ori_SI)
     charts[i][1].append(var_SI)
@@ -556,7 +561,22 @@ for line in infile:
 
 infile.close()
 
-#print(pep_list)
+no_bind = 0
+weak_bind = 0
+strong_bind = 0
+for pep in pep_list:
+    if max(pep[2]) == 0:
+        pep_dict[pep[0]].append(0)
+        no_bind += 1
+    elif max(pep[2]) == 1:
+        pep_dict[pep[0]].append(1)
+        weak_bind += 1
+    else:
+        pep_dict[pep[0]].append(2)
+        strong_bind += 1
+
+
+print("No binders:", no_bind, "Only weak binders:", weak_bind, "Strong binders:", strong_bind)
 
 # # Print seqs for fasta format
 # outfile = open("seqs_for_HLA_profiling.fsa", "w")
@@ -572,7 +592,9 @@ coef_sim_matrix = [[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
-
+HLA_binder_table = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
+table_count = [0,0,0,0,0,0]
+HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
@@ -588,10 +610,13 @@ for chart in charts:
     for i in corr_data:
         point = LOF(i)
         outliers.append(point)
-    print(outliers)
+    # print(outliers)
     #print(corr_data)
 
     print_corr_plot(chart, PCC)
+
+
+    # print_corr_plot(chart, PCC)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
@@ -599,19 +624,70 @@ for chart in charts:
     coef_sim_matrix[1].append(SRC)
     coef_sim_matrix[2].append(percent_sim)
 
-    CR = 1 if PCC > 0.5 else 0
+    str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
+    weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
+
+    str_bind_2 = min(sum([int(a == 2 and b == 2) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
+    weak_bind_2 = min(sum([int(a > 0 and b > 0) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
+
+    CR = 1 if SRC > 0.5 else 0
 
     if percent_sim < 50:
         cross_react_count[0].append(CR)
         PCC_bins[0].append(PCC)
+        if not CR:
+            HLA_binder_table[0][0, str_bind] += 1
+            HLA_binder_table[0][1, weak_bind] += 1
+            HLA_binder_table_2[0][0, str_bind_2] += 1
+            HLA_binder_table_2[0][1, weak_bind_2] += 1
+            table_count[0] += 1
+        else:
+            HLA_binder_table[3][0, str_bind] += 1
+            HLA_binder_table[3][1, weak_bind] += 1
+            HLA_binder_table_2[3][0, str_bind_2] += 1
+            HLA_binder_table_2[3][1, weak_bind_2] += 1
+            table_count[3] += 1
     elif percent_sim >= 80:
         cross_react_count[2].append(CR)
         PCC_bins[2].append(PCC)
+        if not CR:
+            HLA_binder_table[2][0, str_bind] += 1
+            HLA_binder_table[2][1, weak_bind] += 1
+            HLA_binder_table_2[2][0, str_bind_2] += 1
+            HLA_binder_table_2[2][1, weak_bind_2] += 1
+            table_count[2] += 1
+        else:
+            HLA_binder_table[5][0, str_bind] += 1
+            HLA_binder_table[5][1, weak_bind] += 1
+            HLA_binder_table_2[5][0, str_bind_2] += 1
+            HLA_binder_table_2[5][1, weak_bind_2] += 1
+            table_count[5] += 1
     else:
         cross_react_count[1].append(CR)
         PCC_bins[1].append(PCC)
+        if not CR:
+            HLA_binder_table[1][0, str_bind] += 1
+            HLA_binder_table[1][1, weak_bind] += 1
+            HLA_binder_table_2[1][0, str_bind_2] += 1
+            HLA_binder_table_2[1][1, weak_bind_2] += 1
+            table_count[1] += 1
+        else:
+            HLA_binder_table[4][0, str_bind] += 1
+            HLA_binder_table[4][1, weak_bind] += 1
+            HLA_binder_table_2[4][0, str_bind_2] += 1
+            HLA_binder_table_2[4][1, weak_bind_2] += 1
+            table_count[4] += 1
 
 
+label = ["Low sim, low SRC","Mid sim, low SRC","High sim, low SRC","Low sim, high SRC","Mid sim, high SRC","high sim, high SRC"]
+print("Pool size")
+print(table_count[:3])
+print(table_count[3:])
+for i, (n, table) in enumerate(zip(table_count,HLA_binder_table_2)):
+    #print(table)
+    print()
+    print(label[i])
+    print(np.round(table/n,2))
 
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
