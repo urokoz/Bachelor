@@ -138,13 +138,6 @@ def pearsons_cc(y_est, y_true):
     return r_xy
 
 
-# ## Alignment Matrix Traceback
-
-# ### Traceback
-
-# In[12]:
-
-
 def smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, query="VLLP", database="VLILP", gap_open=-5, gap_extension=-1):
 
     M = len(query)
@@ -266,9 +259,6 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
             elif left == max_score:
                 P[i+1,j+1] = 4
 
-    # print(D)
-    # print(P)
-
     # traceback
     ori_align = ""
     var_align = ""
@@ -374,7 +364,7 @@ def corr_v_sim_func(cross_react_count, coef_sim_matrix):
     ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
     ax2.set_xlabel("% Sequence identity", labelpad=5)
     ax2.set_ylabel("Fraction significant")
-    plt.savefig("Figures/PCC_v_sim.png")
+    plt.savefig("../../Figures/PCC_v_sim.png")
     sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
     print("PCC for scatterplot.",sim_v_PCC_PCC)
     plt.show()
@@ -418,32 +408,31 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
     infile.readline()
     pep_HLA_dict = dict()
     old_pep = 0
-    for line in infile:
+    for i, line in enumerate(infile):
         line = line.split()
 
         cur_pep = line[2]
         if old_pep != cur_pep:
-            if old_pep:
-                pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
+            # if old_pep:
+            #     pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
 
             old_pep = cur_pep
 
-        HLA_bind_rank = [float(line[i]) for i in range(6,25,3)]
+        HLA_bind_rank = [[float(line[i]), line[i-2]] for i in range(6,25,3)]
 
         if cur_pep in pep_HLA_dict:
-            pep_HLA_dict[cur_pep] = [min(old, new) for old, new in zip(pep_HLA_dict[cur_pep], HLA_bind_rank)]
+            pep_HLA_dict[cur_pep] = [old if old[0] < new[0] else new for old, new in zip(pep_HLA_dict[cur_pep], HLA_bind_rank)]
         else:
             pep_HLA_dict[cur_pep] = HLA_bind_rank
 
-    pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
-
     return pep_HLA_dict
 
+
 def LOF(array, KNN_n = 1):
-    data = []
-    for i, j in enumerate(array[0]):
-        data_point = [array[0][i], array[1][i]]
-        data.append(data_point)
+    data = [[a,b] for a,b in zip(array[0], array[1])]
+    # for i, j in enumerate(array[0]):
+    #     data_point = [array[0][i], array[1][i]]
+    #     data.append(data_point)
 
     # Lav LOF fit
     clf = LocalOutlierFactor(n_neighbors=KNN_n)
@@ -476,6 +465,7 @@ unique_seqs = set()
 allergen_dict = dict()
 pep_list = []
 pep_dict = dict()
+pep_id_name = dict()
 
 for line in infile:
     line = line.split()
@@ -515,6 +505,7 @@ for line in infile:
             full_ori_name = ori_name + "_" + str(allergen_dict[ori_name])
             pep_list.append([full_ori_name, ori_pepseq, pep_HLA_dict[full_ori_name]])
             pep_dict[full_ori_name] = [ori_pepseq, pep_HLA_dict[full_ori_name]]
+            pep_id_name[ori_id] = full_ori_name
 
         if var_id not in unique_seqs:
             unique_seqs.add(var_id)
@@ -527,6 +518,7 @@ for line in infile:
             full_var_name = var_name + "_" + str(allergen_dict[var_name])
             pep_list.append([full_var_name, var_pepseq, pep_HLA_dict[full_var_name]])
             pep_dict[full_var_name] = [var_pepseq, pep_HLA_dict[full_var_name]]
+            pep_id_name[var_id] = full_var_name
 
         ## Similarity measurements
         # Global alignment with Needleman-Wunsch
@@ -547,7 +539,7 @@ for line in infile:
         # print("")
 
 
-        charts.append([[],[], [full_ori_name, full_var_name], aligned_similarity, 0])
+        charts.append([[],[], [pep_id_name[ori_id], pep_id_name[var_id]], aligned_similarity, 0])
 
     charts[i][0].append(ori_SI)
     charts[i][1].append(var_SI)
@@ -560,15 +552,15 @@ for line in infile:
     donor_reaction_dict[donor_id][var_pepseq] = var_SI
 
 infile.close()
-
 no_bind = 0
 weak_bind = 0
 strong_bind = 0
 for pep in pep_list:
-    if max(pep[2]) == 0:
+    bind_str = min([a[0] for a in pep[2]])
+    if bind_str > 5:
         pep_dict[pep[0]].append(0)
         no_bind += 1
-    elif max(pep[2]) == 1:
+    elif bind_str >= 1:
         pep_dict[pep[0]].append(1)
         weak_bind += 1
     else:
@@ -587,8 +579,7 @@ print("No binders:", no_bind, "Only weak binders:", weak_bind, "Strong binders:"
 
 # heatmap(pep_list, donor_list, donor_reaction_dict)
 
-
-coef_sim_matrix = [[],[],[]]
+coef_sim_matrix = [[],[],[], [],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
@@ -613,22 +604,58 @@ for chart in charts:
     # print(outliers)
     #print(corr_data)
 
-    print_corr_plot(chart, PCC)
+    # print_corr_plot(chart, PCC)
 
 
     # print_corr_plot(chart, PCC)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
+    pep1_info = pep_dict[chart[2][0]]
+    pep2_info = pep_dict[chart[2][1]]
+
+    # best core vs best core
+    rank1 = np.inf
+    rank2 = np.inf
+    for [rank, core] in pep1_info[1]:
+        if rank < rank1:
+            rank1 = rank
+            best_core1 = core
+
+    for [rank, core] in pep2_info[1]:
+        if rank < rank2:
+            rank2 = rank
+            best_core2 = core
+
+    # best core from ori and corresponding core for var
+    # best_rank = np.inf
+    # for [rank_ori, core_ori], [rank_var, core_var]  in zip(pep1_info[1], pep2_info[1]):
+    #     if rank_ori < best_rank:
+    #         best_rank = rank_ori
+    #         best_core1 = core_ori
+    #         best_core2 = core_var
+
+    #print(best_core1, best_core2)
+
+    core_matches = 0
+    core_blosum = 0
+    for a,b in zip(best_core1, best_core2):
+        core_matches += int(a==b)
+        core_blosum += blosum50[a][b]
+
+    core_ident = core_matches/len(best_core1)
+
     coef_sim_matrix[0].append(PCC)
     coef_sim_matrix[1].append(SRC)
     coef_sim_matrix[2].append(percent_sim)
+    coef_sim_matrix[3].append(core_ident)
+    coef_sim_matrix[4].append(core_blosum)
 
     str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
     weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
 
-    str_bind_2 = min(sum([int(a == 2 and b == 2) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
-    weak_bind_2 = min(sum([int(a > 0 and b > 0) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
+    str_bind_2 = min(sum([int(a[0] < 1 and b[0] < 1) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
+    weak_bind_2 = min(sum([int(a[0] < 5 and b[0] < 5) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
 
     CR = 1 if SRC > 0.5 else 0
 
@@ -689,14 +716,27 @@ for i, (n, table) in enumerate(zip(table_count,HLA_binder_table_2)):
     print(label[i])
     print(np.round(table/n,2))
 
+fig, ax = plt.subplots(1,1)
+ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
+print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
+plt.show()
+
+
+
+fig, ax = plt.subplots(1,1)
+ax.scatter(coef_sim_matrix[4], coef_sim_matrix[0])
+print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
+plt.show()
+
+
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
 #
 # print("PCC t-test")
 # print_stats(PCC_bins)
 #
-# print("Correlation vs. similarity + bar plot")
-# corr_v_sim_func(cross_react_count, coef_sim_matrix)
+print("Correlation vs. similarity + bar plot")
+corr_v_sim_func(cross_react_count, coef_sim_matrix)
 #
 # print("PCC and SRC histogram")
 # pcc_src_comparison(coef_sim_matrix)
