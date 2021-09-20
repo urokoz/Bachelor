@@ -594,8 +594,8 @@ cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
 HLA_binder_table = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
-table_count = [0,0,0,0,0,0]
 HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
+table_count = [0,0,0,0,0,0]
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
