@@ -339,6 +339,7 @@ def print_corr_plot(chart, corr, dest = "../../Figures/{}.png"):
     ax.set_xlabel("Ori SI")
     ax.set_ylabel("Var SI")
     ax.set_title(chart[2])
+
     # fig.savefig(dest.format("{}_v_{}".format(chart[2][0], chart[2][1])))
     # plt.show()
     # plt.close()
@@ -438,17 +439,16 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
 
     return pep_HLA_dict
 
-
-def LOF(array, KNN_n = 2):
-    data = []  # new data format: [[a1,b1],[a2,b2],[c3,c3]]
+def LOF(array, KNN_n = 1):
+    data = []
     for i, j in enumerate(array[0]):
         data_point = [array[0][i], array[1][i]]
         data.append(data_point)
 
     # Lav LOF fit
     clf = LocalOutlierFactor(n_neighbors=KNN_n)
-    output = clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
-    output2 = clf.negative_outlier_factor_  # ikke brugt - måske relevant? se: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
+    clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
+    output = clf.negative_outlier_factor_
 
     return output
 
@@ -456,7 +456,6 @@ def LOF(array, KNN_n = 2):
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
 
 infile.readline()
-
 
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
 #          'Amb', 'a', '1.0201', 'NSDKTIDGRGVKVNIVNAGL', '1.12407']
@@ -607,23 +606,15 @@ for chart in charts:
 
     corr_data = [np.stack((x_values, y_values))]
 
-    outliers = []  # array containing all the outputs from LOF functionen
+    outliers = []  # array containing all the outputs from the LOF function
     for i in corr_data:
         point = LOF(i)
         outliers.append(point)
     # print(outliers)
     #print(corr_data)
 
-    #piller lige lidt ved formatet af data
-    #for i, j in enumerate(corr_data[0]):
-        #data_point = [corr_data[0][i], corr_data[1][i]]
-        #data.append(data_point)
+    print_corr_plot(chart, PCC)
 
-    #LOF algoritme
-    #clf = LocalOutlierFactor(n_neighbors=KNN_n)
-    #outliers = clf.fit_predict(data)  #Returns -1 for anomalies/outliers and 1 for inliers.
-    #output2 = clf.negative_outlier_factor_  #Bliver ikke brugt, men måske brugbart? se def https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
-    #print(outliers)
 
     # print_corr_plot(chart, PCC)
 
