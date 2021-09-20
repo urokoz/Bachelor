@@ -322,18 +322,27 @@ def heatmap(pep_list, donor_list, donor_reaction_dict):
     plt.show()
 
 
-def print_corr_plot(chart, corr, dest = "../../Figures/{}.png"):
-    fig, ax = plt.subplots()
-    ax.scatter(chart[0], chart[1], label="PCC: %.3f" % PCC)
-    ax.legend()
-    ax.set_xlabel("Ori SI")
-    ax.set_ylabel("Var SI")
-    ax.set_title(chart[2])
+def print_corr_plot(chart, non_outliers_list, dest = "../../Figures/{}.png"):
+    #fig, ax = plt.subplots()
+    #ax.scatter(chart[0], chart[1], label="PCC: %.3f" % PCC)
+    #ax.legend()
+    #ax.set_xlabel("Ori SI")
+    #ax.set_ylabel("Var SI")
+    #ax.set_title(chart[2])
 
-    # fig.savefig(dest.format("{}_v_{}".format(chart[2][0], chart[2][1])))
-    # plt.show()
-    # plt.close()
+    #fig.savefig(dest.format("{}_v_{}".format(chart[2][0], chart[2][1])))
+    #plt.close()
 
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    ax1.scatter(chart[0], chart[1], c = "b", label="PCC: %.3f" % PCC_POS)
+    ax1.scatter(non_outliers_list[0],non_outliers_list[1], c ="r", label="PCC: %.3f" % PCC )
+    ax1.legend()
+    ax1.set_xlabel("Ori SI")
+    ax1.set_ylabel("Var SI")
+    ax1.set_title(chart[2])
+
+    #plt.show()
 
 def print_stats(bins):
         print("ttest <50% vs. 50%-80%:")
@@ -568,7 +577,7 @@ for pep in pep_list:
         strong_bind += 1
 
 
-print("No binders:", no_bind, "Only weak binders:", weak_bind, "Strong binders:", strong_bind)
+print("No binders:", no_bind, "Weak binders:", weak_bind, "Strong binders:", strong_bind)
 
 # # Print seqs for fasta format
 # outfile = open("seqs_for_HLA_profiling.fsa", "w")
@@ -583,9 +592,14 @@ coef_sim_matrix = [[],[],[], [],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
+sensitive_plots = []
 HLA_binder_table = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
 HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
+<<<<<<< Updated upstream
 table_count = [0,0,0,0,0,0]
+=======
+
+>>>>>>> Stashed changes
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
@@ -595,19 +609,39 @@ for chart in charts:
     x_values = np.array(chart[0])
     y_values = np.array(chart[1])
 
-    corr_data = [np.stack((x_values, y_values))]
+    corr_data = np.stack((x_values, y_values))
 
-    outliers = []  # array containing all the outputs from the LOF function
-    for i in corr_data:
-        point = LOF(i)
-        outliers.append(point)
-    # print(outliers)
+    outliers = []  # list containing all the outputs from the LOF function
+
+    point = LOF(corr_data)
+    outliers.append(point)
+    #print(outliers)
+    #print(outliers)
     #print(corr_data)
 
+<<<<<<< Updated upstream
     # print_corr_plot(chart, PCC)
+=======
+    for i, dp in enumerate(point):
+        if dp <= -5:
+            point[i] = int(1)
+        else:
+            point[i] = int(0)
 
+    point = point.astype(bool) #returns binary array for every dataset (1 = outlier, 0 = inlier)
+    outlier_list = corr_data[:, point]
+    non_outliers_list = corr_data[:, np.invert(point)]
+    #print(corr_data)
+    #print(non_outliers_list)
+    PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
+    Delta_PCC = abs(PCC_POS - PCC)
+>>>>>>> Stashed changes
 
-    # print_corr_plot(chart, PCC)
+    #print_corr_plot(chart, non_outliers_list, PCC)
+
+    #if Delta_PCC >= 0.3:
+        #sensitive_plots.append(Delta_PCC)
+    #print(sensitive_plots)
 
     # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
 
@@ -706,15 +740,15 @@ for chart in charts:
             table_count[4] += 1
 
 
-label = ["Low sim, low SRC","Mid sim, low SRC","High sim, low SRC","Low sim, high SRC","Mid sim, high SRC","high sim, high SRC"]
-print("Pool size")
-print(table_count[:3])
-print(table_count[3:])
-for i, (n, table) in enumerate(zip(table_count,HLA_binder_table_2)):
+#label = ["Low sim, low SRC","Mid sim, low SRC","High sim, low SRC","Low sim, high SRC","Mid sim, high SRC","high sim, high SRC"]
+#print("Pool size")
+#print(table_count[:3])
+#print(table_count[3:])
+#for i, (n, table) in enumerate(zip(table_count,HLA_binder_table_2)):
     #print(table)
-    print()
-    print(label[i])
-    print(np.round(table/n,2))
+    #print()
+    #print(label[i])
+    #print(np.round(table/n,2))
 
 fig, ax = plt.subplots(1,1)
 ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
@@ -740,3 +774,4 @@ corr_v_sim_func(cross_react_count, coef_sim_matrix)
 #
 # print("PCC and SRC histogram")
 # pcc_src_comparison(coef_sim_matrix)
+
