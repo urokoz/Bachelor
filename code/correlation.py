@@ -595,11 +595,8 @@ data = []
 sensitive_plots = []
 HLA_binder_table = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
 HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
-<<<<<<< Updated upstream
 table_count = [0,0,0,0,0,0]
-=======
 
->>>>>>> Stashed changes
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
     SRC, p = spearmanr(chart[0], chart[1])
@@ -619,9 +616,6 @@ for chart in charts:
     #print(outliers)
     #print(corr_data)
 
-<<<<<<< Updated upstream
-    # print_corr_plot(chart, PCC)
-=======
     for i, dp in enumerate(point):
         if dp <= -5:
             point[i] = int(1)
@@ -635,7 +629,6 @@ for chart in charts:
     #print(non_outliers_list)
     PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
     Delta_PCC = abs(PCC_POS - PCC)
->>>>>>> Stashed changes
 
     #print_corr_plot(chart, non_outliers_list, PCC)
 
@@ -774,4 +767,3 @@ corr_v_sim_func(cross_react_count, coef_sim_matrix)
 #
 # print("PCC and SRC histogram")
 # pcc_src_comparison(coef_sim_matrix)
-
