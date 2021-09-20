@@ -748,8 +748,6 @@ ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
 print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
 plt.show()
 
-
-
 fig, ax = plt.subplots(1,1)
 ax.scatter(coef_sim_matrix[4], coef_sim_matrix[0])
 print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
