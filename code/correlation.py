@@ -588,7 +588,7 @@ print("No binders:", no_bind, "Weak binders:", weak_bind, "Strong binders:", str
 
 # heatmap(pep_list, donor_list, donor_reaction_dict)
 
-coef_sim_matrix = [[],[],[], [],[]]
+coef_sim_matrix = [[],[],[],[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 data = []
@@ -596,6 +596,8 @@ sensitive_plots = []
 HLA_binder_table = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
 HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3))]
 table_count = [0,0,0,0,0,0]
+CR_delta_rank = []
+NCR_delta_rank = []
 
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
@@ -641,6 +643,7 @@ for chart in charts:
     pep1_info = pep_dict[chart[2][0]]
     pep2_info = pep_dict[chart[2][1]]
 
+    ## Core similarity vs PCC
     # best core vs best core
     rank1 = np.inf
     rank2 = np.inf
@@ -655,12 +658,15 @@ for chart in charts:
             best_core2 = core
 
     # best core from ori and corresponding core for var
-    # best_rank = np.inf
-    # for [rank_ori, core_ori], [rank_var, core_var]  in zip(pep1_info[1], pep2_info[1]):
-    #     if rank_ori < best_rank:
-    #         best_rank = rank_ori
-    #         best_core1 = core_ori
-    #         best_core2 = core_var
+    best_rank = np.inf
+    for [rank_ori, core_ori], [rank_var, core_var]  in zip(pep1_info[1], pep2_info[1]):
+        if rank_ori < best_rank:
+            best_rank = rank_ori
+            var_rank = rank_var
+            best_core3 = core_ori
+            best_core4 = core_var
+
+    delta_rank = np.abs(rank1 - rank2)
 
     #print(best_core1, best_core2)
 
@@ -677,6 +683,8 @@ for chart in charts:
     coef_sim_matrix[2].append(percent_sim)
     coef_sim_matrix[3].append(core_ident)
     coef_sim_matrix[4].append(core_blosum)
+    coef_sim_matrix[5].append(delta_rank)
+
 
     str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
     weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
@@ -684,7 +692,12 @@ for chart in charts:
     str_bind_2 = min(sum([int(a[0] < 1 and b[0] < 1) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
     weak_bind_2 = min(sum([int(a[0] < 5 and b[0] < 5) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
 
-    CR = 1 if SRC > 0.5 else 0
+    CR = 1 if PCC > 0.5 else 0
+
+    if CR:
+        CR_delta_rank.append(delta_rank)
+    else:
+        NCR_delta_rank.append(delta_rank)
 
     if percent_sim < 50:
         cross_react_count[0].append(CR)
@@ -743,16 +756,23 @@ for chart in charts:
     #print(label[i])
     #print(np.round(table/n,2))
 
-fig, ax = plt.subplots(1,1)
-ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
-print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
-plt.show()
+# fig, ax = plt.subplots(1,1)
+# ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
+# print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
+# plt.show()
+#
+# fig, ax = plt.subplots(1,1)
+# ax.scatter(coef_sim_matrix[4], coef_sim_matrix[0])
+# print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
+# plt.show()
 
 fig, ax = plt.subplots(1,1)
-ax.scatter(coef_sim_matrix[4], coef_sim_matrix[0])
-print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
+p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
+ax.boxplot([NCR_delta_rank,CR_delta_rank])
+ax.set_xticklabels(["Non-CR", "CR"])
+ax.set_ylabel("Delta rank")
+ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
-
 
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
@@ -760,8 +780,8 @@ plt.show()
 # print("PCC t-test")
 # print_stats(PCC_bins)
 #
-print("Correlation vs. similarity + bar plot")
-corr_v_sim_func(cross_react_count, coef_sim_matrix)
+# print("Correlation vs. similarity + bar plot")
+# corr_v_sim_func(cross_react_count, coef_sim_matrix)
 #
 # print("PCC and SRC histogram")
 # pcc_src_comparison(coef_sim_matrix)
