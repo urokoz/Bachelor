@@ -16,7 +16,7 @@ import scipy.stats as st
 from scipy.stats import spearmanr
 import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
-from sklearn.metrics import pairwise_distances
+import seaborn as sns
 
 #alphabet_file = alphabet_upload.values()
 #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
@@ -335,14 +335,14 @@ def print_corr_plot(chart, non_outliers_list, dest = "../../Figures/{}.png"):
 
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
-    ax1.scatter(chart[0], chart[1], c = "b", label="PCC: %.3f" % PCC_POS)
-    ax1.scatter(non_outliers_list[0],non_outliers_list[1], c ="r", label="PCC: %.3f" % PCC )
+    ax1.scatter(chart[0], chart[1], c = "b", label="PCC Before Outlier Selection: %.3f" % PCC)
+    ax1.scatter(non_outliers_list[0],non_outliers_list[1], c ="r", label="PCC After Outlier Selection: %.3f" % PCC_POS)
     ax1.legend()
     ax1.set_xlabel("Ori SI")
     ax1.set_ylabel("Var SI")
     ax1.set_title(chart[2])
 
-    #plt.show()
+    plt.show()
 
 def print_stats(bins):
         print("ttest <50% vs. 50%-80%:")
@@ -373,7 +373,7 @@ def corr_v_sim_func(cross_react_count, coef_sim_matrix):
     ax2.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
     ax2.set_xlabel("% Sequence identity", labelpad=5)
     ax2.set_ylabel("Fraction significant")
-    plt.savefig("../../Figures/PCC_v_sim.png")
+    #plt.savefig("../../Figures/PCC_v_sim.png")
     sim_v_PCC_PCC = pearsons_cc(coef_sim_matrix[2],coef_sim_matrix[0])
     print("PCC for scatterplot.",sim_v_PCC_PCC)
     plt.show()
@@ -436,19 +436,20 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
 
     return pep_HLA_dict
 
-
-def LOF(array, KNN_n = 1):
-    data = [[a,b] for a,b in zip(array[0], array[1])]
+#-----------------
+#def LOF(array, KNN_n = 2):
+    #data = [[a,b] for a,b in zip(array[0], array[1])]
     # for i, j in enumerate(array[0]):
     #     data_point = [array[0][i], array[1][i]]
     #     data.append(data_point)
 
     # Lav LOF fit
-    clf = LocalOutlierFactor(n_neighbors=KNN_n)
-    clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
-    output = clf.negative_outlier_factor_
+    #clf = LocalOutlierFactor(n_neighbors=KNN_n)
+    #clf.fit_predict(data)  # Returns -1 for anomalies/outliers and 1 for inliers.
+    #output = clf.negative_outlier_factor_
 
-    return output
+    #return output
+#-----------------
 
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
@@ -608,29 +609,38 @@ for chart in charts:
 
     corr_data = np.stack((x_values, y_values))
 
-    outliers = []  # list containing all the outputs from the LOF function
+    #Interquartile range for first array in each pair
+    q3_1, q1_1 = np.percentile(corr_data[0], [75, 25])
+    IQR1 = q3_1 - q1_1
 
-    point = LOF(corr_data)
-    outliers.append(point)
+    #Interquartile range for second array in each pair
+    q3_2, q1_2 = np.percentile(corr_data[1], [75, 25])
+    IQR2 = q3_2 - q1_2
+
+    non_outliers_list = corr_data[:, np.invert(np.add(corr_data[0, :] > (q3_1 + 1.5 * IQR1), corr_data[1, :] > (q3_2 + 1.5 * IQR2)))]
+    non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
+
+    #point = LOF(corr_data)
+    #outliers.append(point)
     #print(outliers)
     #print(outliers)
     #print(corr_data)
 
-    for i, dp in enumerate(point):
-        if dp <= -5:
-            point[i] = int(1)
-        else:
-            point[i] = int(0)
+    #for i, dp in enumerate(point):
+        #if dp <= -10:
+        #    point[i] = int(1)
+        #else:
+        #    point[i] = int(0)
 
-    point = point.astype(bool) #returns binary array for every dataset (1 = outlier, 0 = inlier)
-    outlier_list = corr_data[:, point]
-    non_outliers_list = corr_data[:, np.invert(point)]
+    #point = point.astype(bool) #returns binary array for every dataset (1 = outlier, 0 = inlier)
+    #outlier_list = corr_data[:, point]
+    #non_outliers_list = corr_data[:, np.invert(point)]
     #print(corr_data)
     #print(non_outliers_list)
     PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
     Delta_PCC = abs(PCC_POS - PCC)
 
-    #print_corr_plot(chart, non_outliers_list, PCC)
+    print_corr_plot(chart, non_outliers_list, PCC)
 
     #if Delta_PCC >= 0.3:
         #sensitive_plots.append(Delta_PCC)
@@ -745,25 +755,25 @@ for chart in charts:
 
 fig, ax = plt.subplots(1,1)
 ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
-print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
-plt.show()
+#print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
+#plt.show()
 
 
 
 fig, ax = plt.subplots(1,1)
 ax.scatter(coef_sim_matrix[4], coef_sim_matrix[0])
-print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
-plt.show()
+#print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
+#plt.show()
 
 
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
-#
+# ---
 # print("PCC t-test")
 # print_stats(PCC_bins)
-#
-print("Correlation vs. similarity + bar plot")
-corr_v_sim_func(cross_react_count, coef_sim_matrix)
-#
+# ---
+#print("Correlation vs. similarity + bar plot")
+#corr_v_sim_func(cross_react_count, coef_sim_matrix)
+# ---
 # print("PCC and SRC histogram")
 # pcc_src_comparison(coef_sim_matrix)
