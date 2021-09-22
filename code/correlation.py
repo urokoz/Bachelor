@@ -642,7 +642,7 @@ for chart in charts:
     PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
     Delta_PCC = abs(PCC_POS - PCC)
 
-    print_corr_plot(chart, non_outliers_list, PCC)
+    # print_corr_plot(chart, non_outliers_list, PCC)
 
     #if Delta_PCC >= 0.3:
         #sensitive_plots.append(Delta_PCC)
@@ -686,7 +686,7 @@ for chart in charts:
         core_matches += int(a==b)
         core_blosum += blosum50[a][b]
 
-    core_ident = core_matches/len(best_core1)
+    core_ident = core_matches/len(best_core1)*100
 
     coef_sim_matrix[0].append(PCC)
     coef_sim_matrix[1].append(SRC)
@@ -767,22 +767,36 @@ for chart in charts:
     #print(np.round(table/n,2))
 
 
-# fig, ax = plt.subplots(1,1)
-# ax.scatter(coef_sim_matrix[3], coef_sim_matrix[0])
-# print(pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[0]))
-# plt.show()
-#
-# fig, ax = plt.subplots(1,1)
-# ax.scatter(coef_sim_matrix[4], coef_sim_matrix[0])
-# print(pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[0]))
+fig, ((ax1,ax4),(ax3,ax2)) = plt.subplots(2,2)
+PCC_1 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[1])
+ax1.scatter(coef_sim_matrix[2], coef_sim_matrix[1])
+ax1.set_title("PCC as a function of global similarity(percent). PCC = %.3f" % PCC_1)
+ax1.set_xlabel("Global similarity(percent)")
+ax1.set_ylabel("PCC")
 # plt.show()
 
-fig, ax = plt.subplots(1,1)
+# fig, ax = plt.subplots(1,1)
+PCC_1 = pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[1])
+ax2.scatter(coef_sim_matrix[3], coef_sim_matrix[1])
+ax2.set_title("PCC as a function of core identity(percent). PCC = %.3f" % PCC_1)
+ax2.set_xlabel("Core identity(%)")
+ax2.set_ylabel("PCC")
+# plt.show()
+
+# fig, ax = plt.subplots(1,1)
+PCC_2 = pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[1])
+ax3.scatter(coef_sim_matrix[4], coef_sim_matrix[1])
+ax3.set_title("PCC as a function of core identity(BLOSUM score). PCC = %.3f" % PCC_2)
+ax3.set_xlabel("Core identity(BLOSUM score)")
+ax3.set_ylabel("PCC")
+# plt.show()
+
+# fig, ax = plt.subplots(1,1)
 p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
-ax.boxplot([NCR_delta_rank,CR_delta_rank])
-ax.set_xticklabels(["Non-CR", "CR"])
-ax.set_ylabel("Delta rank")
-ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
+ax4.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
+ax4.set_yticklabels(["Non-CR", "CR"])
+ax4.set_xlabel("Delta rank")
+ax4.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
 
 
