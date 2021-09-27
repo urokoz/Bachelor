@@ -168,7 +168,7 @@ def smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, query="VLLP", dat
         if E_matrix[i, j] == 3:
 
             count = i + 2
-            score = D_matrix[count, j] + gap_open + gap_extensionimport
+            score = D_matrix[count, j] + gap_open + gap_extension
 
             # Find length of gap
             while((score - D_matrix[i, j])*(score - D_matrix[i, j]) >= 0.00001):
