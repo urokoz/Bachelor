@@ -885,9 +885,6 @@ ax7.scatter(threshold_values, PCC_t)
 plt.show()
 print(max(PCC_t))
 
-
-
-
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
 # ---
