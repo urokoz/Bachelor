@@ -599,207 +599,215 @@ HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((
 table_count = [0,0,0,0,0,0]
 CR_delta_rank = []
 NCR_delta_rank = []
+threshold_values = np.linspace(0.1,0.5,30)
+PCC_t = []
+
+for t in threshold_values:
+
+    for i, chart in enumerate(charts):
+        PCC = pearsons_cc(chart[0], chart[1])
+        SRC, p = spearmanr(chart[0], chart[1])
+        percent_sim = chart[3]
 
 
-for i, chart in enumerate(charts):
-    PCC = pearsons_cc(chart[0], chart[1])
-    SRC, p = spearmanr(chart[0], chart[1])
-    percent_sim = chart[3]
-
-    if np.abs(PCC-SRC) > 0.3:
-        continue
-    #stacker data
-    x_values = np.array(chart[0])
-    y_values = np.array(chart[1])
-
-
-    # outfile = open("chart{}.txt".format(i), "w")
-    # for x,y in zip(x_values, y_values):
-    #     print(x,y,sep="\t",file=outfile)
-    # outfile.close()
-
-    corr_data = np.stack((x_values, y_values))
-
-    #Interquartile range for first array in each pair
-    q3_1, q1_1 = np.percentile(corr_data[0], [75, 25])
-    IQR1 = q3_1 - q1_1
-
-    #Interquartile range for second array in each pair
-    q3_2, q1_2 = np.percentile(corr_data[1], [75, 25])
-    IQR2 = q3_2 - q1_2
-
-    non_outliers_list = corr_data[:, np.invert(np.add(corr_data[0, :] > (q3_1 + 1.5 * IQR1), corr_data[1, :] > (q3_2 + 1.5 * IQR2)))]
-    non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
-
-    #point = LOF(corr_data)
-    #outliers.append(point)
-    #print(outliers)
-    #print(outliers)
-    #print(corr_data)
-
-    #for i, dp in enumerate(point):
-        #if dp <= -10:
-        #    point[i] = int(1)
-        #else:
-        #    point[i] = int(0)
-
-    #point = point.astype(bool) #returns binary array for every dataset (1 = outlier, 0 = inlier)
-    #outlier_list = corr_data[:, point]
-    #non_outliers_list = corr_data[:, np.invert(point)]
-    #print(corr_data)
-    #print(non_outliers_list)
-    PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
-    Delta_PCC = abs(PCC_POS - PCC)
-
-
-    # print_corr_plot(chart, non_outliers_list)
-
-    #if Delta_PCC >= 0.3:
-        #sensitive_plots.append(Delta_PCC)
-    #print(sensitive_plots)
-
-    # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
-
-    pep1_info = pep_dict[chart[2][0]]
-    pep2_info = pep_dict[chart[2][1]]
-
-    pep1_bind = pep1_info[1]
-    pep2_bind = pep2_info[1]
-
-    ## Core similarity vs PCC
-    # best core vs best core
-    rank1 = np.inf
-    rank2 = np.inf
-    for [rank, core] in pep1_bind:
-        if rank < rank1:
-            rank1 = rank
-            best_core1 = core
-
-    for [rank, core] in pep2_bind:
-        if rank < rank2:
-            rank2 = rank
-            best_core2 = core
-
-    # best core from ori and corresponding core for var
-    best_rank = np.inf
-    for [rank_ori, core_ori], [rank_var, core_var]  in zip(pep1_bind, pep2_bind):
-        if rank_ori < best_rank:
-            best_rank = rank_ori
-            var_rank = rank_var
-            best_core3 = core_ori
-            best_core4 = core_var
-
-    best_blosum_cores = "NA"
-    best_ident_cores = "NA"
-    best_ident = None
-    best_blosum = None
-
-    for [rank_ori, core_ori] in pep1_bind:
-        if rank_ori > 5:
+        if np.abs(PCC-SRC) > t:
             continue
-        for [rank_var, core_var] in pep2_bind:
-            if rank_var > 5:
+        #stacker data
+        x_values = np.array(chart[0])
+        y_values = np.array(chart[1])
+
+
+        # outfile = open("chart{}.txt".format(i), "w")
+        # for x,y in zip(x_values, y_values):
+        #     print(x,y,sep="\t",file=outfile)
+        # outfile.close()
+
+        corr_data = np.stack((x_values, y_values))
+
+        #Interquartile range for first array in each pair
+        q3_1, q1_1 = np.percentile(corr_data[0], [75, 25])
+        IQR1 = q3_1 - q1_1
+
+        #Interquartile range for second array in each pair
+        q3_2, q1_2 = np.percentile(corr_data[1], [75, 25])
+        IQR2 = q3_2 - q1_2
+
+        non_outliers_list = corr_data[:, np.invert(np.add(corr_data[0, :] > (q3_1 + 1.5 * IQR1), corr_data[1, :] > (q3_2 + 1.5 * IQR2)))]
+        non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
+
+        #point = LOF(corr_data)
+        #outliers.append(point)
+        #print(outliers)
+        #print(outliers)
+        #print(corr_data)
+
+        #for i, dp in enumerate(point):
+            #if dp <= -10:
+            #    point[i] = int(1)
+            #else:
+            #    point[i] = int(0)
+
+        #point = point.astype(bool) #returns binary array for every dataset (1 = outlier, 0 = inlier)
+        #outlier_list = corr_data[:, point]
+        #non_outliers_list = corr_data[:, np.invert(point)]
+        #print(corr_data)
+        #print(non_outliers_list)
+        PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
+        Delta_PCC = abs(PCC_POS - PCC)
+
+
+        # print_corr_plot(chart, non_outliers_list)
+
+        #if Delta_PCC >= 0.3:
+            #sensitive_plots.append(Delta_PCC)
+        #print(sensitive_plots)
+
+        # print("{:<8} {:<12} {:<12} {:<10}".format("n = %.d" % chart[4], "PCC: %.3f" % PCC, "SRC: %.3f" % SRC, "N_sim: %.d " % chart[3]))
+
+        pep1_info = pep_dict[chart[2][0]]
+        pep2_info = pep_dict[chart[2][1]]
+
+        pep1_bind = pep1_info[1]
+        pep2_bind = pep2_info[1]
+
+        ## Core similarity vs PCC
+        # best core vs best core
+        rank1 = np.inf
+        rank2 = np.inf
+        for [rank, core] in pep1_bind:
+            if rank < rank1:
+                rank1 = rank
+                best_core1 = core
+
+        for [rank, core] in pep2_bind:
+            if rank < rank2:
+                rank2 = rank
+                best_core2 = core
+
+        # best core from ori and corresponding core for var
+        best_rank = np.inf
+        for [rank_ori, core_ori], [rank_var, core_var]  in zip(pep1_bind, pep2_bind):
+            if rank_ori < best_rank:
+                best_rank = rank_ori
+                var_rank = rank_var
+                best_core3 = core_ori
+                best_core4 = core_var
+
+        best_blosum_cores = "NA"
+        best_ident_cores = "NA"
+        best_ident = 0
+        best_blosum = -20
+
+        for [rank_ori, core_ori] in pep1_bind:
+            if rank_ori > 5:
                 continue
+            for [rank_var, core_var] in pep2_bind:
+                if rank_var > 5:
+                    continue
 
-            blosum_match = blosum_score(core_ori, core_var)
-            ident = sum([int(a == b) for a,b in zip(core_ori, core_var)])/len(core_ori)*100
+                blosum_match = blosum_score(core_ori, core_var)
+                ident = sum([int(a == b) for a,b in zip(core_ori, core_var)])/len(core_ori)*100
 
-            if best_blosum == None:
-                best_blosum = blosum_match
-            elif blosum_match > best_blosum:
-                best_blosum = blosum_match
-                best_blosum_cores = [core_ori, core_var]
+                if best_blosum == None:
+                    best_blosum = blosum_match
+                elif blosum_match > best_blosum:
+                    best_blosum = blosum_match
+                    best_blosum_cores = [core_ori, core_var]
 
-            if best_ident == None:
-                best_ident = ident
-            elif ident > best_ident:
-                best_ident = ident
-                best_ident_cores = [core_ori, core_var]
+                if best_ident == None:
+                    best_ident = ident
+                elif ident > best_ident:
+                    best_ident = ident
+                    best_ident_cores = [core_ori, core_var]
 
 
-    delta_rank = np.abs(rank1 - rank2)
+        delta_rank = np.abs(rank1 - rank2)
 
-    #print(best_core1, best_core2)
+        #print(best_core1, best_core2)
 
-    core_matches = 0
-    core_blosum = 0
-    for a,b in zip(best_core1, best_core2):
-        core_matches += int(a==b)
-        core_blosum += blosum50[a][b]
+        core_matches = 0
+        core_blosum = 0
+        for a,b in zip(best_core1, best_core2):
+            core_matches += int(a==b)
+            core_blosum += blosum50[a][b]
 
-    core_ident = core_matches/len(best_core1)*100
+        core_ident = core_matches/len(best_core1)*100
 
-    first_comb = percent_sim*(100-delta_rank)
+        first_comb = percent_sim*(100-delta_rank)
 
-    coef_sim_matrix[0].append(PCC)
-    coef_sim_matrix[1].append(SRC)
-    coef_sim_matrix[2].append(percent_sim)
-    coef_sim_matrix[3].append(core_ident)
-    coef_sim_matrix[4].append(core_blosum)
-    coef_sim_matrix[5].append(delta_rank)
-    coef_sim_matrix[6].append(best_ident)
-    coef_sim_matrix[7].append(best_blosum)
-    coef_sim_matrix[8].append(first_comb)
+        coef_sim_matrix[0].append(PCC)
+        coef_sim_matrix[1].append(SRC)
+        coef_sim_matrix[2].append(percent_sim)
+        coef_sim_matrix[3].append(core_ident)
+        coef_sim_matrix[4].append(core_blosum)
+        coef_sim_matrix[5].append(delta_rank)
+        coef_sim_matrix[6].append(best_ident)
+        coef_sim_matrix[7].append(best_blosum)
+        coef_sim_matrix[8].append(first_comb)
 
-    str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
-    weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
+        str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
+        weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
 
-    str_bind_2 = min(sum([int(a[0] < 1 and b[0] < 1) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
-    weak_bind_2 = min(sum([int(a[0] < 5 and b[0] < 5) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
+        str_bind_2 = min(sum([int(a[0] < 1 and b[0] < 1) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
+        weak_bind_2 = min(sum([int(a[0] < 5 and b[0] < 5) for a,b in zip(pep_dict[chart[2][0]][1],pep_dict[chart[2][1]][1])]),2)
 
-    CR = 1 if SRC > 0.5 else 0
+        CR = 1 if SRC > 0.5 else 0
 
-    if CR:
-        CR_delta_rank.append(delta_rank)
-    else:
-        NCR_delta_rank.append(delta_rank)
-
-    if percent_sim < 50:
-        cross_react_count[0].append(CR)
-        PCC_bins[0].append(PCC)
-        if not CR:
-            HLA_binder_table[0][0, str_bind] += 1
-            HLA_binder_table[0][1, weak_bind] += 1
-            HLA_binder_table_2[0][0, str_bind_2] += 1
-            HLA_binder_table_2[0][1, weak_bind_2] += 1
-            table_count[0] += 1
+        if CR:
+            CR_delta_rank.append(delta_rank)
         else:
-            HLA_binder_table[3][0, str_bind] += 1
-            HLA_binder_table[3][1, weak_bind] += 1
-            HLA_binder_table_2[3][0, str_bind_2] += 1
-            HLA_binder_table_2[3][1, weak_bind_2] += 1
-            table_count[3] += 1
-    elif percent_sim >= 80:
-        cross_react_count[2].append(CR)
-        PCC_bins[2].append(PCC)
-        if not CR:
-            HLA_binder_table[2][0, str_bind] += 1
-            HLA_binder_table[2][1, weak_bind] += 1
-            HLA_binder_table_2[2][0, str_bind_2] += 1
-            HLA_binder_table_2[2][1, weak_bind_2] += 1
-            table_count[2] += 1
-        else:
-            HLA_binder_table[5][0, str_bind] += 1
-            HLA_binder_table[5][1, weak_bind] += 1
-            HLA_binder_table_2[5][0, str_bind_2] += 1
-            HLA_binder_table_2[5][1, weak_bind_2] += 1
-            table_count[5] += 1
-    else:
-        cross_react_count[1].append(CR)
-        PCC_bins[1].append(PCC)
-        if not CR:
-            HLA_binder_table[1][0, str_bind] += 1
-            HLA_binder_table[1][1, weak_bind] += 1
-            HLA_binder_table_2[1][0, str_bind_2] += 1
-            HLA_binder_table_2[1][1, weak_bind_2] += 1
-            table_count[1] += 1
-        else:
-            HLA_binder_table[4][0, str_bind] += 1
-            HLA_binder_table[4][1, weak_bind] += 1
-            HLA_binder_table_2[4][0, str_bind_2] += 1
-            HLA_binder_table_2[4][1, weak_bind_2] += 1
-            table_count[4] += 1
+            NCR_delta_rank.append(delta_rank)
 
+        if percent_sim < 50:
+            cross_react_count[0].append(CR)
+            PCC_bins[0].append(PCC)
+            if not CR:
+                HLA_binder_table[0][0, str_bind] += 1
+                HLA_binder_table[0][1, weak_bind] += 1
+                HLA_binder_table_2[0][0, str_bind_2] += 1
+                HLA_binder_table_2[0][1, weak_bind_2] += 1
+                table_count[0] += 1
+            else:
+                HLA_binder_table[3][0, str_bind] += 1
+                HLA_binder_table[3][1, weak_bind] += 1
+                HLA_binder_table_2[3][0, str_bind_2] += 1
+                HLA_binder_table_2[3][1, weak_bind_2] += 1
+                table_count[3] += 1
+        elif percent_sim >= 80:
+            cross_react_count[2].append(CR)
+            PCC_bins[2].append(PCC)
+            if not CR:
+                HLA_binder_table[2][0, str_bind] += 1
+                HLA_binder_table[2][1, weak_bind] += 1
+                HLA_binder_table_2[2][0, str_bind_2] += 1
+                HLA_binder_table_2[2][1, weak_bind_2] += 1
+                table_count[2] += 1
+            else:
+                HLA_binder_table[5][0, str_bind] += 1
+                HLA_binder_table[5][1, weak_bind] += 1
+                HLA_binder_table_2[5][0, str_bind_2] += 1
+                HLA_binder_table_2[5][1, weak_bind_2] += 1
+                table_count[5] += 1
+        else:
+            cross_react_count[1].append(CR)
+            PCC_bins[1].append(PCC)
+            if not CR:
+                HLA_binder_table[1][0, str_bind] += 1
+                HLA_binder_table[1][1, weak_bind] += 1
+                HLA_binder_table_2[1][0, str_bind_2] += 1
+                HLA_binder_table_2[1][1, weak_bind_2] += 1
+                table_count[1] += 1
+            else:
+                HLA_binder_table[4][0, str_bind] += 1
+                HLA_binder_table[4][1, weak_bind] += 1
+                HLA_binder_table_2[4][0, str_bind_2] += 1
+                HLA_binder_table_2[4][1, weak_bind_2] += 1
+                table_count[4] += 1
+    PCC_0 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[1])
+    PCC_t.append(PCC_0)
+
+PCC_t = np.array(PCC_t)
+print(threshold_values[PCC_t == max(PCC_t)])
 
 #label = ["Low sim, low SRC","Mid sim, low SRC","High sim, low SRC","Low sim, high SRC","Mid sim, high SRC","high sim, high SRC"]
 #print("Pool size")
@@ -870,7 +878,13 @@ ax4.scatter(coef_sim_matrix[8], coef_sim_matrix[1])
 ax4.set_title("SRC as a function of global similarity and delta_rank. PCC = %.3f" % PCC_5)
 ax4.set_xlabel("Global similarity(percent)*(100-delta_rank)")
 ax4.set_ylabel("SRC")
+#plt.show()
+
+fig, ax7 = plt.subplots(1,1)
+ax7.scatter(threshold_values, PCC_t)
 plt.show()
+print(max(PCC_t))
+
 
 
 
