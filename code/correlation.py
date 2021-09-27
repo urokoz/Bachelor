@@ -590,7 +590,7 @@ print("No binders:", no_bind, "Weak binders:", weak_bind, "Strong binders:", str
 
 # heatmap(pep_list, donor_list, donor_reaction_dict)
 
-coef_sim_matrix = [[],[],[],[],[],[],[],[]]
+coef_sim_matrix = [[],[],[],[],[],[],[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 sensitive_plots = []
@@ -691,8 +691,8 @@ for i, chart in enumerate(charts):
 
     best_blosum_cores = "NA"
     best_ident_cores = "NA"
-    best_ident = 0
-    best_blosum = -20
+    best_ident = None
+    best_blosum = None
 
     for [rank_ori, core_ori] in pep1_bind:
         if rank_ori > 5:
@@ -729,6 +729,8 @@ for i, chart in enumerate(charts):
 
     core_ident = core_matches/len(best_core1)*100
 
+    first_comb = percent_sim*(100-delta_rank)
+
     coef_sim_matrix[0].append(PCC)
     coef_sim_matrix[1].append(SRC)
     coef_sim_matrix[2].append(percent_sim)
@@ -737,7 +739,7 @@ for i, chart in enumerate(charts):
     coef_sim_matrix[5].append(delta_rank)
     coef_sim_matrix[6].append(best_ident)
     coef_sim_matrix[7].append(best_blosum)
-
+    coef_sim_matrix[8].append(first_comb)
 
     str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
     weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
@@ -835,28 +837,39 @@ ax3.set_ylabel("SRC")
 # plt.show()
 
 # fig, ax4 = plt.subplots(1,1)
-p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
-ax4.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
-ax4.set_yticklabels(["Non-CR", "CR"])
-ax4.set_xlabel("Delta rank")
-ax4.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
+# p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
+# ax4.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
+# ax4.set_yticklabels(["Non-CR", "CR"])
+# ax4.set_xlabel("Delta rank")
+# ax4.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 # plt.show()
 
 # fig, ax5 = plt.subplots(1,1)
+array_1 = np.array((coef_sim_matrix[6], coef_sim_matrix[1]))
+array_1 = array_1[:,array_1[0,:] != None]
 
-PCC_3 = pearsons_cc(coef_sim_matrix[6], coef_sim_matrix[1])
-ax5.scatter(coef_sim_matrix[6], coef_sim_matrix[1])
+PCC_3 = pearsons_cc(*array_1)
+ax5.scatter(*array_1)
 ax5.set_title("SRC as a function of best matching cores identity(percent). PCC = %.3f" % PCC_3)
 ax5.set_xlabel("Core identity(%)")
 ax5.set_ylabel("SRC")
 # plt.show()
 
 # fig, ax6 = plt.subplots(1,1)
-PCC_4 = pearsons_cc(coef_sim_matrix[7], coef_sim_matrix[1])
-ax6.scatter(coef_sim_matrix[7], coef_sim_matrix[1])
+array_2 = np.array((coef_sim_matrix[7], coef_sim_matrix[1]))
+array_2 = array_2[:,array_2[0,:] != None]
+
+PCC_4 = pearsons_cc(*array_2)
+ax6.scatter(*array_2)
 ax6.set_title("SRC as a function of best matching cores BLOSUM score. PCC = %.3f" % PCC_4)
 ax6.set_xlabel("Core identity(BLOSUM score)")
 ax6.set_ylabel("SRC")
+
+PCC_5 = pearsons_cc(coef_sim_matrix[8], coef_sim_matrix[1])
+ax4.scatter(coef_sim_matrix[8], coef_sim_matrix[1])
+ax4.set_title("SRC as a function of global similarity and delta_rank. PCC = %.3f" % PCC_5)
+ax4.set_xlabel("Global similarity(percent)*(100-delta_rank)")
+ax4.set_ylabel("SRC")
 plt.show()
 
 
