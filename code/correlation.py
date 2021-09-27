@@ -642,7 +642,7 @@ for chart in charts:
     PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
     Delta_PCC = abs(PCC_POS - PCC)
 
-    # print_corr_plot(chart, non_outliers_list, PCC)
+    print_corr_plot(chart, non_outliers_list, PCC)
 
     #if Delta_PCC >= 0.3:
         #sensitive_plots.append(Delta_PCC)
