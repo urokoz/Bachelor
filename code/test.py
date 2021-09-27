@@ -1,25 +1,30 @@
-infile = open("Data/2860_NetMHCIIpan.xls","r")
+#!/usr/bin/env python
 
-infile.readline()
-infile.readline()
-pep_HLA_dict = dict()
-old_pep = 0
-for i, line in enumerate(infile):
+import matplotlib.pyplot as plt
+import numpy as np
+
+infile = open("Data/sampled_corr.txt","r")
+list1 = [0]*11
+list2 = [0]*11
+for line in infile:
     line = line.split()
+    SRC = float(line[6])
+    lower = np.min((float(line[11]), float(line[12])))
+    upper = np.max((float(line[11]), float(line[12])))
 
-    cur_pep = line[2]
-    if old_pep != cur_pep:
-        # if old_pep:
-        #     pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
+    i = int(np.floor((SRC+1)*5))
 
-        old_pep = cur_pep
+    list1[i] += int(SRC >= lower and SRC <= upper)
+    list2[i] += 1
 
-    HLA_bind_rank = [[float(line[i]), line[i-2]] for i in range(6,25,3)]
+print(sum(list2))
+bins = []
+for x, n in zip(list1, list2):
+    print(x,n)
+    bins.append(0 if n == 0 else x/n)
 
-    if cur_pep in pep_HLA_dict:
-        pep_HLA_dict[cur_pep] = [old if old[0] < new[0] else new for old, new in zip(pep_HLA_dict[cur_pep], HLA_bind_rank)]
-    else:
-        pep_HLA_dict[cur_pep] = HLA_bind_rank
 
-print(pep_HLA_dict)
-# pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
+fig, ax = plt.subplots()
+
+ax.bar(np.linspace(-1, 1, 11), bins, width = 0.2)
+plt.show()
