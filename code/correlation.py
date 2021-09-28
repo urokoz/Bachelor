@@ -599,6 +599,7 @@ HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((
 table_count = [0,0,0,0,0,0]
 CR_delta_rank = []
 NCR_delta_rank = []
+print_i_seq = 1
 
 for chart in charts:
     PCC = pearsons_cc(chart[0], chart[1])
@@ -608,6 +609,13 @@ for chart in charts:
     #stacker data
     x_values = np.array(chart[0])
     y_values = np.array(chart[1])
+
+    if print_i_seq:
+        outfile = open("test.txt", "w")
+        for x,y in zip(x_values, y_values):
+            print(x,y,sep="\t",file=outfile)
+            print_i_seq = 0
+
 
     corr_data = np.stack((x_values, y_values))
 
