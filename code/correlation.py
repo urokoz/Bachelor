@@ -433,6 +433,13 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
     return pep_HLA_dict
 
 
+def load_peptide_pair_significance(filename):
+    infile = open(filename, "r")
+    sig_list = [float(line.split()[-1]) for line in infile]
+    infile.close()
+    return sig_list
+
+
 def blosum_score(seq1, seq2):
     assert len(seq1) == len(seq2), "blosum_score: sequences are not the same length"
     return sum(blosum50[a][b] for a,b in zip(seq1,seq2))
@@ -613,12 +620,22 @@ NCR_delta_rank = []
 threshold_values = [0.17 if log_switch else 0.3]
 PCC_t = []
 
+sig_list = load_peptide_pair_significance("Data/sampled_corr.txt")
+
 for t in threshold_values:
 
-    for i, chart in enumerate(charts):
+    for chart, sig in zip(charts, sig_list):
         PCC = pearsons_cc(chart[0], chart[1])
         SRC, p = spearmanr(chart[0], chart[1])
         percent_sim = chart[3]
+
+        # if sig > 0.05 and SRC > 0.5:
+        #     continue
+        #
+        # if sig < 0.05 and SRC < -0.25:
+        #     continue
+        # elif SRC < -0.25:
+        #     SRC = -0.25
 
 
         if np.abs(PCC-SRC) > t:
