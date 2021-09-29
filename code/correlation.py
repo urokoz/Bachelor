@@ -321,9 +321,9 @@ def print_corr_plot(chart, non_outliers_list=None, dest = "../../Figures/{}.png"
     ax.legend()
     ax.set_xlabel("Ori SI")
     ax.set_ylabel("Var SI")
-    ax.set_title(chart[2])
+    ax.set_title("log_{}_vs._{}".format(chart[2][0], chart[2][1]).replace("_"," "))
 
-    file_name = "{}_v_{}".format(chart[2][0], chart[2][1])
+    file_name = "log_{}_v_{}".format(chart[2][0], chart[2][1])
     file_path = dest.format(file_name)
 
     fig.savefig(file_path, dpi=300)
@@ -470,6 +470,13 @@ donor_reaction_dict = dict()
 donor_list = []
 wanted_charts = 1000
 
+
+PCC_SRC_switch = 1  # 0 for PCC and 1 for SRC
+log_switch = True   # Log transform the correlation data
+PCC_SRC_str = "PCC " if PCC_SRC_switch == 0 else "SRC "
+log_norm_str = "log transformed " if log_switch else "normal "
+overall_title = PCC_SRC_str + log_norm_str + "data"
+
 pep_HLA_dict = load_pep_HLA_data()
 
 unique_seqs = set()
@@ -490,6 +497,10 @@ for line in infile:
 
     ori_SI = float(line[5])
     var_SI = float(line[10])
+
+    if log_switch:
+        ori_SI = np.log(ori_SI)
+        var_SI = np.log(var_SI)
 
     if ori_pepseq != old_ori_seq or var_pepseq != old_var_seq:
         i += 1
@@ -579,7 +590,7 @@ for pep in pep_list:
         strong_bind += 1
 
 
-print("No binders:", no_bind, "Weak binders:", weak_bind, "Strong binders:", strong_bind)
+# print("No binders:", no_bind, "Weak binders:", weak_bind, "Strong binders:", strong_bind)
 
 # # Print seqs for fasta format
 # outfile = open("seqs_for_HLA_profiling.fsa", "w")
@@ -599,7 +610,7 @@ HLA_binder_table_2 = [np.zeros((2,3)),np.zeros((2,3)),np.zeros((2,3)),np.zeros((
 table_count = [0,0,0,0,0,0]
 CR_delta_rank = []
 NCR_delta_rank = []
-threshold_values = np.linspace(0.1,0.5,30)
+threshold_values = [0.17 if log_switch else 0.3]
 PCC_t = []
 
 for t in threshold_values:
@@ -803,11 +814,11 @@ for t in threshold_values:
                 HLA_binder_table_2[4][0, str_bind_2] += 1
                 HLA_binder_table_2[4][1, weak_bind_2] += 1
                 table_count[4] += 1
-    PCC_0 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[1])
-    PCC_t.append(PCC_0)
-
-PCC_t = np.array(PCC_t)
-print(threshold_values[PCC_t == max(PCC_t)])
+#     PCC_0 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[1])
+#     PCC_t.append(PCC_0)
+#
+# PCC_t = np.array(PCC_t)
+# print(threshold_values[PCC_t == max(PCC_t)])
 
 #label = ["Low sim, low SRC","Mid sim, low SRC","High sim, low SRC","Low sim, high SRC","Mid sim, high SRC","high sim, high SRC"]
 #print("Pool size")
@@ -821,27 +832,29 @@ print(threshold_values[PCC_t == max(PCC_t)])
 
 
 fig, ((ax1,ax2,ax3),(ax4,ax5,ax6)) = plt.subplots(2,3)
-PCC_0 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[1])
-ax1.scatter(coef_sim_matrix[2], coef_sim_matrix[1])
-ax1.set_title("SRC as a function of global similarity(percent). PCC = %.3f" % PCC_0)
+fig.suptitle(overall_title, fontsize=16)
+
+PCC_0 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[PCC_SRC_switch])
+ax1.scatter(coef_sim_matrix[2], coef_sim_matrix[PCC_SRC_switch])
+ax1.set_title(PCC_SRC_str + "as a function of global similarity(percent). PCC = %.3f" % PCC_0)
 ax1.set_xlabel("Global similarity(percent)")
-ax1.set_ylabel("SRC")
+ax1.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax2 = plt.subplots(1,1)
-PCC_1 = pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[1])
-ax2.scatter(coef_sim_matrix[3], coef_sim_matrix[1])
-ax2.set_title("SRC as a function of core identity(percent). PCC = %.3f" % PCC_1)
+PCC_1 = pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[PCC_SRC_switch])
+ax2.scatter(coef_sim_matrix[3], coef_sim_matrix[PCC_SRC_switch])
+ax2.set_title(PCC_SRC_str + "as a function of core identity(percent). PCC = %.3f" % PCC_1)
 ax2.set_xlabel("Core identity(%)")
-ax2.set_ylabel("SRC")
+ax2.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax3 = plt.subplots(1,1)
-PCC_2 = pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[1])
-ax3.scatter(coef_sim_matrix[4], coef_sim_matrix[1])
-ax3.set_title("SRC as a function of core identity(BLOSUM score). PCC = %.3f" % PCC_2)
+PCC_2 = pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[PCC_SRC_switch])
+ax3.scatter(coef_sim_matrix[4], coef_sim_matrix[PCC_SRC_switch])
+ax3.set_title(PCC_SRC_str + "as a function of core identity(BLOSUM score). PCC = %.3f" % PCC_2)
 ax3.set_xlabel("Core identity(BLOSUM score)")
-ax3.set_ylabel("SRC")
+ax3.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax4 = plt.subplots(1,1)
@@ -853,37 +866,38 @@ ax3.set_ylabel("SRC")
 # plt.show()
 
 # fig, ax5 = plt.subplots(1,1)
-array_1 = np.array((coef_sim_matrix[6], coef_sim_matrix[1]))
+array_1 = np.array((coef_sim_matrix[6], coef_sim_matrix[PCC_SRC_switch]))
 array_1 = array_1[:,array_1[0,:] != None]
 
 PCC_3 = pearsons_cc(*array_1)
 ax5.scatter(*array_1)
-ax5.set_title("SRC as a function of best matching cores identity(percent). PCC = %.3f" % PCC_3)
+ax5.set_title(PCC_SRC_str + "as a function of best matching cores identity(percent). PCC = %.3f" % PCC_3)
 ax5.set_xlabel("Core identity(%)")
-ax5.set_ylabel("SRC")
+ax5.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax6 = plt.subplots(1,1)
-array_2 = np.array((coef_sim_matrix[7], coef_sim_matrix[1]))
+array_2 = np.array((coef_sim_matrix[7], coef_sim_matrix[PCC_SRC_switch]))
 array_2 = array_2[:,array_2[0,:] != None]
 
 PCC_4 = pearsons_cc(*array_2)
 ax6.scatter(*array_2)
-ax6.set_title("SRC as a function of best matching cores BLOSUM score. PCC = %.3f" % PCC_4)
+ax6.set_title(PCC_SRC_str + "as a function of best matching cores BLOSUM score. PCC = %.3f" % PCC_4)
 ax6.set_xlabel("Core identity(BLOSUM score)")
-ax6.set_ylabel("SRC")
+ax6.set_ylabel(PCC_SRC_str)
 
-PCC_5 = pearsons_cc(coef_sim_matrix[8], coef_sim_matrix[1])
-ax4.scatter(coef_sim_matrix[8], coef_sim_matrix[1])
-ax4.set_title("SRC as a function of global similarity and delta_rank. PCC = %.3f" % PCC_5)
+PCC_5 = pearsons_cc(coef_sim_matrix[8], coef_sim_matrix[PCC_SRC_switch])
+ax4.scatter(coef_sim_matrix[8], coef_sim_matrix[PCC_SRC_switch])
+ax4.set_title(PCC_SRC_str + "as a function of global similarity and delta_rank. PCC = %.3f" % PCC_5)
 ax4.set_xlabel("Global similarity(percent)*(100-delta_rank)")
-ax4.set_ylabel("SRC")
-#plt.show()
+ax4.set_ylabel(PCC_SRC_str)
 
-fig, ax7 = plt.subplots(1,1)
-ax7.scatter(threshold_values, PCC_t)
 plt.show()
-print(max(PCC_t))
+#
+# fig, ax7 = plt.subplots(1,1)
+# ax7.scatter(threshold_values, PCC_t)
+# plt.show()
+# print(max(PCC_t))
 
 # print("Crossreaction frequency t-test")
 # print_stats(cross_react_count)
