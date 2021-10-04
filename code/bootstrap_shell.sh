@@ -3,6 +3,6 @@
 
 foreach a (`seq 0 1 374`)
 
-./xycorr -bt -z ./charts/chart$a.txt | grep -v "#" >> sampled_corr_PCC.txt
+./spear_xycorr -bt -z ./charts/log_chart$a.txt | grep -v "#" >> Data/log_sampled_corr_SRC.txt
 
 end

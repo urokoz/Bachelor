@@ -29,4 +29,5 @@ for x, n in zip(list1, list2):
 fig, ax = plt.subplots()
 
 ax.bar(np.linspace(-1, 1, 11), bins, width = 0.1)
+ax.set_title("SRC significance freq")
 plt.show()

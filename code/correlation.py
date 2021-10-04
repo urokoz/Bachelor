@@ -444,6 +444,30 @@ def blosum_score(seq1, seq2):
     assert len(seq1) == len(seq2), "blosum_score: sequences are not the same length"
     return sum(blosum50[a][b] for a,b in zip(seq1,seq2))
 
+
+def outlier_using_IQR(x_values, y_values):
+    """ Find outliers using 1.5 x IQR method
+    """
+    # convert data to np array
+    x_values = np.array(chart[0])
+    y_values = np.array(chart[1])
+
+    corr_data = np.stack((x_values, y_values))
+
+    #Interquartile range for first array in each pair
+    q3_1, q1_1 = np.percentile(corr_data[0], [75, 25])
+    IQR1 = q3_1 - q1_1
+
+    #Interquartile range for second array in each pair
+    q3_2, q1_2 = np.percentile(corr_data[1], [75, 25])
+    IQR2 = q3_2 - q1_2
+
+    non_outliers_list = corr_data[:, np.invert(np.add(corr_data[0, :] > (q3_1 + 1.5 * IQR1), corr_data[1, :] > (q3_2 + 1.5 * IQR2)))]
+    non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
+
+    return non_outliers_list
+
+
 #-----------------
 #def LOF(array, KNN_n = 2):
     #data = [[a,b] for a,b in zip(array[0], array[1])]
@@ -468,9 +492,9 @@ outlier_sorting = 1     # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is abs(PCC
 
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
+infile.readline()   # remove header
 
-infile.readline()
-
+# Data format:
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
 #          'Amb', 'a', '1.0201', 'NSDKTIDGRGVKVNIVNAGL', '1.12407']
 
@@ -625,50 +649,48 @@ NCR_delta_rank = []
 threshold_values = [0.17 if log_switch else 0.3]
 PCC_t = []
 
-sig_list = load_peptide_pair_significance("Data/sampled_corr.txt")
+# load the significances for each chart
+if log_switch:
+    SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
+    PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
+else:
+    SRC_sig_list = load_peptide_pair_significance("Data/sampled_corr_SRC.txt")
+    PCC_sig_list = load_peptide_pair_significance("Data/sampled_corr_PCC.txt")
 
 for t in threshold_values:
 
-    for chart, sig in zip(charts, sig_list):
+    for i, (chart, SRC_sig, PCC_sig) in enumerate(zip(charts, SRC_sig_list, PCC_sig_list)):
+        # outfile = open("charts/log_chart{}.txt".format(i), "w")
+        # for x,y in zip(chart[0], chart[1]):
+        #     print(x,y,sep="\t",file=outfile)
+        # outfile.close()
+
         PCC = pearsons_cc(chart[0], chart[1])
         SRC, p = spearmanr(chart[0], chart[1])
         percent_sim = chart[3]
 
         if outlier_sorting == 1:
-            if sig > 0.05 and SRC > 0.5:
+            if SRC_sig > 0.05 and SRC > 0.5:
                 continue
 
-            if sig < 0.05 and SRC < -0.25:
+            if SRC_sig < 0.05 and SRC < -0.25:
                 continue
             elif SRC < -0.25:
                 SRC = -0.25
 
+        if outlier_sorting == 2:
+            if PCC_sig > 0.05 and PCC > 0.5:
+                continue
+
+            if PCC_sig < 0.05 and PCC < -0.25:
+                continue
+            elif PCC < -0.25:
+                PCC = -0.25
+
         if outlier_sorting == 3:
             if np.abs(PCC-SRC) > t:
                 continue
-        
-        #stacker data
-        x_values = np.array(chart[0])
-        y_values = np.array(chart[1])
 
-
-        # outfile = open("chart{}.txt".format(i), "w")
-        # for x,y in zip(x_values, y_values):
-        #     print(x,y,sep="\t",file=outfile)
-        # outfile.close()
-
-        corr_data = np.stack((x_values, y_values))
-
-        #Interquartile range for first array in each pair
-        q3_1, q1_1 = np.percentile(corr_data[0], [75, 25])
-        IQR1 = q3_1 - q1_1
-
-        #Interquartile range for second array in each pair
-        q3_2, q1_2 = np.percentile(corr_data[1], [75, 25])
-        IQR2 = q3_2 - q1_2
-
-        non_outliers_list = corr_data[:, np.invert(np.add(corr_data[0, :] > (q3_1 + 1.5 * IQR1), corr_data[1, :] > (q3_2 + 1.5 * IQR2)))]
-        non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
 
         #point = LOF(corr_data)
         #outliers.append(point)
@@ -687,8 +709,8 @@ for t in threshold_values:
         #non_outliers_list = corr_data[:, np.invert(point)]
         #print(corr_data)
         #print(non_outliers_list)
-        PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
-        Delta_PCC = abs(PCC_POS - PCC)
+        # PCC_POS = pearsons_cc(*non_outliers_list) #POS = "post outlier selection"
+        # Delta_PCC = abs(PCC_POS - PCC)
 
 
         # print_corr_plot(chart, non_outliers_list)
@@ -768,7 +790,7 @@ for t in threshold_values:
 
         core_ident = core_matches/len(best_core1)*100
 
-        first_comb = percent_sim*(100-delta_rank)
+        glob_sim_and_d_rank = percent_sim*(100-delta_rank)
 
         coef_sim_matrix[0].append(PCC)
         coef_sim_matrix[1].append(SRC)
@@ -778,7 +800,7 @@ for t in threshold_values:
         coef_sim_matrix[5].append(delta_rank)
         coef_sim_matrix[6].append(best_ident)
         coef_sim_matrix[7].append(best_blosum)
-        coef_sim_matrix[8].append(first_comb)
+        coef_sim_matrix[8].append(glob_sim_and_d_rank)
 
         str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
         weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
@@ -788,6 +810,7 @@ for t in threshold_values:
 
         CR = 1 if SRC > 0.5 else 0
 
+        # for delta rank boxplot
         if CR:
             CR_delta_rank.append(delta_rank)
         else:
