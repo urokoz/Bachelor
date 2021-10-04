@@ -457,7 +457,14 @@ def blosum_score(seq1, seq2):
     #output = clf.negative_outlier_factor_
 
     #return output
+
 #-----------------
+# -- Program options -- #######################################################
+PCC_SRC_switch = 1  # 0 for PCC and 1 for SRC
+log_switch = True   # Log transform the correlation data
+outlier_sorting = 1     # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is abs(PCC-SRC)
+
+###############################################################################
 
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
@@ -478,8 +485,6 @@ donor_list = []
 wanted_charts = 1000
 
 
-PCC_SRC_switch = 1  # 0 for PCC and 1 for SRC
-log_switch = True   # Log transform the correlation data
 PCC_SRC_str = "PCC " if PCC_SRC_switch == 0 else "SRC "
 log_norm_str = "log transformed " if log_switch else "normal "
 overall_title = PCC_SRC_str + log_norm_str + "data"
@@ -629,17 +634,19 @@ for t in threshold_values:
         SRC, p = spearmanr(chart[0], chart[1])
         percent_sim = chart[3]
 
-        # if sig > 0.05 and SRC > 0.5:
-        #     continue
-        #
-        # if sig < 0.05 and SRC < -0.25:
-        #     continue
-        # elif SRC < -0.25:
-        #     SRC = -0.25
+        if outlier_sorting == 1:
+            if sig > 0.05 and SRC > 0.5:
+                continue
 
+            if sig < 0.05 and SRC < -0.25:
+                continue
+            elif SRC < -0.25:
+                SRC = -0.25
 
-        if np.abs(PCC-SRC) > t:
-            continue
+        if outlier_sorting == 3:
+            if np.abs(PCC-SRC) > t:
+                continue
+        
         #stacker data
         x_values = np.array(chart[0])
         y_values = np.array(chart[1])

@@ -10,7 +10,7 @@ for line in infile:
     line = line.split()
     SRC = float(line[6])
     pval = float(line[-1])
-    print(pval)
+    # print(pval)
     lower = np.min((float(line[11]), float(line[12])))
     upper = np.max((float(line[11]), float(line[12])))
 
@@ -19,7 +19,7 @@ for line in infile:
     list1[i] += int(pval <= 0.05)
     list2[i] += 1
 
-print(sum(list2))
+# print(sum(list2))
 bins = []
 for x, n in zip(list1, list2):
     print(x,n)
