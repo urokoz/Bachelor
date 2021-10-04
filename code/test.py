@@ -3,9 +3,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-infile = open("Data/sampled_corr.txt","r")
-list1 = [0]*11
-list2 = [0]*11
+infile = open("Data/sampled_corr_SRC.txt","r")
+list1 = [0]*20
+list2 = [0]*20
 for line in infile:
     line = line.split()
     SRC = float(line[6])
@@ -14,7 +14,7 @@ for line in infile:
     lower = np.min((float(line[11]), float(line[12])))
     upper = np.max((float(line[11]), float(line[12])))
 
-    i = int(np.floor((SRC+1)*5))
+    i = int(np.floor((SRC+1)*10)) if SRC != 1.0 else 19
 
     list1[i] += int(pval <= 0.05)
     list2[i] += 1
@@ -28,6 +28,6 @@ for x, n in zip(list1, list2):
 
 fig, ax = plt.subplots()
 
-ax.bar(np.linspace(-1, 1, 11), bins, width = 0.1)
+ax.bar(np.linspace(-0.975, 0.975, 20), bins, width = 0.05)
 ax.set_title("SRC significance freq")
 plt.show()

@@ -208,7 +208,7 @@ def smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, query="VLLP", dat
     return aligned_query, aligned_database, matches
 
 
-def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
+def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1, scoring_scheme = "naive"):
     """ Aligns two sequences using Needleman-Wunsch alignment.
         Outputs the two aligned sequences, number of matches and a percent
         similarity.
@@ -231,10 +231,13 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
 
     for i in range(n_ori):
         for j in range(n_var):
-            if ori[i] == var[j]:
-                diag = D[i,j] + match
+            if scoring_scheme == "blosum":
+                diag = D[i,j] + blosum50[ori[i]][var[j]]
             else:
-                diag = D[i,j] + mismatch
+                if ori[i] == var[j]:
+                    diag = D[i,j] + match
+                else:
+                    diag = D[i,j] + mismatch
 
             up = D[i+1,j] + gap
             left = D[i,j+1] + gap
@@ -281,7 +284,8 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1):
             matches += 1
 
     aligned_similarity = matches/min(n_ori,n_var)*100
-
+    if scoring_scheme == "blosum":
+        aligned_similarity = max_score
     return ori_align, var_align, aligned_similarity, matches
 
 
@@ -484,9 +488,10 @@ def outlier_using_IQR(x_values, y_values):
 
 #-----------------
 # -- Program options -- #######################################################
-PCC_SRC_switch = 1  # 0 for PCC and 1 for SRC
-log_switch = True   # Log transform the correlation data
-outlier_sorting = 1     # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is abs(PCC-SRC)
+PCC_SRC_switch = 0  # 0 for PCC and 1 for SRC
+log_switch = True  # Log transform the correlation data
+outlier_sorting = 0     # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is both PCC and SRC sig, 4 is abs(PCC-SRC)
+lower_cutoff = 0
 
 ###############################################################################
 
@@ -507,11 +512,6 @@ seqs_for_FASTA = []
 donor_reaction_dict = dict()
 donor_list = []
 wanted_charts = 1000
-
-
-PCC_SRC_str = "PCC " if PCC_SRC_switch == 0 else "SRC "
-log_norm_str = "log transformed " if log_switch else "normal "
-overall_title = PCC_SRC_str + log_norm_str + "data"
 
 pep_HLA_dict = load_pep_HLA_data()
 
@@ -581,15 +581,15 @@ for line in infile:
         ## Similarity measurements
         # Global alignment with Needleman-Wunsch
 
-        ori_align, var_align, aligned_similarity, nw_matches = needleman_wunsch(ori_pepseq, var_pepseq)
+        ori_align, var_align, nw_ident, nw_matches = needleman_wunsch(ori_pepseq, var_pepseq)
 
-        # # local alignment? with Smith-Waterman (O2)
-        # scoring_scheme = blosum50
-        # gap_open = -11
-        # gap_extension = -1
+        # local alignment? with Smith-Waterman (O2)
+        scoring_scheme = blosum50
+        gap_open = -11
+        gap_extension = -1
 
-        # P_matrix, Q_matrix, D_matrix, E_matrix, i_max, j_max, max_score = smith_waterman_alignment(ori_pepseq, var_pepseq, scoring_scheme, gap_open, gap_extension)
-        # aligned_query, aligned_database, matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
+        P_matrix, Q_matrix, D_matrix, E_matrix, i_max, j_max, max_score = smith_waterman_alignment(ori_pepseq, var_pepseq, scoring_scheme, gap_open, gap_extension)
+        aligned_query, aligned_database, sw_matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
 
         # print("ALN", "Origin", len(ori_pepseq), "Variant", len(var_pepseq), len(aligned_query), matches, max_score)
         # print("QAL", i_max, ''.join(aligned_query))
@@ -597,7 +597,7 @@ for line in infile:
         # print("")
 
 
-        charts.append([[],[], [pep_id_name[ori_id], pep_id_name[var_id]], aligned_similarity, 0])
+        charts.append([[],[], [pep_id_name[ori_id], pep_id_name[var_id]], [nw_ident,sw_matches,max_score], 0])
 
     charts[i][0].append(ori_SI)
     charts[i][1].append(var_SI)
@@ -637,7 +637,7 @@ for pep in pep_list:
 
 # heatmap(pep_list, donor_list, donor_reaction_dict)
 
-coef_sim_matrix = [[],[],[],[],[],[],[],[],[]]
+coef_sim_matrix = [[],[],[],[],[],[],[],[],[],[],[],[]]
 cross_react_count = [[],[],[]]
 PCC_bins = [[],[],[]]
 sensitive_plots = []
@@ -667,29 +667,34 @@ for t in threshold_values:
 
         PCC = pearsons_cc(chart[0], chart[1])
         SRC, p = spearmanr(chart[0], chart[1])
-        percent_sim = chart[3]
+        global_ident = chart[3][0]
+        local_matches = chart[3][1]
+        local_blosum = chart[3][2]
 
-        if outlier_sorting == 1:
+        ## Outlier chart sorting
+        # by SRC significance
+        sorted_out = 0
+        if outlier_sorting == 1 or outlier_sorting == 3:
             if SRC_sig > 0.05 and SRC > 0.5:
-                continue
+                sorted_out = 1
 
-            if SRC_sig < 0.05 and SRC < -0.25:
-                continue
-            elif SRC < -0.25:
+            elif SRC_sig < 0.05 and SRC < -0.25:
+                sorted_out = 0
+            elif SRC < -0.25 and lower_cutoff:
                 SRC = -0.25
-
-        if outlier_sorting == 2:
+        # by PCC significance
+        if outlier_sorting == 2 or outlier_sorting == 3:
             if PCC_sig > 0.05 and PCC > 0.5:
-                continue
+                sorted_out = 1
 
-            if PCC_sig < 0.05 and PCC < -0.25:
-                continue
-            elif PCC < -0.25:
+            elif PCC_sig < 0.05 and PCC < -0.25:
+                sorted_out = 0
+            elif PCC < -0.25 and lower_cutoff:
                 PCC = -0.25
-
-        if outlier_sorting == 3:
+        # difference between PCC and SRC
+        if outlier_sorting == 4:
             if np.abs(PCC-SRC) > t:
-                continue
+                sorted_out = 1
 
 
         #point = LOF(corr_data)
@@ -790,17 +795,21 @@ for t in threshold_values:
 
         core_ident = core_matches/len(best_core1)*100
 
-        glob_sim_and_d_rank = percent_sim*(100-delta_rank)
+        glob_sim_and_d_rank = global_ident*(100-delta_rank)
 
         coef_sim_matrix[0].append(PCC)
         coef_sim_matrix[1].append(SRC)
-        coef_sim_matrix[2].append(percent_sim)
+        coef_sim_matrix[2].append(global_ident)
         coef_sim_matrix[3].append(core_ident)
         coef_sim_matrix[4].append(core_blosum)
         coef_sim_matrix[5].append(delta_rank)
         coef_sim_matrix[6].append(best_ident)
         coef_sim_matrix[7].append(best_blosum)
         coef_sim_matrix[8].append(glob_sim_and_d_rank)
+        coef_sim_matrix[9].append(local_matches)
+        coef_sim_matrix[10].append(local_blosum)
+        coef_sim_matrix[11].append(sorted_out)
+
 
         str_bind = int(pep_dict[chart[2][0]][2] == 2) + int(pep_dict[chart[2][1]][2] == 2)
         weak_bind = int(pep_dict[chart[2][0]][2] > 0) + int(pep_dict[chart[2][1]][2] > 0)
@@ -816,7 +825,8 @@ for t in threshold_values:
         else:
             NCR_delta_rank.append(delta_rank)
 
-        if percent_sim < 50:
+        # Print HLA binding tables and PCC for <50%, 50-80% and >80% bins.
+        if global_ident < 50:
             cross_react_count[0].append(CR)
             PCC_bins[0].append(PCC)
             if not CR:
@@ -831,7 +841,7 @@ for t in threshold_values:
                 HLA_binder_table_2[3][0, str_bind_2] += 1
                 HLA_binder_table_2[3][1, weak_bind_2] += 1
                 table_count[3] += 1
-        elif percent_sim >= 80:
+        elif global_ident >= 80:
             cross_react_count[2].append(CR)
             PCC_bins[2].append(PCC)
             if not CR:
@@ -877,29 +887,54 @@ for t in threshold_values:
     #print(label[i])
     #print(np.round(table/n,2))
 
+PCC_SRC_str = "PCC " if PCC_SRC_switch == 0 else "SRC "
+log_norm_str = "log transformed " if log_switch else "normal "
+sorts = ["none", "SRC sig", "PCC sig", "SRC and PCC sig", "abs(PCC-SRC)<t"]
+sorting_str = ". Sorted: " + sorts[outlier_sorting]
+overall_title = PCC_SRC_str + log_norm_str + "data" + sorting_str
+
+sorted_out_list = np.array(coef_sim_matrix[11]).astype(bool)
 
 fig, ((ax1,ax2,ax3),(ax4,ax5,ax6)) = plt.subplots(2,3)
-fig.suptitle(overall_title, fontsize=16)
+fig.suptitle(overall_title, fontsize=20)
 
-PCC_0 = pearsons_cc(coef_sim_matrix[2], coef_sim_matrix[PCC_SRC_switch])
-ax1.scatter(coef_sim_matrix[2], coef_sim_matrix[PCC_SRC_switch])
-ax1.set_title(PCC_SRC_str + "as a function of global similarity(percent). PCC = %.3f" % PCC_0)
+array_1 = np.array((coef_sim_matrix[2], coef_sim_matrix[PCC_SRC_switch]))
+array_1_in = array_1[:, np.invert(sorted_out_list)]
+array_1_out = array_1[:, sorted_out_list]
+
+PCC_1_before = pearsons_cc(*array_1)
+PCC_1_after = pearsons_cc(*array_1_in)
+ax1.scatter(*array_1_in)
+ax1.scatter(*array_1_out)
+ax1.set_title(PCC_SRC_str + "as a function of global similarity(percent). PCC = %.3f. After = %.3f" % (PCC_1_before, PCC_1_after), fontsize=14)
 ax1.set_xlabel("Global similarity(percent)")
 ax1.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax2 = plt.subplots(1,1)
-PCC_1 = pearsons_cc(coef_sim_matrix[3], coef_sim_matrix[PCC_SRC_switch])
-ax2.scatter(coef_sim_matrix[3], coef_sim_matrix[PCC_SRC_switch])
-ax2.set_title(PCC_SRC_str + "as a function of core identity(percent). PCC = %.3f" % PCC_1)
+array_2 = np.array((coef_sim_matrix[3], coef_sim_matrix[PCC_SRC_switch]))
+array_2_in = array_2[:, np.invert(sorted_out_list)]
+array_2_out = array_2[:, sorted_out_list]
+
+PCC_2_before = pearsons_cc(*array_2)
+PCC_2_after = pearsons_cc(*array_2_in)
+ax2.scatter(*array_2_in)
+ax2.scatter(*array_2_out)
+ax2.set_title(PCC_SRC_str + "as a function of core identity(percent). PCC = %.3f. After = %.3f" % (PCC_2_before, PCC_2_after), fontsize=14)
 ax2.set_xlabel("Core identity(%)")
 ax2.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax3 = plt.subplots(1,1)
-PCC_2 = pearsons_cc(coef_sim_matrix[4], coef_sim_matrix[PCC_SRC_switch])
-ax3.scatter(coef_sim_matrix[4], coef_sim_matrix[PCC_SRC_switch])
-ax3.set_title(PCC_SRC_str + "as a function of core identity(BLOSUM score). PCC = %.3f" % PCC_2)
+array_3 = np.array((coef_sim_matrix[4], coef_sim_matrix[PCC_SRC_switch]))
+array_3_in = array_3[:, np.invert(sorted_out_list)]
+array_3_out = array_3[:, sorted_out_list]
+
+PCC_3_before = pearsons_cc(*array_3)
+PCC_3_after = pearsons_cc(*array_3_in)
+ax3.scatter(*array_3_in)
+ax3.scatter(*array_3_out)
+ax3.set_title(PCC_SRC_str + "as a function of core identity(BLOSUM score). PCC = %.3f. After = %.3f" % (PCC_3_before, PCC_3_after), fontsize=14)
 ax3.set_xlabel("Core identity(BLOSUM score)")
 ax3.set_ylabel(PCC_SRC_str)
 # plt.show()
@@ -912,32 +947,46 @@ ax3.set_ylabel(PCC_SRC_str)
 # ax4.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 # plt.show()
 
-# fig, ax5 = plt.subplots(1,1)
-array_1 = np.array((coef_sim_matrix[6], coef_sim_matrix[PCC_SRC_switch]))
-array_1 = array_1[:,array_1[0,:] != None]
+array_4 = np.array((coef_sim_matrix[8], coef_sim_matrix[PCC_SRC_switch]))
+array_4_in = array_4[:, np.invert(sorted_out_list)]
+array_4_out = array_4[:, sorted_out_list]
 
-PCC_3 = pearsons_cc(*array_1)
-ax5.scatter(*array_1)
-ax5.set_title(PCC_SRC_str + "as a function of best matching cores identity(percent). PCC = %.3f" % PCC_3)
+PCC_4_before = pearsons_cc(*array_4)
+PCC_4_after = pearsons_cc(*array_4_in)
+ax4.scatter(*array_4_in)
+ax4.scatter(*array_4_out)
+ax4.set_title(PCC_SRC_str + "as a function of global similarity and delta_rank. PCC = %.3f. After = %.3f" % (PCC_4_before, PCC_4_after), fontsize=14)
+ax4.set_xlabel("Global similarity(percent)*(100-delta_rank)")
+ax4.set_ylabel(PCC_SRC_str)
+
+# fig, ax5 = plt.subplots(1,1)
+array_5 = np.array((coef_sim_matrix[6], coef_sim_matrix[PCC_SRC_switch]))
+array_5 = array_5[:,array_5[0,:] != None]
+array_5_in = array_5[:, np.invert(sorted_out_list)]
+array_5_out = array_5[:, sorted_out_list]
+
+PCC_5_before = pearsons_cc(*array_5)
+PCC_5_after = pearsons_cc(*array_5_in)
+ax5.scatter(*array_5_in)
+ax5.scatter(*array_5_out)
+ax5.set_title(PCC_SRC_str + "as a function of best matching cores identity(percent). PCC = %.3f. After = %.3f" % (PCC_5_before, PCC_5_after), fontsize=14)
 ax5.set_xlabel("Core identity(%)")
 ax5.set_ylabel(PCC_SRC_str)
 # plt.show()
 
 # fig, ax6 = plt.subplots(1,1)
-array_2 = np.array((coef_sim_matrix[7], coef_sim_matrix[PCC_SRC_switch]))
-array_2 = array_2[:,array_2[0,:] != None]
+array_6 = np.array((coef_sim_matrix[7], coef_sim_matrix[PCC_SRC_switch]))
+array_6 = array_6[:,array_6[0,:] != None]
+array_6_in = array_6[:, np.invert(sorted_out_list)]
+array_6_out = array_6[:, sorted_out_list]
 
-PCC_4 = pearsons_cc(*array_2)
-ax6.scatter(*array_2)
-ax6.set_title(PCC_SRC_str + "as a function of best matching cores BLOSUM score. PCC = %.3f" % PCC_4)
+PCC_6_before = pearsons_cc(*array_6)
+PCC_6_after = pearsons_cc(*array_6_in)
+ax6.scatter(*array_6_in)
+ax6.scatter(*array_6_out)
+ax6.set_title(PCC_SRC_str + "as a function of best matching cores BLOSUM score. PCC = %.3f. After = %.3f" % (PCC_6_before, PCC_6_after), fontsize=14)
 ax6.set_xlabel("Core identity(BLOSUM score)")
 ax6.set_ylabel(PCC_SRC_str)
-
-PCC_5 = pearsons_cc(coef_sim_matrix[8], coef_sim_matrix[PCC_SRC_switch])
-ax4.scatter(coef_sim_matrix[8], coef_sim_matrix[PCC_SRC_switch])
-ax4.set_title(PCC_SRC_str + "as a function of global similarity and delta_rank. PCC = %.3f" % PCC_5)
-ax4.set_xlabel("Global similarity(percent)*(100-delta_rank)")
-ax4.set_ylabel(PCC_SRC_str)
 
 plt.show()
 #
