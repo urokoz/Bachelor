@@ -51,4 +51,12 @@ loop through charts
 
     Add parameters to list
 
-    
+    Determine crossreativity
+
+    Add to HLA binder table (CR v similarity)
+    Add PCC to bins for t test
+    Add CR to bins for bar plot
+
+# create and print HLA table
+
+# create plots and print stats
