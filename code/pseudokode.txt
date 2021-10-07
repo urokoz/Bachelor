@@ -1,0 +1,54 @@
+Pseudocode
+
+open data file
+
+load vars for loop
+load peptide HLA dict
+
+loop for each line in data file
+    add donor_id to donor list
+    extract SI's and log transform
+    load pepseqs
+
+    if not previous peptide pair:
+        create unique name/id for peptide using a dictionary to keep track of the amount of peptides from each allergen
+
+        add unique name, seq, and HLA binding info to a "database" dict/list
+
+        calculate global alignment info (both naive and blosum)
+
+        calculate local alignment info (using blosum)
+
+        create charts entry containing [ori_SI_list, var_SI_list,[ori_name, var_name], [global_ident, global_blosum, local_matches, local_blosum], n_donors_per_chart]
+
+    add SIs to the appropriate charts
+    add SIs to donor_reaction dict for use in heatmap
+
+go through each peptide and determine if whether it's a strong, weak or non binder and add this to the list
+
+# output peptides in fasta format
+
+# print heatmap
+
+init vars for the second big loop
+load chart significances
+
+loop through charts
+    calculate PCC and SCC
+    extract local and global idents/blosum
+
+    sort the dataset from significances
+
+    extract binding info from charts
+
+    get best binding cores for both peptides and calculate similarity
+
+    get best binding ori HLA and calculate similarity with corresponding var HLA
+
+    Get best matching cores (of the binding cores)
+
+    calculate delta rank as best rank vs best rank
+
+    Add parameters to list
+
+    
