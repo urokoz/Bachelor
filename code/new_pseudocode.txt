@@ -1,0 +1,64 @@
+### file 1 - Load data and filter ( prep dataset )
+
+load in dataset file
+load in HLA dict
+
+loop for each line in data file
+    add donor_id to donor list
+    extract SI's and log transform
+    load pepseqs
+
+    if not previous peptide pair:
+        create unique name/id for peptide using a dictionary to keep track of the amount of peptides from each allergen
+
+        add unique name, seq, and HLA binding info to a "database" list
+        determine binding and filter non binders off
+
+        create charts entry containing [ori_SI_list, var_SI_list, ori_name, var_name]
+
+    add SIs to the appropriate charts
+    add SIs to donor_reaction dict for use in heatmap
+
+heatmap
+
+load significance
+Filter by significance
+
+heatmap after filtering
+
+
+output:
+pep1_name,pep2_name,SI_list1,SI_list2 >> chart list
+
+pep_name, pep_seq, HLA_ranks, HLA_cores,
+
+
+### File 2 - create charts and similarity measurements
+
+load pep_dict
+load chart list
+
+loop through charts in chart_list
+    calculate PCC and SCC
+    determine cross reactivity
+    calculate global alignment scores
+    calculate local alignment scores
+    calculate k-mer similarity
+    calculate core similarities
+        best rank vs best rank
+        best rank vs corresponding (both ways)
+        best matching binding cores
+        delta rank
+
+    HLA binder table
+
+output:
+
+pep1_name, pep2_name, PCC, SCC, global ident, global blosum, local ident, local blosum, k-mer sim, core sims, delta rank, weak binder
+
+
+
+### file 3 - print plots and aggregate data
+Many SCC/PCC vs sim plots
+
+print stats for different plots
