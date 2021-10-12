@@ -21,8 +21,7 @@ loop for each line in data file
 
 heatmap
 
-load significance
-Filter by significance
+filter by binding
 
 heatmap after filtering
 
@@ -40,6 +39,9 @@ load chart list
 
 loop through charts in chart_list
     calculate PCC and SCC
+
+    filter by significance
+
     determine cross reactivity
     calculate global alignment scores
     calculate local alignment scores

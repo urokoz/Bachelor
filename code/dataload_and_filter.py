@@ -1,26 +1,32 @@
 #!/usr/bin/env python
 
 import numpy as np
-import matplotlib.pyplot as plt
-
-def heatmap(pep_list, donor_list, donor_reaction_dict):
-    # Heatmap generation
-    donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
-    for i in range(len(pep_list)):
-        for j in range(len(donor_list)):
-            donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
-
-    fig, ax = plt.subplots()
-    c = plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=25, aspect = "auto")
-    ax.set_title('Donor SI per peptide heatmap', fontsize=18)
-    ax.set_xlabel("Peptides", fontsize=12)
-    ax.set_ylabel("Donors", fontsize=12)
-    plt.colorbar(c)
-    plt.savefig("../../Figures/Heatmap.png", dpi=500, bbox_inches="tight")
-    plt.show(block=False)
+# import matplotlib.pyplot as plt
+#
+# def heatmap(pep_list, donor_list, donor_reaction_dict):
+#     # Heatmap generation
+#     donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
+#     for i in range(len(pep_list)):
+#         for j in range(len(donor_list)):
+#             donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
+#
+#     fig, ax = plt.subplots()
+#     c = plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=25, aspect = "auto")
+#     ax.set_title('Donor SI per peptide heatmap', fontsize=18)
+#     ax.set_xlabel("Peptides", fontsize=12)
+#     ax.set_ylabel("Donors", fontsize=12)
+#     plt.colorbar(c)
+#     plt.savefig("../../Figures/Heatmap.png", dpi=500, bbox_inches="tight")
+#     plt.show(block=False)
 
 
 def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
+    """ Reads HLA binding for 7 allels and outputs it as a dict.
+
+        output format:
+        pep_HLA_dict[pep_name] = [[rank1,core1],...,[rank7,core7]]
+    """
+
     infile = open(datafile,"r")
 
     infile.readline()
@@ -55,25 +61,27 @@ def load_peptide_pair_significance(filename):
 
 
 ## Main
+lower_cutoff = False
+bottom_sort_out = False
+log_switch = True
 
 # Data format:
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
 #          'Amb', 'a', '1.0201', 'NSDKTIDGRGVKVNIVNAGL', '1.12407']
 
 i = -1
+n = 0
+wanted_charts = 1000
 old_ori_seq = ""
 old_var_seq = ""
 charts = []
-n = 0
 seqs_for_FASTA = []
-donor_reaction_dict = dict()
 donor_list = []
-wanted_charts = 1000
+pep_list = []
 
-
+donor_reaction_dict = dict()
 unique_seqs = set()
 allergen_dict = dict()
-pep_list = []
 pep_dict = dict()
 pep_id_name = dict()
 
@@ -138,7 +146,7 @@ for line in infile:
             pep_id_name[var_id] = full_var_name
 
         # Save info about the peptide pairing and prep lists for SI values
-        charts.append([[],[], [pep_id_name[ori_id], pep_id_name[var_id]])
+        charts.append([[],[], pep_id_name[ori_id], pep_id_name[var_id]])
 
     # add SI to the chart for the peptide pairing
     charts[i][0].append(ori_SI)
@@ -151,5 +159,53 @@ for line in infile:
     donor_reaction_dict[donor_id][var_pepseq] = var_SI
 infile.close()
 
-outfile = open("filtered_dataset.csv")
-for chart in charts
+SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
+PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
+
+outfile = open("Data/filtered_dataset.csv","w")
+for chart in charts:
+    ori_SI = chart[0]
+    var_SI = chart[1]
+    ori_name = chart[2]
+    var_name = chart[3]
+
+    ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
+    var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
+
+    if not (ori_bind and var_bind):
+        continue
+
+    print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
+outfile.close()
+
+outfile = open("Data/filtered_pep_list.csv", "w")
+for pep in pep_list:
+    pep_name = pep[0]
+    pep_seq = pep[1]
+    pep_HLA = pep[2]
+    pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
+
+    if not pep_bind:
+        continue
+
+    print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)
+
+    ### For file 2
+    # # by SRC significance
+    # if outlier_sorting == 1 or outlier_sorting == 3:
+    #     if SRC_sig > 0.05 and SRC > 0.5:
+    #         continue
+    #
+    #     elif SRC_sig < 0.05 and SRC < -0.25 and bottom_sort_out:
+    #         continue
+    #     elif SRC < -0.25 and lower_cutoff:
+    #         SRC = -0.25
+    # # by PCC significance
+    # if outlier_sorting == 2 or outlier_sorting == 3:
+    #     if PCC_sig > 0.05 and PCC > 0.5:
+    #         continue
+    #
+    #     elif PCC_sig < 0.05 and PCC < -0.25 and bottom_sort_out:
+    #         continue
+    #     elif PCC < -0.25 and lower_cutoff:
+    #         PCC = -0.25
