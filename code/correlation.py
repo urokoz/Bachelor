@@ -284,8 +284,7 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1, scoring_schem
             matches += 1
 
     aligned_similarity = matches/min(n_ori,n_var)*100
-    if scoring_scheme == "blosum":
-        matches = max_score
+
     return ori_align, var_align, aligned_similarity, matches
 
 
@@ -476,7 +475,7 @@ def outlier_using_IQR(x_values, y_values):
     non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
 
     return non_outliers_list
-
+global_ident
 
 #-----------------
 #def LOF(array, KNN_n = 2):

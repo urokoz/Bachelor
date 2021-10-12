@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 
 import numpy as np
-# import matplotlib.pyplot as plt
-#
-# def heatmap(pep_list, donor_list, donor_reaction_dict):
-#     # Heatmap generation
-#     donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
-#     for i in range(len(pep_list)):
-#         for j in range(len(donor_list)):
-#             donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
-#
-#     fig, ax = plt.subplots()
-#     c = plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=25, aspect = "auto")
-#     ax.set_title('Donor SI per peptide heatmap', fontsize=18)
-#     ax.set_xlabel("Peptides", fontsize=12)
-#     ax.set_ylabel("Donors", fontsize=12)
-#     plt.colorbar(c)
-#     plt.savefig("../../Figures/Heatmap.png", dpi=500, bbox_inches="tight")
-#     plt.show(block=False)
+from scipy.stats import spearmanr, pearsonr
+import matplotlib.pyplot as plt
+
+def heatmap(pep_list, donor_list, donor_reaction_dict):
+    # Heatmap generation
+    donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
+    for i in range(len(pep_list)):
+        for j in range(len(donor_list)):
+            donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
+
+    fig, ax = plt.subplots()
+    c = plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=25, aspect = "auto")
+    ax.set_title('Donor SI per peptide heatmap', fontsize=18)
+    ax.set_xlabel("Peptides", fontsize=12)
+    ax.set_ylabel("Donors", fontsize=12)
+    plt.colorbar(c)
+    plt.savefig("../../Figures/Heatmap.png", dpi=500, bbox_inches="tight")
+    plt.show(block=False)
 
 
 def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
@@ -64,6 +65,7 @@ def load_peptide_pair_significance(filename):
 lower_cutoff = False
 bottom_sort_out = False
 log_switch = True
+outlier_sorting = 3
 
 # Data format:
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
@@ -163,11 +165,33 @@ SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
 PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
 
 outfile = open("Data/filtered_dataset.csv","w")
-for chart in charts:
+for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     ori_SI = chart[0]
     var_SI = chart[1]
     ori_name = chart[2]
     var_name = chart[3]
+
+    PCC, PCC_p = pearsonr(ori_SI,var_SI)
+    SCC, SCC_p = spearmanr(ori_SI,var_SI)
+
+    # by SRC significance
+    if outlier_sorting == 1 or outlier_sorting == 3:
+        if SCC_sig > 0.05 and SCC > 0.5:
+            continue
+
+        elif SCC_sig < 0.05 and SCC < -0.25 and bottom_sort_out:
+            continue
+        elif SCC < -0.25 and lower_cutoff:
+            SCC = -0.25
+    # by PCC significance
+    if outlier_sorting == 2 or outlier_sorting == 3:
+        if PCC_sig > 0.05 and PCC > 0.5:
+            continue
+
+        elif PCC_sig < 0.05 and PCC < -0.25 and bottom_sort_out:
+            continue
+        elif PCC < -0.25 and lower_cutoff:
+            PCC = -0.25
 
     ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
     var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
