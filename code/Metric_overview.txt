@@ -1,0 +1,7 @@
+1. PCC
+2. SCC
+3. Needleman-Wunch naive sim
+4. Needleman-Wunch naive score
+5. Needleman-Wunch blosum sim
+6. Needleman-Wunch blosum score
+7. Smith-Waterman

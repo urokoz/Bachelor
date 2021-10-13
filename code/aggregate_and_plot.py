@@ -40,5 +40,11 @@ ylabel = "SCC"
 plot_title = ylabel +" vs. " + xlabel
 x = pep_pair_sims[:,2]
 y = pep_pair_sims[:,1]
+sim_plot(x, y, plot_title, xlabel, ylabel)
 
+xlabel = "Naive global similarity(%)"
+ylabel = "SCC"
+plot_title = ylabel +" vs. " + xlabel
+x = pep_pair_sims[:,2]
+y = pep_pair_sims[:,1]
 sim_plot(x, y, plot_title, xlabel, ylabel)
