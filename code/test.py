@@ -1,33 +1,58 @@
 #!/usr/bin/env python
 
-import matplotlib.pyplot as plt
 import numpy as np
 
-infile = open("Data/sampled_corr_SRC.txt","r")
-list1 = [0]*20
-list2 = [0]*20
-for line in infile:
-    line = line.split()
-    SRC = float(line[6])
-    pval = float(line[-1])
-    # print(pval)
-    lower = np.min((float(line[11]), float(line[12])))
-    upper = np.max((float(line[11]), float(line[12])))
-
-    i = int(np.floor((SRC+1)*10)) if SRC != 1.0 else 19
-
-    list1[i] += int(pval <= 0.05)
-    list2[i] += 1
-
-# print(sum(list2))
-bins = []
-for x, n in zip(list1, list2):
-    print(x,n)
-    bins.append(0 if n == 0 else x/n)
+#alphabet_file = alphabet_upload.values()
+#alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
+alphabet_file = "Matrices/alphabet"
+alphabet = np.loadtxt(alphabet_file, dtype=str)
 
 
-fig, ax = plt.subplots()
+#blosum_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/blosum50"
+blosum_file = "Matrices/BLOSUM50"
+_blosum50 = np.loadtxt(blosum_file, dtype=float).reshape((24, -1)).T
 
-ax.bar(np.linspace(-0.975, 0.975, 20), bins, width = 0.05)
-ax.set_title("SRC significance freq")
-plt.show()
+blosum50 = {}
+
+for i, letter_1 in enumerate(alphabet):
+
+    blosum50[letter_1] = {}
+
+    for j, letter_2 in enumerate(alphabet):
+
+        blosum50[letter_1][letter_2] = _blosum50[i, j]
+
+def score_cores(core1, core2):
+    core_matches = 0
+    core_blosum = 0
+    for a,b in zip(core1, core2):
+        core_matches += int(a==b)
+        core_blosum += blosum50[a][b]
+
+        core_ident = core_matches/len(core1)*100
+
+    return core_ident, core_blosum
+
+
+def k_mer(seq1,seq2, k = 9):
+    best_ident = 0
+    best_blosum = -np.inf
+    for i in range(len(seq1)-(k-1)):
+        for j in range(len(seq2)-(k-1)):
+            core1 = seq1[i:i+k]
+            core2 = seq2[j:j+k]
+            ident, blosum = score_cores(core1,core2)
+
+            best_ident = max(ident, best_ident)
+            best_blosum = max(blosum, best_blosum)
+
+    return best_ident, best_blosum
+
+
+seq1 = "AKVEIINAGFTLNGVKNVII"
+seq2 = "GDAIGISGGSQIWIDHSSLS"
+
+best_ident, best_blosum = k_mer(seq1, seq2)
+
+print(best_ident)
+print(best_blosum)

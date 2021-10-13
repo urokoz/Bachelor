@@ -318,6 +318,21 @@ def load_peptide_pair_significance(filename):
     return sig_list
 
 
+def k_mer(seq1,seq2, k = 9):
+    best_ident = 0
+    best_blosum = -np.inf
+    for i in range(len(seq1)-(k-1)):
+        for j in range(len(seq2)-(k-1)):
+            core1 = seq1[i:i+k]
+            core2 = seq2[j:j+k]
+            ident, blosum = score_cores(core1,core2)
+
+            best_ident = max(ident, best_ident)
+            best_blosum = max(blosum, best_blosum)
+
+    return best_ident, best_blosum
+
+
 pep_dict = load_pep_dict("Data/filtered_pep_list.csv")
 
 infile = open("Data/filtered_dataset.csv", "r")
@@ -359,6 +374,9 @@ for line in infile:
     aligned_query, aligned_database, sw_matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
     sw_sim = sw_matches/min(len(ori_pepseq), len(var_pepseq))*100
     sim_list.extend([sw_sim, max_score])
+
+    kmer_ident, kmer_blosum = k_mer(ori_pepseq,var_pepseq)
+    sim_list.extend([kmer_ident, kmer_blosum])
 
     ## Core similarity vs PCC
     # best core vs best core
