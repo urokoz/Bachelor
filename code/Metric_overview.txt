@@ -14,3 +14,4 @@
 14. Best matching cores blosum
 15. Delta rank best core vs. best core
 16. nw_naive_sim x (100-delta_rank)
+
