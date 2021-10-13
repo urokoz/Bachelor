@@ -412,7 +412,7 @@ for line in infile:
             elif ident_match > bm_ident:
                 bm_ident = ident_match
 
-    sim_list.extend([bvb_ident, bvb_blosum, bvc_ident, bvc_blosum, bm_ident, bm_blosum])
+    sim_list.extend([bvb_ident, bvb_blosum, bvc_ident, bvc_blosum, bm_ident, bm_blosum, delta_rank])
 
     # combination metrics
     glob_sim_and_d_rank = nw_naive_sim*(100-delta_rank)
