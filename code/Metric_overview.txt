@@ -1,17 +1,17 @@
-1. PCC
-2. SCC
-3. Needleman-Wunch naive sim
-4. Needleman-Wunch naive score
-5. Needleman-Wunch blosum sim
-6. Needleman-Wunch blosum score
-7. Smith-Waterman sim
-8. Smith-Waterman blosum
-9. Best core vs. best core sim
-10. Best core vs. best core blosum
-11. Best ori core vs. corresponding var sim
-12. Best ori core vs. corresponding var blosum
-13. Best matching cores sim
-14. Best matching cores blosum
-15. Delta rank best core vs. best core
-16. nw_naive_sim x (100-delta_rank)
+0. PCC
+1. SCC
+2. Needleman-Wunch naive sim
+3. Needleman-Wunch naive score
+4. Needleman-Wunch blosum sim
+5. Needleman-Wunch blosum score
+6. Smith-Waterman sim
+7. Smith-Waterman blosum
+8. Best core vs. best core sim
+9. Best core vs. best core blosum
+10. Best ori core vs. corresponding var sim
+11. Best ori core vs. corresponding var blosum
+12. Best matching cores sim
+13. Best matching cores blosum
+14. Delta rank best core vs. best core
+15. nw_naive_sim x (100-delta_rank)
 
