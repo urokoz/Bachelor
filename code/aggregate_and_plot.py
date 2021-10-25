@@ -38,7 +38,7 @@ def hist(x, plot_title, xlabel, ylabel, bar_names = False):
     ax.set_ylabel(ylabel)
     plt.show()
 
-data = np.loadtxt("Data/calculated_metrics.txt", delimiter=",", dtype = str)
+data = np.loadtxt("Data/calculated_metrics_2.txt", delimiter=",", dtype = str)
 
 #Index overview:
 #0. PCC
@@ -59,32 +59,33 @@ data = np.loadtxt("Data/calculated_metrics.txt", delimiter=",", dtype = str)
 #15. Best matching cores blosum
 #16. Delta rank best core vs. best core
 #17. nw_naive_sim x (100-delta_rank)
+#18. Pep kernel score
 
 
 pep_pair_names = data[:,0]
 pep_pair_sims = data[:,1:].astype(float)
 
-xlabel = "Naive global similarity(%)"
-ylabel = "SRC"
-plot_title = ylabel +" vs. " + xlabel
-x = pep_pair_sims[:,2]
-y = pep_pair_sims[:,1]
-sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-
-xlabel = "Naive global similarity(%)"
-ylabel = "PCC"
-plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,2]
-y = pep_pair_sims[:,0]
-sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-
-xlabel = "Local similarity(%)"
-ylabel = "SRC"
-plot_title = ylabel +" vs. " + xlabel
-x = pep_pair_sims[:,6]
-y = pep_pair_sims[:,1]
-sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-
+# xlabel = "Naive global similarity(%)"
+# ylabel = "SRC"
+# plot_title = ylabel +" vs. " + xlabel
+# x = pep_pair_sims[:,2]
+# y = pep_pair_sims[:,1]
+# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#
+# xlabel = "Naive global similarity(%)"
+# ylabel = "PCC"
+# plot_title = ylabel + " vs. " + xlabel
+# x = pep_pair_sims[:,2]
+# y = pep_pair_sims[:,0]
+# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#
+# xlabel = "Local similarity(%)"
+# ylabel = "SRC"
+# plot_title = ylabel +" vs. " + xlabel
+# x = pep_pair_sims[:,6]
+# y = pep_pair_sims[:,1]
+# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#
 xlabel = "9-mere (% Identity)"
 ylabel = "SRC"
 plot_title = ylabel +" vs. " + xlabel
@@ -98,12 +99,16 @@ plot_title = ylabel +" vs. " + xlabel
 x = pep_pair_sims[:,9]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#
+# xlabel = "Histogram"
+# ylabel = "Count"
+# plot_title = "Histogram"
+# x = pep_pair_sims[:,8]
+# hist(x, plot_title, xlabel, ylabel)
 
-xlabel = "Histogram"
-ylabel = "Count"
-plot_title = "Histogram"
-x = pep_pair_sims[:,8]
-hist(x, plot_title, xlabel, ylabel)
-
-
-
+xlabel = "Pep kernel score"
+ylabel = "SCC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,18]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
