@@ -6,7 +6,7 @@
 5. Needleman-Wunch blosum score
 6. Smith-Waterman sim
 7. Smith-Waterman blosum
-8. K-mer sim
+8. K-mer identity
 9. K-mer blosum
 10. Best core vs. best core sim
 11. Best core vs. best core blosum

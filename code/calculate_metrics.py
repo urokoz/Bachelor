@@ -440,3 +440,9 @@ for line in infile:
     chart_sim_list.append(sim_list)
 
     print(*sim_list, sep=",", file=outfile)
+
+
+#positive vs. negative correlations - comparison
+print(SRC_sig_list)
+
+print(PCC_sig_list)

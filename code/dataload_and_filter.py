@@ -80,6 +80,7 @@ charts = []
 seqs_for_FASTA = []
 donor_list = []
 pep_list = []
+Ori_SI_means = []
 
 donor_reaction_dict = dict()
 unique_seqs = set()
@@ -174,6 +175,8 @@ for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     PCC, PCC_p = pearsonr(ori_SI,var_SI)
     SCC, SCC_p = spearmanr(ori_SI,var_SI)
 
+    Ori_SI_means.append(np.mean(ori_SI))
+
     # by SRC significance
     if outlier_sorting == 1 or outlier_sorting == 3:
         if SCC_sig > 0.05 and SCC > 0.5:
@@ -233,3 +236,8 @@ for pep in pep_list:
     #         continue
     #     elif PCC < -0.25 and lower_cutoff:
     #         PCC = -0.25
+
+#print(Ori_SI_means)
+#index for all negative corrolations ---> extract corresponding Ori means
+#index for all positive corrolations --> extract corresponding Ori means
+#t.test positive and negative means

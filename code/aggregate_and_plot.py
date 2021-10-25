@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 
 
 def pearsons_cc(y_est, y_true):
-    """ Calucates the Pearson's correlation coefficient.
-    Author: Mathias Rahbek-Borre, Fall 2020.
-    """
     n = len(y_est)
     sum_x = sum(y_est)
     sum_y = sum(y_true)
@@ -20,7 +17,7 @@ def pearsons_cc(y_est, y_true):
     return r_xy
 
 
-def sim_plot(x,y,plot_title, xlabel, ylabel):
+def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
     PCC = pearsons_cc(x,y)
     fig, ax = plt.subplots()
     ax.scatter(x,y)
@@ -29,22 +26,84 @@ def sim_plot(x,y,plot_title, xlabel, ylabel):
     ax.set_ylabel(ylabel)
     plt.show()
 
+def hist(x, plot_title, xlabel, ylabel, bar_names = False):
+    q25, q75 = np.percentile(x, [.25, .75])
+    bin_width = 2 * (q75 - q25) * len(x) ** (-1 / 3)
+    bins = round((max(x) - min(x)) / bin_width)
 
-a = np.loadtxt("Data/calculated_metrics.txt", delimiter=",", dtype = str)
+    fig, ax = plt.subplots()
+    ax.hist(x, density = False, bins=bins)
+    ax.set_title(plot_title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    plt.show()
 
-pep_pair_names = a[:,0]
-pep_pair_sims = a[:,1:].astype(float)
+data = np.loadtxt("Data/calculated_metrics.txt", delimiter=",", dtype = str)
+
+#Index overview:
+#0. PCC
+#1. SCC
+#2. Needleman-Wunch naive sim
+#3. Needleman-Wunch naive score
+#4. Needleman-Wunch blosum sim
+#5. Needleman-Wunch blosum score
+#6. Smith-Waterman sim
+#7. Smith-Waterman blosum
+#8. K-mer identity
+#9. K-mer blosum
+#10. Best core vs. best core sim
+#11. Best core vs. best core blosum
+#12. Best ori core vs. corresponding var sim
+#13. Best ori core vs. corresponding var blosum
+#14. Best matching cores sim
+#15. Best matching cores blosum
+#16. Delta rank best core vs. best core
+#17. nw_naive_sim x (100-delta_rank)
+
+
+pep_pair_names = data[:,0]
+pep_pair_sims = data[:,1:].astype(float)
 
 xlabel = "Naive global similarity(%)"
-ylabel = "SCC"
+ylabel = "SRC"
 plot_title = ylabel +" vs. " + xlabel
 x = pep_pair_sims[:,2]
 y = pep_pair_sims[:,1]
-sim_plot(x, y, plot_title, xlabel, ylabel)
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Naive global similarity(%)"
-ylabel = "SCC"
-plot_title = ylabel +" vs. " + xlabel
+ylabel = "PCC"
+plot_title = ylabel + " vs. " + xlabel
 x = pep_pair_sims[:,2]
+y = pep_pair_sims[:,0]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Local similarity(%)"
+ylabel = "SRC"
+plot_title = ylabel +" vs. " + xlabel
+x = pep_pair_sims[:,6]
 y = pep_pair_sims[:,1]
-sim_plot(x, y, plot_title, xlabel, ylabel)
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "9-mere (% Identity)"
+ylabel = "SRC"
+plot_title = ylabel +" vs. " + xlabel
+x = pep_pair_sims[:,8]
+y = pep_pair_sims[:,0]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "9-mere (Blosum50)"
+ylabel = "SRC"
+plot_title = ylabel +" vs. " + xlabel
+x = pep_pair_sims[:,9]
+y = pep_pair_sims[:,0]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Histogram"
+ylabel = "Count"
+plot_title = "Histogram"
+x = pep_pair_sims[:,8]
+hist(x, plot_title, xlabel, ylabel)
+
+
+

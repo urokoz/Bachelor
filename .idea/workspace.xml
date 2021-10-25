@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3782bb2d-0475-43da-95da-f983f86a7c16" name="Default Changelist" comment="" />
+    <list default="true" id="3782bb2d-0475-43da-95da-f983f86a7c16" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Data/calculated_metrics.txt" beforeDir="false" afterPath="$PROJECT_DIR$/code/Data/calculated_metrics.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Data/filtered_dataset.csv" beforeDir="false" afterPath="$PROJECT_DIR$/code/Data/filtered_dataset.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/Metric_overview.txt" beforeDir="false" afterPath="$PROJECT_DIR$/code/Metric_overview.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/aggregate_and_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/aggregate_and_plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/calculate_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/calculate_metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/dataload_and_filter.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/dataload_and_filter.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,7 +32,49 @@
     <property name="full.screen.before.presentation.mode" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.dataload_and_filter">
+    <configuration name="aggregate_and_plot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Bachelor" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/aggregate_and_plot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="calculate_metrics" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Bachelor" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/calculate_metrics.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="correlation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Bachelor" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -46,8 +96,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="dataload_and_filter" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Bachelor" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/dataload_and_filter.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dataload_and_filter" />
+        <item itemvalue="Python.calculate_metrics" />
+        <item itemvalue="Python.aggregate_and_plot" />
         <item itemvalue="Python.correlation" />
       </list>
     </recent_temporary>
@@ -68,53 +142,61 @@
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state x="184" y="91" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.815@0.25.1440.815" timestamp="1631013504476" />
-    <state width="1303" height="46" key="GridCell.Tab.0.bottom" timestamp="1632751593787">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.0.bottom" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.bottom.inPresentationMode" timestamp="1631698311768">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.bottom.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311768" />
+    <state width="1419" height="148" key="GridCell.Tab.0.bottom/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1303" height="46" key="GridCell.Tab.0.bottom/0.25.1440.815@0.25.1440.815" timestamp="1632751593787" />
-    <state width="1303" height="46" key="GridCell.Tab.0.center" timestamp="1632751593787">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.0.center" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.center.inPresentationMode" timestamp="1631698311767">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.center.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311767" />
+    <state width="1419" height="148" key="GridCell.Tab.0.center/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1303" height="46" key="GridCell.Tab.0.center/0.25.1440.815@0.25.1440.815" timestamp="1632751593787" />
-    <state width="1303" height="46" key="GridCell.Tab.0.left" timestamp="1632751593787">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.0.left" timestamp="1634391732139">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.left.inPresentationMode" timestamp="1631698311766">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.left.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311766" />
+    <state width="1419" height="148" key="GridCell.Tab.0.left/0.25.1440.814@0.25.1440.814" timestamp="1634391732139" />
     <state width="1303" height="46" key="GridCell.Tab.0.left/0.25.1440.815@0.25.1440.815" timestamp="1632751593787" />
-    <state width="1303" height="46" key="GridCell.Tab.0.right" timestamp="1632751593787">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.0.right" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.right.inPresentationMode" timestamp="1631698311768">
       <screen x="0" y="25" width="1440" height="815" />
     </state>
     <state width="1419" height="81" key="GridCell.Tab.0.right.inPresentationMode/0.25.1440.815@0.25.1440.815" timestamp="1631698311768" />
+    <state width="1419" height="148" key="GridCell.Tab.0.right/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1303" height="46" key="GridCell.Tab.0.right/0.25.1440.815@0.25.1440.815" timestamp="1632751593787" />
-    <state width="1419" height="258" key="GridCell.Tab.1.bottom" timestamp="1631882594146">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.1.bottom" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
+    <state width="1419" height="148" key="GridCell.Tab.1.bottom/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1419" height="258" key="GridCell.Tab.1.bottom/0.25.1440.815@0.25.1440.815" timestamp="1631882594146" />
-    <state width="1419" height="258" key="GridCell.Tab.1.center" timestamp="1631882594145">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.1.center" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
+    <state width="1419" height="148" key="GridCell.Tab.1.center/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1419" height="258" key="GridCell.Tab.1.center/0.25.1440.815@0.25.1440.815" timestamp="1631882594145" />
-    <state width="1419" height="258" key="GridCell.Tab.1.left" timestamp="1631882594145">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.1.left" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
+    <state width="1419" height="148" key="GridCell.Tab.1.left/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1419" height="258" key="GridCell.Tab.1.left/0.25.1440.815@0.25.1440.815" timestamp="1631882594145" />
-    <state width="1419" height="258" key="GridCell.Tab.1.right" timestamp="1631882594146">
-      <screen x="0" y="25" width="1440" height="815" />
+    <state width="1419" height="148" key="GridCell.Tab.1.right" timestamp="1634391732140">
+      <screen x="0" y="25" width="1440" height="814" />
     </state>
+    <state width="1419" height="148" key="GridCell.Tab.1.right/0.25.1440.814@0.25.1440.814" timestamp="1634391732140" />
     <state width="1419" height="258" key="GridCell.Tab.1.right/0.25.1440.815@0.25.1440.815" timestamp="1631882594146" />
     <state x="323" y="25" key="SettingsEditor" timestamp="1632751269334">
       <screen x="0" y="25" width="1440" height="815" />
