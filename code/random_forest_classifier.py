@@ -61,7 +61,7 @@ X = pep_pair_sims[:, [5,9,10,16,18]]
 y = pep_pair_sims[:,0]
 
 # K-fold crossvalidation
-# K = 3
+# K = 8
 # CV_outer = model_selection.KFold(K, shuffle=True)
 # CV_inner = model_selection.KFold(K, shuffle=True)
 K = len(y)
@@ -71,6 +71,7 @@ CV_inner = model_selection.LeaveOneOut()
 clf = RandomForestRegressor()
 
 mse = []
+ft = None
 y_true = []
 y_est = []
 
@@ -83,15 +84,22 @@ for (kout, (train_index_out, test_index_out)) in enumerate(CV_outer.split(X, y))
     y_out_test = y[test_index_out]
 
     clf.fit(X_out_train, y_out_train)
+    if ft:
+        ft_im = np.vstack((ft_im, clf.feature_importances_))
+    else:
+        ft_im = clf.feature_importances_
+        ft = True
+
     y_pred = clf.predict(X_out_test)
     y_est.append(y_pred)
     y_true.append(y_out_test)
 
     mse.append(mean_squared_error(y_out_test, y_pred, squared=False))
 
-xlabel = "Y est"
-ylabel = "Y true"
-plot_title = ylabel +" vs. " + xlabel
-
-sim_scatterplot(y_est, y_true, plot_title, xlabel, ylabel)
+print(np.mean(ft_im,axis=0))
+# xlabel = "Y est"
+# ylabel = "Y true"
+# plot_title = ylabel +" vs. " + xlabel
+#
+# sim_scatterplot(y_est, y_true, plot_title, xlabel, ylabel)
 print(np.mean(mse))

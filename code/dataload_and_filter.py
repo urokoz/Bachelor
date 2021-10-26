@@ -62,10 +62,11 @@ def load_peptide_pair_significance(filename):
 
 
 ## Main
-lower_cutoff = False
-bottom_sort_out = False
-log_switch = True
-outlier_sorting = 3
+HLA_sort = False         # Filter out non-binders
+lower_cutoff = False    # Raise PCC/SCC values under -0.25 to -0.25
+bottom_sort_out = False # Sort out significant datapoints under -0.25 PCC/SCC
+log_switch = True       # Log transform SI values
+outlier_sorting = 0     # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is both PCC and SRC sig
 
 # Data format:
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
@@ -165,7 +166,7 @@ infile.close()
 SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
 PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
 
-outfile = open("Data/filtered_dataset.csv","w")
+outfile = open("Data/log_unfiltered_dataset.csv","w")
 for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     ori_SI = chart[0]
     var_SI = chart[1]
@@ -199,20 +200,20 @@ for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
     var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
 
-    if not (ori_bind and var_bind):
+    if HLA_sort and not (ori_bind and var_bind):
         continue
 
     print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
 outfile.close()
 
-outfile = open("Data/filtered_pep_list.csv", "w")
+outfile = open("Data/unfiltered_pep_list.csv", "w")
 for pep in pep_list:
     pep_name = pep[0]
     pep_seq = pep[1]
     pep_HLA = pep[2]
     pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
 
-    if not pep_bind:
+    if HLA_sort and not pep_bind:
         continue
 
     print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)

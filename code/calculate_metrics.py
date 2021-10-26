@@ -333,13 +333,10 @@ def k_mer(seq1,seq2, k = 9):
     return best_ident, best_blosum
 
 
-pep_dict = load_pep_dict("Data/filtered_pep_list.csv")
+pep_dict = load_pep_dict("Data/unfiltered_pep_list.csv")
 
-infile = open("Data/filtered_dataset.csv", "r")
-outfile = open("Data/calculated_metrics.txt","w")
-
-SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
-PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
+infile = open("Data/log_unfiltered_dataset.csv", "r")
+outfile = open("Data/log_unfiltered_calculated_metrics.txt","w")
 
 chart_sim_list = []
 
@@ -440,9 +437,3 @@ for line in infile:
     chart_sim_list.append(sim_list)
 
     print(*sim_list, sep=",", file=outfile)
-
-
-#positive vs. negative correlations - comparison
-print(SRC_sig_list)
-
-print(PCC_sig_list)
