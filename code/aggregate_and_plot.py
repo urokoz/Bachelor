@@ -4,6 +4,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import scipy.stats as st
+from argparse import ArgumentParser
 
 
 def pearsons_cc(y_est, y_true):
@@ -48,7 +49,13 @@ def load_peptide_pair_significance(filename):
     return sig_list
 
 
-data = np.loadtxt("Data/calculated_metrics_2.txt", delimiter=",", dtype = str)
+parser = ArgumentParser(description="Extracts useful data from data files.")
+parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/calculated_metrics_2.txt", help="File with data")
+
+args = parser.parse_args()
+data_file = args.data_file
+
+data = np.loadtxt(data_file, delimiter=",", dtype = str)
 
 #Index overview:
 #0. PCC
@@ -77,7 +84,7 @@ pep_pair_sims = data[:,1:].astype(float)
 
 
 # Visualize sorting #############################################################
-charts = np.loadtxt("Data/log_filtered_dataset.csv", delimiter="\t", dtype = str)
+# charts = np.loadtxt("Data/log_filtered_dataset.csv", delimiter="\t", dtype = str)
 # SRC_sig_list = np.array(load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt"))
 # PCC_sig_list = np.array(load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt"))
 #

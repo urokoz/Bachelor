@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn import model_selection
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
+from argparse import ArgumentParser
 
 
 def pearsons_cc(y_est, y_true):
@@ -29,8 +30,13 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
     ax.set_ylabel(ylabel)
     plt.show()
 
+parser = ArgumentParser(description="Extracts useful data from data files.")
+parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/calculated_metrics_2.txt", help="File with data")
 
-data = np.loadtxt("Data/calculated_metrics_2.txt", delimiter=",", dtype = str)
+args = parser.parse_args()
+data_file = args.data_file
+
+data = np.loadtxt(data_file, delimiter=",", dtype = str)
 
 #Index overview:
 #0. PCC
@@ -68,7 +74,7 @@ K = len(y)
 CV_outer = model_selection.LeaveOneOut()
 CV_inner = model_selection.LeaveOneOut()
 
-clf = RandomForestRegressor()
+forest = RandomForestRegressor()
 
 mse = []
 ft = None
@@ -83,14 +89,14 @@ for (kout, (train_index_out, test_index_out)) in enumerate(CV_outer.split(X, y))
     y_out_train = y[train_index_out]
     y_out_test = y[test_index_out]
 
-    clf.fit(X_out_train, y_out_train)
+    forest.fit(X_out_train, y_out_train)
     if ft:
-        ft_im = np.vstack((ft_im, clf.feature_importances_))
+        ft_im = np.vstack((ft_im, forest.feature_importances_))
     else:
-        ft_im = clf.feature_importances_
+        ft_im = forest.feature_importances_
         ft = True
 
-    y_pred = clf.predict(X_out_test)
+    y_pred = forest.predict(X_out_test)
     y_est.append(y_pred)
     y_true.append(y_out_test)
 

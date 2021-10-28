@@ -68,7 +68,8 @@ parser.add_argument("-hs", action="store_true", default=False, help="Sort out no
 parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
 parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/SCC values under -0.25 to -0.25")
 parser.add_argument("-bs", action="store_true", default=False, help="Sort out significant datapoints under -0.25 PCC/SCC")
-parser.add_argument("-ol", action=store, type=int, default=0, help="Significance sorting: 0: none, 1: SRC sig, 2: PCC sig, 3: both PCC and SRC sig")
+parser.add_argument("-ol", action="store", type=int, default=0, help="Significance sorting: 0: none, 1: SRC sig, 2: PCC sig, 3: both PCC and SRC sig")
+parser.add_argument("-fas_f", action="store", type=str, default=None, help="print fasta of peptides")
 
 args = parser.parse_args()
 data_file = args.data_file
@@ -78,6 +79,7 @@ log_switch = args.log
 lower_cutoff = args.lc
 bottom_sort_out = args.bs
 outlier_sorting = args.ol
+fasta_name = args.fas_f
 
 ## Main
 
@@ -220,14 +222,20 @@ for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
 outfile.close()
 
 outfile = open(pep_file, "w")
+
+if fasta_name != None:
+    fasta_file = open(fasta_name, "w")
+
 for pep in pep_list:
     pep_name = pep[0]
     pep_seq = pep[1]
     pep_HLA = pep[2]
     pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
 
-    if HLA_sort and not pep_bind:
-        continue
+    if fasta_name != None:
+        print(">" + name, file=outfile)
+        print(seq, file=outfile)
+
 
     print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)
 
