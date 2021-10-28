@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
+from argparse import ArgumentParser
 
 def heatmap(pep_list, donor_list, donor_reaction_dict):
     # Heatmap generation
@@ -39,9 +40,6 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
 
         cur_pep = line[2]
         if old_pep != cur_pep:
-            # if old_pep:
-            #     pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
-
             old_pep = cur_pep
 
         HLA_bind_rank = [[float(line[i]), line[i-2]] for i in range(6,25,3)]
@@ -61,12 +59,27 @@ def load_peptide_pair_significance(filename):
     return sig_list
 
 
+## Argument parsing:
+
+parser = ArgumentParser(description="Preps and filters the data and peptides")
+parser.add_argument("-f", action="store", dest="data_file", type=str, default = "Data/ragweed_Tcell_pairwise.MNi.tab", help="File with data")
+parser.add_argument("-pf", action="store", dest="pep_file", type=str, default = "Data/filtered_pep_list.csv", help="File to store peptide data")
+parser.add_argument("-hs", action="store_true", default=False, help="Sort out nonbinders")
+parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
+parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/SCC values under -0.25 to -0.25")
+parser.add_argument("-bs", action="store_true", default=False, help="Sort out significant datapoints under -0.25 PCC/SCC")
+parser.add_argument("-ol", action=store, type=int, default=0, help="Significance sorting: 0: none, 1: SRC sig, 2: PCC sig, 3: both PCC and SRC sig")
+
+args = parser.parse_args()
+data_file = args.data_file
+pep_file = args.pep_file
+HLA_sort = args.hs
+log_switch = args.log
+lower_cutoff = args.lc
+bottom_sort_out = args.bs
+outlier_sorting = args.ol
+
 ## Main
-HLA_sort = False         # Filter out non-binders
-lower_cutoff = False    # Raise PCC/SCC values under -0.25 to -0.25
-bottom_sort_out = False # Sort out significant datapoints under -0.25 PCC/SCC
-log_switch = True       # Log transform SI values
-outlier_sorting = 0     # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is both PCC and SRC sig
 
 # Data format:
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
@@ -92,7 +105,7 @@ pep_id_name = dict()
 
 pep_HLA_dict = load_pep_HLA_data()
 
-infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
+infile = open(data_file, "r")
 infile.readline()   # remove header
 for line in infile:
     line = line.split()
@@ -206,7 +219,7 @@ for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
 outfile.close()
 
-outfile = open("Data/unfiltered_pep_list.csv", "w")
+outfile = open(pep_file, "w")
 for pep in pep_list:
     pep_name = pep[0]
     pep_seq = pep[1]

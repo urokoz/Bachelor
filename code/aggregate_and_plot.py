@@ -48,8 +48,7 @@ def load_peptide_pair_significance(filename):
     return sig_list
 
 
-data = np.loadtxt("Data/log_filtered_calculated_metrics.txt", delimiter=",", dtype = str)
-charts = np.loadtxt("Data/log_filtered_dataset.csv", delimiter="\t", dtype = str)
+data = np.loadtxt("Data/calculated_metrics_2.txt", delimiter=",", dtype = str)
 
 #Index overview:
 #0. PCC
@@ -78,6 +77,7 @@ pep_pair_sims = data[:,1:].astype(float)
 
 
 # Visualize sorting #############################################################
+charts = np.loadtxt("Data/log_filtered_dataset.csv", delimiter="\t", dtype = str)
 # SRC_sig_list = np.array(load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt"))
 # PCC_sig_list = np.array(load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt"))
 #
