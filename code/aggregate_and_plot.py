@@ -65,39 +65,39 @@ data = np.loadtxt("Data/calculated_metrics_2.txt", delimiter=",", dtype = str)
 pep_pair_names = data[:,0]
 pep_pair_sims = data[:,1:].astype(float)
 
-# xlabel = "Naive global similarity(%)"
-# ylabel = "SRC"
-# plot_title = ylabel +" vs. " + xlabel
-# x = pep_pair_sims[:,2]
-# y = pep_pair_sims[:,1]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+xlabel = "% Similarity - Pairwise Global Alignment (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ""
+x = pep_pair_sims[:,4]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
-# xlabel = "Naive global similarity(%)"
-# ylabel = "PCC"
-# plot_title = ylabel + " vs. " + xlabel
-# x = pep_pair_sims[:,2]
-# y = pep_pair_sims[:,0]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#xlabel = "% Identity"
+#ylabel = "PCC"
+#plot_title = ylabel + " vs. " + xlabel
+#x = pep_pair_sims[:,2]
+#y = pep_pair_sims[:,0]
+#sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
-# xlabel = "Local similarity(%)"
-# ylabel = "SRC"
-# plot_title = ylabel +" vs. " + xlabel
-# x = pep_pair_sims[:,6]
-# y = pep_pair_sims[:,1]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ""
+x = pep_pair_sims[:,7]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
-xlabel = "9-mere (% Identity)"
+xlabel = "9-mere Identity"
 ylabel = "SRC"
 plot_title = ylabel +" vs. " + xlabel
 x = pep_pair_sims[:,8]
-y = pep_pair_sims[:,0]
+y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
-xlabel = "9-mere (Blosum50)"
+xlabel = "9-mere BLOSUM50 score"
 ylabel = "SRC"
 plot_title = ylabel +" vs. " + xlabel
 x = pep_pair_sims[:,9]
-y = pep_pair_sims[:,0]
+y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
 # xlabel = "Histogram"
@@ -107,8 +107,57 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 # hist(x, plot_title, xlabel, ylabel)
 
 xlabel = "Pep kernel score"
-ylabel = "SCC"
+ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
 x = pep_pair_sims[:,18]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best core vs. best core (% Identity)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + "(" + xlabel + ")"
+x = pep_pair_sims[:,10]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best core vs. best core (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + "(" + xlabel + ")"
+x = pep_pair_sims[:,11]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best ori core vs. corresponding var sim"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,12]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best ori core vs. corresponding var (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,13]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best matching cores (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,15]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Delta rank best core vs. best core"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,16]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "nw_naive_sim x (100-delta_rank)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,17]
 y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
