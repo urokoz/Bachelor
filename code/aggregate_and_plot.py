@@ -82,6 +82,20 @@ data = np.loadtxt(data_file, delimiter=",", dtype = str)
 pep_pair_names = data[:,0]
 pep_pair_sims = data[:,1:].astype(float)
 
+xlabel = "% Similarity - Pairwise Global Alignment (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ""
+x = pep_pair_sims[:,4]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#
+#xlabel = "% Identity"
+#ylabel = "PCC"
+#plot_title = ylabel + " vs. " + xlabel
+#x = pep_pair_sims[:,2]
+#y = pep_pair_sims[:,0]
+#sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
 
 # Visualize sorting #############################################################
 # charts = np.loadtxt("Data/log_filtered_dataset.csv", delimiter="\t", dtype = str)
@@ -138,14 +152,30 @@ pep_pair_sims = data[:,1:].astype(float)
 # x = pep_pair_sims[:,2]
 # y = pep_pair_sims[:,0]
 # sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#
-# xlabel = "Local similarity(%)"
-# ylabel = "SRC"
-# plot_title = ylabel +" vs. " + xlabel
-# x = pep_pair_sims[:,6]
-# y = pep_pair_sims[:,1]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#
+
+
+xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ""
+x = pep_pair_sims[:,7]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+
+xlabel = "9-mere Identity"
+ylabel = "SRC"
+plot_title = ylabel +" vs. " + xlabel
+x = pep_pair_sims[:,8]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "9-mere BLOSUM50 score"
+ylabel = "SRC"
+plot_title = ylabel +" vs. " + xlabel
+x = pep_pair_sims[:,9]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
 # xlabel = "9-mere (% Identity)"
 # ylabel = "SRC"
 # plot_title = ylabel +" vs. " + xlabel
@@ -159,7 +189,7 @@ pep_pair_sims = data[:,1:].astype(float)
 # x = pep_pair_sims[:,9]
 # y = pep_pair_sims[:,0]
 # sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#
+
 # xlabel = "Histogram"
 # ylabel = "Count"
 # plot_title = "Histogram"
@@ -177,6 +207,63 @@ CR_delta_rank = pep_pair_sims[pep_pair_sims[:,0] > 0.5, 16]
 NCR_delta_rank = pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 16]
 
 
+xlabel = "Pep kernel score"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,18]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best core vs. best core (% Identity)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + "(" + xlabel + ")"
+x = pep_pair_sims[:,10]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best core vs. best core (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + "(" + xlabel + ")"
+x = pep_pair_sims[:,11]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best ori core vs. corresponding var sim"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,12]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best ori core vs. corresponding var (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,13]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best matching cores (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,15]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Delta rank best core vs. best core"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,16]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "nw_naive_sim x (100-delta_rank)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,17]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+
 fig, ax = plt.subplots()
 p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
 ax.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
@@ -184,3 +271,4 @@ ax.set_yticklabels(["Non-CR", "CR"])
 ax.set_xlabel("Delta rank")
 ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
+

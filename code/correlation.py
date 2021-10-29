@@ -475,9 +475,7 @@ def outlier_using_IQR(x_values, y_values):
     non_outliers_list = non_outliers_list[:, np.invert(np.add(non_outliers_list[0, :] < (q1_1 - 1.5 * IQR1), non_outliers_list[1, :] < (q1_2 - 1.5 * IQR2)))]
 
     return non_outliers_list
-global_ident
 
-#-----------------
 #def LOF(array, KNN_n = 2):
     #data = [[a,b] for a,b in zip(array[0], array[1])]
     # for i, j in enumerate(array[0]):
@@ -491,15 +489,11 @@ global_ident
 
     #return output
 
-#-----------------
-# -- Program options -- #######################################################
 PCC_SRC_switch = 1  # 0 for PCC and 1 for SRC
 log_switch = False  # Log transform the correlation data
 outlier_sorting = 1    # 0 is nothing, 1 is SRC sig, 2 is PCC sig, 3 is both PCC and SRC sig, 4 is abs(PCC-SRC)
 lower_cutoff = 0
 bottom_sort_out = 1
-
-###############################################################################
 
 ## Main
 infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
