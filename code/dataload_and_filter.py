@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+import sys
 import numpy as np
-from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
+from scipy.stats import spearmanr, pearsonr
 
 def heatmap(pep_list, donor_list, donor_reaction_dict):
     # Heatmap generation
@@ -62,24 +63,37 @@ def load_peptide_pair_significance(filename):
 ## Argument parsing:
 
 parser = ArgumentParser(description="Preps and filters the data and peptides")
-parser.add_argument("-f", action="store", dest="data_file", type=str, default = "Data/ragweed_Tcell_pairwise.MNi.tab", help="File with data")
-parser.add_argument("-pf", action="store", dest="pep_file", type=str, default = "Data/filtered_pep_list.csv", help="File to store peptide data")
+parser.add_argument("-f", action="store", dest="data_file", type=str, default = "Data/ragweed/ragweed_lookup_file.txt", help="Lookup file with paths of datafiles")
 parser.add_argument("-hs", action="store_true", default=False, help="Sort out nonbinders")
 parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
 parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/SCC values under -0.25 to -0.25")
 parser.add_argument("-bs", action="store_true", default=False, help="Sort out significant datapoints under -0.25 PCC/SCC")
+parser.add_argument("-ch", action="store_true", default=False, help="Print charts for permutation test")
 parser.add_argument("-ol", action="store", type=int, default=0, help="Significance sorting: 0: none, 1: SRC sig, 2: PCC sig, 3: both PCC and SRC sig")
 parser.add_argument("-fas_f", action="store", type=str, default=None, help="print fasta of peptides")
 
+
 args = parser.parse_args()
-data_file = args.data_file
-pep_file = args.pep_file
+lookup_file = args.data_file
 HLA_sort = args.hs
 log_switch = args.log
 lower_cutoff = args.lc
 bottom_sort_out = args.bs
+print_charts = args.ch
 outlier_sorting = args.ol
 fasta_name = args.fas_f
+
+infile = open(lookup_file, "r")
+lookup_dict = dict()
+for line in infile:
+    line = line.split()
+    lookup_dict[line[0]] = line[1]
+infile.close()
+
+data_dir = lookup_dict["data_dir"]
+data_file = data_dir + lookup_dict["dataset"]
+pep_file = data_dir + lookup_dict["pep_file"]
+hla_file = data_dir + lookup_dict["HLA_file"]
 
 ## Main
 
@@ -87,17 +101,13 @@ fasta_name = args.fas_f
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
 #          'Amb', 'a', '1.0201', 'NSDKTIDGRGVKVNIVNAGL', '1.12407']
 
-i = -1
-n = 0
-wanted_charts = 1000
-old_ori_seq = ""
-old_var_seq = ""
-charts = []
 seqs_for_FASTA = []
 donor_list = []
 pep_list = []
 Ori_SI_means = []
 
+pep_pair_dict = dict()
+seen_peptide_pairs = set()
 donor_reaction_dict = dict()
 unique_seqs = set()
 allergen_dict = dict()
@@ -105,40 +115,35 @@ pep_dict = dict()
 pep_id_name = dict()
 
 
-pep_HLA_dict = load_pep_HLA_data()
 
 infile = open(data_file, "r")
 infile.readline()   # remove header
 for line in infile:
-    line = line.split()
+    line = line.replace("\n","").split("\t")
 
     donor_id = line[0]
     if donor_id not in donor_list:
         donor_list.append(donor_id)
 
-    ori_pepseq = line[4]
-    var_pepseq = line[9]
+    ori_pepseq = line[2]
+    var_pepseq = line[5]
 
-    ori_SI = float(line[5])
-    var_SI = float(line[10])
+    ori_SI = float(line[3])
+    var_SI = float(line[6])
+
+    ori_name = line[1].strip().replace(" ", "_")
+    var_name = line[4].strip().replace(" ", "_")
+
+    ori_id = ori_name + "_" + ori_pepseq
+    var_id = var_name + "_" + var_pepseq
 
     if log_switch:
         ori_SI = np.log(ori_SI)
         var_SI = np.log(var_SI)
 
-    if ori_pepseq != old_ori_seq or var_pepseq != old_var_seq:
-        i += 1
-        if i > wanted_charts-1:
-            break
-        n += 1
-        old_ori_seq = ori_pepseq
-        old_var_seq = var_pepseq
-
-        ori_name = line[1] + "_" + line[2] + "_" + line[3]
-        var_name = line[6] + "_" + line[7] + "_" + line[8]
-
-        ori_id = ori_name + "_" + ori_pepseq
-        var_id = var_name + "_" + var_pepseq
+    #if ori_pepseq != old_ori_seq or var_pepseq != old_var_seq:
+    if frozenset([ori_id,var_id]) not in seen_peptide_pairs:
+        seen_peptide_pairs.add(frozenset([ori_id,var_id]))
 
         if ori_id not in unique_seqs:
             unique_seqs.add(ori_id)
@@ -149,7 +154,7 @@ for line in infile:
                 allergen_dict[ori_name] = 1
 
             full_ori_name = ori_name + "_" + str(allergen_dict[ori_name])
-            pep_list.append([full_ori_name, ori_pepseq, pep_HLA_dict[full_ori_name]])
+            pep_list.append([full_ori_name, ori_pepseq])
             pep_id_name[ori_id] = full_ori_name
 
         if var_id not in unique_seqs:
@@ -161,15 +166,31 @@ for line in infile:
                 allergen_dict[var_name] = 1
 
             full_var_name = var_name + "_" + str(allergen_dict[var_name])
-            pep_list.append([full_var_name, var_pepseq, pep_HLA_dict[full_var_name]])
+            pep_list.append([full_var_name, var_pepseq])
             pep_id_name[var_id] = full_var_name
 
         # Save info about the peptide pairing and prep lists for SI values
-        charts.append([[],[], pep_id_name[ori_id], pep_id_name[var_id]])
+        full_ori_name = pep_id_name[ori_id]
+        full_var_name = pep_id_name[var_id]
+        if full_ori_name < full_var_name:
+            pep_pair = full_ori_name + "\t" + full_var_name
+        else:
+            pep_pair = full_var_name + "\t" + full_ori_name
+        pep_pair_dict[pep_pair] = [[],[]]
 
     # add SI to the chart for the peptide pairing
-    charts[i][0].append(ori_SI)
-    charts[i][1].append(var_SI)
+    full_ori_name = pep_id_name[ori_id]
+    full_var_name = pep_id_name[var_id]
+    if pep_id_name[ori_id] < pep_id_name[var_id]:
+        pep_pair = full_ori_name + "\t" + full_var_name
+        pep_pair_dict[pep_pair][0].append(ori_SI)
+        pep_pair_dict[pep_pair][1].append(var_SI)
+    else:
+        pep_pair = full_var_name + "\t" + full_ori_name
+        pep_pair_dict[pep_pair][0].append(var_SI)
+        pep_pair_dict[pep_pair][1].append(ori_SI)
+
+
 
     if donor_id not in donor_reaction_dict:
         donor_reaction_dict[donor_id] = dict()
@@ -178,15 +199,42 @@ for line in infile:
     donor_reaction_dict[donor_id][var_pepseq] = var_SI
 infile.close()
 
-SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
-PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
+if log_switch:
+    SRC_sig_list = load_peptide_pair_significance(data_dir + lookup_dict["log_SCC_sig"])
+    PCC_sig_list = load_peptide_pair_significance(data_dir + lookup_dict["log_PCC_sig"])
+else:
+    SRC_sig_list = load_peptide_pair_significance(data_dir + lookup_dict["SCC_sig"])
+    PCC_sig_list = load_peptide_pair_significance(data_dir + lookup_dict["PCC_sig"])
 
-outfile = open("Data/log_unfiltered_dataset.csv","w")
-for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
-    ori_SI = chart[0]
-    var_SI = chart[1]
-    ori_name = chart[2]
-    var_name = chart[3]
+pep_HLA_dict = load_pep_HLA_data(hla_file)
+
+outfile_name = ""
+if log_switch:
+    outfile_name += "log_"
+if HLA_sort:
+    outfile_name += "filtered_"
+else:
+    outfile_name += "unfiltered_"
+
+outfile = open(data_dir+outfile_name+"dataset.csv","w")
+for i, (pep_pair, SI_vals) in enumerate(pep_pair_dict.items()):
+    ori_SI = SI_vals[0]
+    var_SI = SI_vals[1]
+    ori_name = pep_pair.split()[0]
+    var_name = pep_pair.split()[0]
+
+    # Print SI values as chart files for permutation test
+    if print_charts:
+        chartname = "chart{}.txt".format(i)
+        if log_switch:
+            chartname = "log_" + chartname
+
+        chartfile = open(data_dir + "charts/" + chartname,"w")
+
+        for x,y in zip(ori_SI, var_SI):
+            print(x,y,sep="\t",file=chartfile)
+        chartfile.close()
+
 
     PCC, PCC_p = pearsonr(ori_SI,var_SI)
     SCC, SCC_p = spearmanr(ori_SI,var_SI)
@@ -229,12 +277,12 @@ if fasta_name != None:
 for pep in pep_list:
     pep_name = pep[0]
     pep_seq = pep[1]
-    pep_HLA = pep[2]
+    pep_HLA = pep_HLA_dict[pep_name]
     pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
 
     if fasta_name != None:
-        print(">" + name, file=outfile)
-        print(seq, file=outfile)
+        print(">" + pep_name, file=fasta_file)
+        print(pep_seq, file=fasta_file)
 
 
     print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)

@@ -1,0 +1,9 @@
+name  birch
+data_dir  Data/birch/
+dataset tree_Tcell_pairwise.MNi.tab
+pep_file  peptides/birch_peptides.txt
+HLA_file  peptides/4267_NetMHCIIpan.xls
+log_SCC_sig significances/birch_log_SCC_sig.txt
+log_PCC_sig significances/birch_log_PCC_sig.txt
+SCC_sig significances/birch_SCC_sig.txt
+PCC_sig significances/birch_PCC_sig.txt
