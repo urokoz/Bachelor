@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.stats import spearmanr
 import math
+from argparse import ArgumentParser
 
 #alphabet_file = alphabet_upload.values()
 #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
@@ -264,8 +265,7 @@ def needleman_wunsch(ori, var, match = 1, mismatch = -1, gap = -1, scoring_schem
             matches += 1
 
     aligned_similarity = matches/min(n_ori,n_var)*100
-    if scoring_scheme == "blosum":
-        matches = max_score
+
     return ori_align, var_align, aligned_similarity, matches, max_score
 
 
@@ -332,14 +332,24 @@ def k_mer(seq1,seq2, k = 9):
 
     return best_ident, best_blosum
 
+parser = ArgumentParser(description="Extracts useful data from data files.")
+parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/log_filtered_dataset.csv", help="File with data")
+parser.add_argument("-pf", action="store", dest="pep_file", type=str, default="Data/filtered_pep_list.csv", help="File with peptide data")
+parser.add_argument("-of", action="store", dest="outfile", type=str, default="Data/log_filtered_calculated_metrics.txt", help="File to store the output")
+parser.add_argument("-gal", action="store_true", default=False, help="Print global alignments")
+parser.add_argument("-lal", action="store_true", default=False, help="Print local alignments")
 
-pep_dict = load_pep_dict("Data/filtered_pep_list.csv")
+args = parser.parse_args()
+data_file = args.data_file
+pep_file = args.pep_file
+outfile_name = args.outfile
+print_local = args.lal
+print_global = args.gal
 
-infile = open("Data/filtered_dataset.csv", "r")
-outfile = open("Data/calculated_metrics.txt","w")
+pep_dict = load_pep_dict(pep_file)
 
-SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
-PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
+infile = open(data_file, "r")
+outfile = open(outfile_name,"w")
 
 chart_sim_list = []
 
@@ -366,6 +376,12 @@ for line in infile:
     ori_align, var_align, nw_blosum_sim, nw_blosum_matches, nw_blosum_score = needleman_wunsch(ori_pepseq, var_pepseq, scoring_scheme = "blosum")
     sim_list.extend([nw_naive_sim, nw_naive_score, nw_blosum_sim, nw_blosum_score])
 
+    if print_global:
+        print("ALN", ori_name, len(ori_pepseq), var_name, len(var_pepseq), len(ori_align), nw_blosum_matches, nw_blosum_score)
+        print("QAL", ori_align)
+        print("DAL", var_align)
+        print("")
+
     # local alignment with Smith-Waterman (O2)
     scoring_scheme = blosum50
     gap_open = -11
@@ -374,6 +390,12 @@ for line in infile:
     aligned_query, aligned_database, sw_matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
     sw_sim = sw_matches/min(len(ori_pepseq), len(var_pepseq))*100
     sim_list.extend([sw_sim, max_score])
+
+    if print_local:
+        print("ALN", ori_name, len(ori_pepseq), var_name, len(var_pepseq), len(aligned_query), sw_matches, max_score)
+        print("QAL", i_max, ''.join(aligned_query))
+        print("DAL", j_max,''.join(aligned_database))
+        print("")
 
     kmer_ident, kmer_blosum = k_mer(ori_pepseq,var_pepseq)
     sim_list.extend([kmer_ident, kmer_blosum])
@@ -440,9 +462,3 @@ for line in infile:
     chart_sim_list.append(sim_list)
 
     print(*sim_list, sep=",", file=outfile)
-
-
-#positive vs. negative correlations - comparison
-print(SRC_sig_list)
-
-print(PCC_sig_list)

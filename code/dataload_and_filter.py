@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
+from argparse import ArgumentParser
 
 def heatmap(pep_list, donor_list, donor_reaction_dict):
     # Heatmap generation
@@ -39,9 +40,6 @@ def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
 
         cur_pep = line[2]
         if old_pep != cur_pep:
-            # if old_pep:
-            #     pep_HLA_dict[old_pep] = [2 if a<1 else 1 if a<5 else 0 for a in pep_HLA_dict[old_pep]]
-
             old_pep = cur_pep
 
         HLA_bind_rank = [[float(line[i]), line[i-2]] for i in range(6,25,3)]
@@ -61,11 +59,29 @@ def load_peptide_pair_significance(filename):
     return sig_list
 
 
+## Argument parsing:
+
+parser = ArgumentParser(description="Preps and filters the data and peptides")
+parser.add_argument("-f", action="store", dest="data_file", type=str, default = "Data/ragweed_Tcell_pairwise.MNi.tab", help="File with data")
+parser.add_argument("-pf", action="store", dest="pep_file", type=str, default = "Data/filtered_pep_list.csv", help="File to store peptide data")
+parser.add_argument("-hs", action="store_true", default=False, help="Sort out nonbinders")
+parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
+parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/SCC values under -0.25 to -0.25")
+parser.add_argument("-bs", action="store_true", default=False, help="Sort out significant datapoints under -0.25 PCC/SCC")
+parser.add_argument("-ol", action="store", type=int, default=0, help="Significance sorting: 0: none, 1: SRC sig, 2: PCC sig, 3: both PCC and SRC sig")
+parser.add_argument("-fas_f", action="store", type=str, default=None, help="print fasta of peptides")
+
+args = parser.parse_args()
+data_file = args.data_file
+pep_file = args.pep_file
+HLA_sort = args.hs
+log_switch = args.log
+lower_cutoff = args.lc
+bottom_sort_out = args.bs
+outlier_sorting = args.ol
+fasta_name = args.fas_f
+
 ## Main
-lower_cutoff = False
-bottom_sort_out = False
-log_switch = True
-outlier_sorting = 3
 
 # Data format:
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
@@ -91,7 +107,7 @@ pep_id_name = dict()
 
 pep_HLA_dict = load_pep_HLA_data()
 
-infile = open("Data/ragweed_Tcell_pairwise.MNi.tab", "r")
+infile = open(data_file, "r")
 infile.readline()   # remove header
 for line in infile:
     line = line.split()
@@ -165,7 +181,7 @@ infile.close()
 SRC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_SRC.txt")
 PCC_sig_list = load_peptide_pair_significance("Data/log_sampled_corr_PCC.txt")
 
-outfile = open("Data/filtered_dataset.csv","w")
+outfile = open("Data/log_unfiltered_dataset.csv","w")
 for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     ori_SI = chart[0]
     var_SI = chart[1]
@@ -199,21 +215,27 @@ for chart, PCC_sig, SCC_sig in zip(charts, PCC_sig_list, SRC_sig_list):
     ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
     var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
 
-    if not (ori_bind and var_bind):
+    if HLA_sort and not (ori_bind and var_bind):
         continue
 
     print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
 outfile.close()
 
-outfile = open("Data/filtered_pep_list.csv", "w")
+outfile = open(pep_file, "w")
+
+if fasta_name != None:
+    fasta_file = open(fasta_name, "w")
+
 for pep in pep_list:
     pep_name = pep[0]
     pep_seq = pep[1]
     pep_HLA = pep[2]
     pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
 
-    if not pep_bind:
-        continue
+    if fasta_name != None:
+        print(">" + name, file=outfile)
+        print(seq, file=outfile)
+
 
     print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)
 
