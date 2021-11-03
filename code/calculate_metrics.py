@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import numpy as np
-from scipy.stats import spearmanr
 import math
+import re
+import sys
+from scipy.stats import spearmanr
 from argparse import ArgumentParser
+
 
 #alphabet_file = alphabet_upload.values()
 #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
@@ -332,26 +335,41 @@ def k_mer(seq1,seq2, k = 9):
 
     return best_ident, best_blosum
 
+
+def load_pep_ker_dict(filename):
+    pep_ker_dict = dict()
+    pep_ker_file = open(filename, "r")
+    for line in pep_ker_file:
+        line = line.split()
+        index = frozenset([line[0], line[1]])
+
+        pep_ker_dict[index] = line[2]
+
+    return pep_ker_dict
+
+
 parser = ArgumentParser(description="Extracts useful data from data files.")
-parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/log_filtered_dataset.csv", help="File with data")
-parser.add_argument("-pf", action="store", dest="pep_file", type=str, default="Data/filtered_pep_list.csv", help="File with peptide data")
-parser.add_argument("-of", action="store", dest="outfile", type=str, default="Data/log_filtered_calculated_metrics.txt", help="File to store the output")
+parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/ragweed/prepped_data/log_filtered_dataset.csv", help="File with data")
+parser.add_argument("-pf", action="store", dest="pep_file", type=str, default="Data/ragweed/peptides/ragweed_peptides.txt", help="File with peptide data")
 parser.add_argument("-gal", action="store_true", default=False, help="Print global alignments")
 parser.add_argument("-lal", action="store_true", default=False, help="Print local alignments")
 
 args = parser.parse_args()
 data_file = args.data_file
 pep_file = args.pep_file
-outfile_name = args.outfile
 print_local = args.lal
 print_global = args.gal
 
+work_dir = re.search(r"(Data\/\w+\/)", data_file).groups(1)[0]
+
+metrics_file = work_dir + "metrics/" + re.search(r"([\w\_]+)dataset", data_file).groups(1)[0] + "metrics.txt"
+pep_ker_file = work_dir + "metrics/pep_ker_scores.txt"
+
 pep_dict = load_pep_dict(pep_file)
+pep_ker_dict = load_pep_ker_dict(pep_ker_file)
 
 infile = open(data_file, "r")
-outfile = open(outfile_name,"w")
-
-chart_sim_list = []
+outfile = open(metrics_file,"w")
 
 for line in infile:
     line = line.split()
@@ -419,12 +437,15 @@ for line in infile:
     # difference between best ranks
     delta_rank = np.abs(rank1 - rank2)
 
-    # best core from ori and corresponding core for var
+    # best overall core vs corr
     best_rank = np.inf
     for [rank_ori, core_ori], [rank_var, core_var]  in zip(ori_HLA, var_HLA):
         if rank_ori < best_rank:
             best_rank = rank_ori
-            var_rank = rank_var
+            best_core3 = core_ori
+            best_core4 = core_var
+        elif rank_var < best_rank:
+            best_rank = rank_var
             best_core3 = core_ori
             best_core4 = core_var
 
@@ -459,6 +480,8 @@ for line in infile:
 
     sim_list.extend([glob_sim_and_d_rank])
 
-    chart_sim_list.append(sim_list)
+    pep_ker_index = frozenset([ori_name, var_name])
+    pep_ker_score = pep_ker_dict[pep_ker_index]
+    sim_list.extend([pep_ker_score])
 
     print(*sim_list, sep=",", file=outfile)

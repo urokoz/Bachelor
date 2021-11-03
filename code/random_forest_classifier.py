@@ -31,12 +31,15 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
     plt.show()
 
 parser = ArgumentParser(description="Extracts useful data from data files.")
-parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/calculated_metrics_2.txt", help="File with data")
+parser.add_argument("-train", action="store", dest="train_file", type=str, default="Data/ragweed/metrics/log_filtered_metrics.txt", help="File with data")
+parser.add_argument("-test", action="store", dest="test_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
 
 args = parser.parse_args()
-data_file = args.data_file
+train_file = args.train_file
+test_file = args.test_file
 
-data = np.loadtxt(data_file, delimiter=",", dtype = str)
+train_data = np.loadtxt(train_file, delimiter=",", dtype = str)
+test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
 
 #Index overview:
 #0. PCC
@@ -60,52 +63,66 @@ data = np.loadtxt(data_file, delimiter=",", dtype = str)
 #18. Pep kernel score
 
 
-pep_pair_names = data[:,0]
-pep_pair_sims = data[:,1:].astype(float)
+train_names = train_data[:,0]
+train_sims = train_data[:,1:].astype(float)
 
-X = pep_pair_sims[:, [5,9,10,16,18]]
-y = pep_pair_sims[:,0]
+X_train = train_sims[:, [5,9,13,16,18]]
+y_train = train_sims[:,0]
+
+test_names = test_data[:,0]
+test_sims = test_data[:,1:].astype(float)
+
+X_test = test_sims[:, [5,9,13,16,18]]
+y_test = test_sims[:,0]
 
 # K-fold crossvalidation
 # K = 8
 # CV_outer = model_selection.KFold(K, shuffle=True)
-# CV_inner = model_selection.KFold(K, shuffle=True)
-K = len(y)
-CV_outer = model_selection.LeaveOneOut()
-CV_inner = model_selection.LeaveOneOut()
+# # CV_inner = model_selection.KFold(K, shuffle=True)
+# K = len(y)
+# CV_outer = model_selection.LeaveOneOut()
+# CV_inner = model_selection.LeaveOneOut()
 
 forest = RandomForestRegressor()
 
-mse = []
-ft = None
-y_true = []
-y_est = []
+forest.fit(X_train, y_train)
 
-for (kout, (train_index_out, test_index_out)) in enumerate(CV_outer.split(X, y)):
-    print("Outer fold: {0}/{1}".format(kout + 1, K))
-    # initialize outer CV fold
-    X_out_train = X[train_index_out, :]
-    X_out_test = X[test_index_out, :]
-    y_out_train = y[train_index_out]
-    y_out_test = y[test_index_out]
+y_est = forest.predict(X_test)
 
-    forest.fit(X_out_train, y_out_train)
-    if ft:
-        ft_im = np.vstack((ft_im, forest.feature_importances_))
-    else:
-        ft_im = forest.feature_importances_
-        ft = True
 
-    y_pred = forest.predict(X_out_test)
-    y_est.append(y_pred)
-    y_true.append(y_out_test)
+# mse = []
+# ft = None
+# y_true = []
+# y_est = []
 
-    mse.append(mean_squared_error(y_out_test, y_pred, squared=False))
-
-print(np.mean(ft_im,axis=0))
-# xlabel = "Y est"
-# ylabel = "Y true"
-# plot_title = ylabel +" vs. " + xlabel
+# for (kout, (train_index_out, test_index_out)) in enumerate(CV_outer.split(X, y)):
+#     print("Outer fold: {0}/{1}".format(kout + 1, K))
+#     # initialize outer CV fold
+#     X_out_train = X[train_index_out, :]
+#     X_out_test = X[test_index_out, :]
+#     y_out_train = y[train_index_out]
+#     y_out_test = y[test_index_out]
 #
-# sim_scatterplot(y_est, y_true, plot_title, xlabel, ylabel)
-print(np.mean(mse))
+#     forest.fit(X_out_train, y_out_train)
+#     if ft:
+#         ft_im = np.vstack((ft_im, forest.feature_importances_))
+#     else:
+#         ft_im = forest.feature_importances_
+#         ft = True
+#
+#     y_pred = forest.predict(X_out_test)
+#     y_est.append(y_pred)
+#     y_true.append(y_out_test)
+#
+#     mse.append(mean_squared_error(y_out_test, y_pred, squared=False))
+#
+# print(np.mean(ft_im,axis=0))
+
+print(y_est)
+print(y_test)
+xlabel = "Y est"
+ylabel = "Y true"
+plot_title = ylabel +" vs. " + xlabel
+
+sim_scatterplot(y_est, y_test, plot_title, xlabel, ylabel)
+# print(np.mean(mse))

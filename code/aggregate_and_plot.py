@@ -82,19 +82,6 @@ data = np.loadtxt(data_file, delimiter=",", dtype = str)
 pep_pair_names = data[:,0]
 pep_pair_sims = data[:,1:].astype(float)
 
-xlabel = "% Similarity - Pairwise Global Alignment (BLOSUM50)"
-ylabel = "SRC"
-plot_title = ""
-x = pep_pair_sims[:,4]
-y = pep_pair_sims[:,1]
-sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#
-#xlabel = "% Identity"
-#ylabel = "PCC"
-#plot_title = ylabel + " vs. " + xlabel
-#x = pep_pair_sims[:,2]
-#y = pep_pair_sims[:,0]
-#sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 
 # Visualize sorting #############################################################
@@ -153,6 +140,12 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 # y = pep_pair_sims[:,0]
 # sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
+xlabel = "% Similarity - Pairwise Global Alignment (BLOSUM50)"
+ylabel = "SRC"
+plot_title = ""
+x = pep_pair_sims[:,4]
+y = pep_pair_sims[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
 ylabel = "SRC"
@@ -162,7 +155,7 @@ y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 
-xlabel = "9-mere Identity"
+xlabel = "9-mere % Identity"
 ylabel = "SRC"
 plot_title = ylabel +" vs. " + xlabel
 x = pep_pair_sims[:,8]
@@ -176,19 +169,6 @@ x = pep_pair_sims[:,9]
 y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
-# xlabel = "9-mere (% Identity)"
-# ylabel = "SRC"
-# plot_title = ylabel +" vs. " + xlabel
-# x = pep_pair_sims[:,8]
-# y = pep_pair_sims[:,0]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#
-# xlabel = "9-mere (Blosum50)"
-# ylabel = "SRC"
-# plot_title = ylabel +" vs. " + xlabel
-# x = pep_pair_sims[:,9]
-# y = pep_pair_sims[:,0]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 # xlabel = "Histogram"
 # ylabel = "Count"
@@ -271,4 +251,3 @@ ax.set_yticklabels(["Non-CR", "CR"])
 ax.set_xlabel("Delta rank")
 ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
-

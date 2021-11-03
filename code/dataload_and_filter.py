@@ -141,7 +141,6 @@ for line in infile:
         ori_SI = np.log(ori_SI)
         var_SI = np.log(var_SI)
 
-    #if ori_pepseq != old_ori_seq or var_pepseq != old_var_seq:
     if frozenset([ori_id,var_id]) not in seen_peptide_pairs:
         seen_peptide_pairs.add(frozenset([ori_id,var_id]))
 
@@ -208,7 +207,7 @@ else:
 
 pep_HLA_dict = load_pep_HLA_data(hla_file)
 
-outfile_name = ""
+outfile_name = "prepped_data/"
 if log_switch:
     outfile_name += "log_"
 if HLA_sort:
@@ -217,11 +216,11 @@ else:
     outfile_name += "unfiltered_"
 
 outfile = open(data_dir+outfile_name+"dataset.csv","w")
-for i, (pep_pair, SI_vals) in enumerate(pep_pair_dict.items()):
+for i, ((pep_pair, SI_vals), SCC_sig, PCC_sig) in enumerate(zip(pep_pair_dict.items(), SRC_sig_list, PCC_sig_list)):
     ori_SI = SI_vals[0]
     var_SI = SI_vals[1]
     ori_name = pep_pair.split()[0]
-    var_name = pep_pair.split()[0]
+    var_name = pep_pair.split()[1]
 
     # Print SI values as chart files for permutation test
     if print_charts:
