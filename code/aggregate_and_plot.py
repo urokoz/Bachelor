@@ -41,6 +41,15 @@ def hist(x, plot_title, xlabel, ylabel, bar_names = False):
     ax.set_ylabel(ylabel)
     plt.show()
 
+def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2):
+
+    fig, ax = plt.subplots()
+    p_val = st.ttest_ind(x,y, equal_var=False)[1]
+    ax.boxplot([x,y], vert = 0)
+    ax.set_yticklabels([ylabel1, ylabel2])
+    ax.set_xlabel(xlabel)
+    ax.set_title(plot_title + " P-val = %.10f" % p_val)
+    plt.show()
 
 def load_peptide_pair_significance(filename):
     infile = open(filename, "r")
@@ -209,42 +218,46 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 # y = pep_pair_sims[:,1]
 # sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
-CR_delta_rank = pep_pair_sims[pep_pair_sims[:,0] > 0.5, 16]
-NCR_delta_rank = pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 16]
+CR_delta_rank = pep_pair_sims[pep_pair_sims[:,0] > 0.5, 17]
+NCR_delta_rank = pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 17]
 
+CR_prom = np.prod(pep_pair_sims[pep_pair_sims[:,0] > 0.5, 20:22], axis = 1)
+NCR_prom = np.prod(pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 20:22], axis = 1)
+#print(CR_prom)
+#print(NCR_prom)
 
 xlabel = "Pep kernel score"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,18]
+x = pep_pair_sims[:,10]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Best core vs. best core (% Identity)"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + "(" + xlabel + ")"
-x = pep_pair_sims[:,10]
+x = pep_pair_sims[:,11]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Best core vs. best core (BLOSUM50)"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + "(" + xlabel + ")"
-x = pep_pair_sims[:,11]
+x = pep_pair_sims[:,12]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Best ori core vs. corresponding var sim"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,12]
+x = pep_pair_sims[:,13]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Best ori core vs. corresponding var (BLOSUM50)"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,13]
+x = pep_pair_sims[:,14]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
@@ -258,14 +271,14 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 xlabel = "Delta rank best core vs. best core"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,16]
+x = pep_pair_sims[:,17]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "nw_naive_sim x (100-delta_rank)"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,17]
+x = pep_pair_sims[:,22]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
@@ -277,3 +290,32 @@ ax.set_yticklabels(["Non-CR", "CR"])
 ax.set_xlabel("Delta rank")
 ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
+
+
+
+xlabel = "Promescuity"
+ylabel1 = "Cross reactive"
+ylabel2 = "None Cross reactive"
+plot_title = "Promescuity score"
+x = CR_prom
+y = NCR_prom
+boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2)
+mean1, sigma1 = np.mean(CR_prom), st.sem(CR_prom)
+mean2, sigma2 = np.mean(NCR_prom), st.sem(NCR_prom)
+conf_int_CR = st.norm.interval(alpha = 0.95, loc = mean1, scale = sigma1)
+conf_int_NCR = st.norm.interval(alpha = 0.95, loc = mean2, scale = sigma2)
+#print(np.mean(CR_prom))
+#print(np.mean(NCR_prom))
+#print(conf_int_CR)
+#print(conf_int_NCR)
+#print(len(CR_prom))
+#print(len(NCR_prom))
+
+reci_log = np.log(pep_pair_sims[:,23])
+
+xlabel = "Reciprok rank"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = reci_log
+y = pep_pair_sims[:,0]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
