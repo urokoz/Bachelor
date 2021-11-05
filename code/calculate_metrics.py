@@ -481,7 +481,8 @@ for line in infile:
 
     ori_promis = sum([int(a[0] < 5) for a in ori_HLA])
     var_promis = sum([int(a[0] < 5) for a in var_HLA])
-    sim_list.extend([ori_promis, var_promis])
+    common_binders = sum([a[0] < 5 and b[0] < 5 for a,b in zip(ori_HLA, var_HLA)])
+    sim_list.extend([ori_promis, var_promis, common_binders])
 
 
     # combination metrics
