@@ -483,9 +483,12 @@ for line in infile:
     var_promis = sum([int(a[0] < 5) for a in var_HLA])
     sim_list.extend([ori_promis, var_promis])
 
+
     # combination metrics
     glob_sim_and_d_rank = nw_naive_sim*(100-delta_rank)
+    comb_rank = (1/rank1)*(1/rank2)
 
-    sim_list.extend([glob_sim_and_d_rank])
+    sim_list.extend([glob_sim_and_d_rank, comb_rank])
+
 
     print(*sim_list, sep=",", file=outfile)
