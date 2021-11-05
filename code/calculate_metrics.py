@@ -488,4 +488,4 @@ for line in infile:
 
     sim_list.extend([glob_sim_and_d_rank])
 
-    #print(*sim_list, sep=",", file=outfile)
+    print(*sim_list, sep=",", file=outfile)
