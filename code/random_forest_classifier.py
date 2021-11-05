@@ -35,44 +35,50 @@ parser.add_argument("-train", action="store", dest="train_file", type=str, defau
 parser.add_argument("-test", action="store", dest="test_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
 
 args = parser.parse_args()
-train_file = args.train_file
-test_file = args.test_file
+test_file = args.train_file
+train_file = args.test_file
 
 train_data = np.loadtxt(train_file, delimiter=",", dtype = str)
 test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
 
-#Index overview:
-#0. PCC
-#1. SCC
-#2. Needleman-Wunch naive sim
-#3. Needleman-Wunch naive score
-#4. Needleman-Wunch blosum sim
-#5. Needleman-Wunch blosum score
-#6. Smith-Waterman sim
-#7. Smith-Waterman blosum
-#8. K-mer identity
-#9. K-mer blosum
-#10. Best core vs. best core sim
-#11. Best core vs. best core blosum
-#12. Best ori core vs. corresponding var sim
-#13. Best ori core vs. corresponding var blosum
-#14. Best matching cores sim
-#15. Best matching cores blosum
-#16. Delta rank best core vs. best core
-#17. nw_naive_sim x (100-delta_rank)
-#18. Pep kernel score
+## New index overview
+# 0. PCC
+# 1. SCC
+# 2. Needleman-Wunch naive sim
+# 3. Needleman-Wunch naive score
+# 4. Needleman-Wunch blosum sim
+# 5. Needleman-Wunch blosum score
+# 6. Smith-Waterman sim
+# 7. Smith-Waterman blosum
+# 8. K-mer identity
+# 9. K-mer blosum
+# 10. Pep kernel score
+# 11. Best core vs. best core sim
+# 12. Best core vs. best core blosum
+# 13. Best ori core vs. corresponding var sim
+# 14. Best ori core vs. corresponding var blosum
+# 15. Best matching cores sim
+# 16. Best matching cores blosum
+# 17. Delta rank best core vs. best core
+# 18. Pep 1 best rank
+# 19. Pep 2 best rank
+# 20. Pep 1 promiscuity
+# 21. Pep 2 promiscuity
+# 22. Binders in common
+# 23. nw_naive_sim x (100-delta_rank)
+# 24. combined rank (1/rank1*1/rank2)
 
 
 train_names = train_data[:,0]
 train_sims = train_data[:,1:].astype(float)
 
-X_train = train_sims[:, [5,9,15,16,18]]
+X_train = train_sims[:, [5,9,10,12,14,16,18,19,20,21,22]]
 y_train = train_sims[:,0]
 
 test_names = test_data[:,0]
 test_sims = test_data[:,1:].astype(float)
 
-X_test = test_sims[:, [5,9,15,16,18]]
+X_test = test_sims[:, [5,9,10,12,14,16,18,19,20,21,22]]
 y_test = test_sims[:,0]
 
 # K-fold crossvalidation

@@ -19,7 +19,7 @@ def pearsons_cc(y_est, y_true):
     return r_xy
 
 
-def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=True):
+def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     PCC = pearsons_cc(x,y)
     fig, ax = plt.subplots()
     ax.scatter(x,y)
@@ -268,7 +268,7 @@ ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
 x = pep_pair_sims[:,17]
 y = pep_pair_sims[:,0]
-sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+sim_scatterplot(x, y, plot_title, xlabel, ylabel, blocker=True)
 
 
 fig, ax = plt.subplots()
