@@ -101,8 +101,9 @@ data = np.loadtxt(data_file, delimiter=",", dtype = str)
 # 19. Pep 2 best rank
 # 20. Pep 1 promiscuity
 # 21. Pep 2 promiscuity
-# 22. nw_naive_sim x (100-delta_rank)
-# 23. combined rank (1/rank1*1/rank2)
+# 22. Binders in common
+# 23. nw_naive_sim x (100-delta_rank)
+# 24. combined rank (1/rank1*1/rank2)
 
 
 pep_pair_names = data[:,0]
