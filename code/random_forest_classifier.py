@@ -66,13 +66,13 @@ test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
 train_names = train_data[:,0]
 train_sims = train_data[:,1:].astype(float)
 
-X_train = train_sims[:, [5,9,13,16,18]]
+X_train = train_sims[:, [5,9,15,16,18]]
 y_train = train_sims[:,0]
 
 test_names = test_data[:,0]
 test_sims = test_data[:,1:].astype(float)
 
-X_test = test_sims[:, [5,9,13,16,18]]
+X_test = test_sims[:, [5,9,15,16,18]]
 y_test = test_sims[:,0]
 
 # K-fold crossvalidation
@@ -117,9 +117,8 @@ y_est = forest.predict(X_test)
 #     mse.append(mean_squared_error(y_out_test, y_pred, squared=False))
 #
 # print(np.mean(ft_im,axis=0))
+print(forest.feature_importances_)
 
-print(y_est)
-print(y_test)
 xlabel = "Y est"
 ylabel = "Y true"
 plot_title = ylabel +" vs. " + xlabel
