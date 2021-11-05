@@ -350,7 +350,7 @@ def load_pep_ker_dict(filename):
 
 parser = ArgumentParser(description="Extracts useful data from data files.")
 parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/ragweed/prepped_data/log_filtered_dataset.csv", help="File with data")
-parser.add_argument("-pf", action="store", dest="pep_file", type=str, default="Data/ragweed/peptides/ragweed_peptides.txt", help="File with peptide data")
+parser.add_argument("-pf", action="store", dest="pep_file", type=str, default="Data/ragweed/peptides/peptides.txt", help="File with peptide data")
 parser.add_argument("-gal", action="store_true", default=False, help="Print global alignments")
 parser.add_argument("-lal", action="store_true", default=False, help="Print local alignments")
 
@@ -418,6 +418,10 @@ for line in infile:
     kmer_ident, kmer_blosum = k_mer(ori_pepseq,var_pepseq)
     sim_list.extend([kmer_ident, kmer_blosum])
 
+    pep_ker_index = frozenset([ori_name, var_name])
+    pep_ker_score = pep_ker_dict[pep_ker_index]
+    sim_list.extend([pep_ker_score])
+
     ## Core similarity vs PCC
     # best core vs best core
     rank1 = np.inf
@@ -473,15 +477,15 @@ for line in infile:
             elif ident_match > bm_ident:
                 bm_ident = ident_match
 
-    sim_list.extend([bvb_ident, bvb_blosum, bvc_ident, bvc_blosum, bm_ident, bm_blosum, delta_rank])
+    sim_list.extend([bvb_ident, bvb_blosum, bvc_ident, bvc_blosum, bm_ident, bm_blosum, delta_rank, rank1, rank2])
+
+    ori_promis = sum([int(a[0] < 5) for a in ori_HLA])
+    var_promis = sum([int(a[0] < 5) for a in var_HLA])
+    sim_list.extend([ori_promis, var_promis])
 
     # combination metrics
     glob_sim_and_d_rank = nw_naive_sim*(100-delta_rank)
 
     sim_list.extend([glob_sim_and_d_rank])
 
-    pep_ker_index = frozenset([ori_name, var_name])
-    pep_ker_score = pep_ker_dict[pep_ker_index]
-    sim_list.extend([pep_ker_score])
-
-    print(*sim_list, sep=",", file=outfile)
+    #print(*sim_list, sep=",", file=outfile)

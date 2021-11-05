@@ -8,11 +8,16 @@
 7. Smith-Waterman blosum
 8. K-mer identity
 9. K-mer blosum
-10. Best core vs. best core sim
-11. Best core vs. best core blosum
-12. Best ori core vs. corresponding var sim
-13. Best ori core vs. corresponding var blosum
-14. Best matching cores sim
-15. Best matching cores blosum
-16. Delta rank best core vs. best core
-17. nw_naive_sim x (100-delta_rank)
+10. Pep kernel score
+11. Best core vs. best core sim
+12. Best core vs. best core blosum
+13. Best ori core vs. corresponding var sim
+14. Best ori core vs. corresponding var blosum
+15. Best matching cores sim
+16. Best matching cores blosum
+17. Delta rank best core vs. best core
+18. Pep 1 best rank
+19. Pep 2 best rank
+20. Pep 1 promiscuity
+21. Pep 2 promiscuity
+22. nw_naive_sim x (100-delta_rank)
