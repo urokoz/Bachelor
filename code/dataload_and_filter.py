@@ -8,19 +8,22 @@ from scipy.stats import spearmanr, pearsonr
 
 def heatmap(pep_list, donor_list, donor_reaction_dict):
     # Heatmap generation
+    print("n peptides:", len(pep_list))
+    print("n donors:", len(donor_list))
+    
     donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
     for i in range(len(pep_list)):
         for j in range(len(donor_list)):
             donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
 
     fig, ax = plt.subplots()
-    c = plt.imshow(donor_reaction_overview, interpolation='nearest', vmax=25, aspect = "auto")
+    c = plt.imshow(donor_reaction_overview, interpolation='nearest', aspect = "auto")
     ax.set_title('Donor SI per peptide heatmap', fontsize=18)
     ax.set_xlabel("Peptides", fontsize=12)
     ax.set_ylabel("Donors", fontsize=12)
     plt.colorbar(c)
     plt.savefig("../../Figures/Heatmap.png", dpi=500, bbox_inches="tight")
-    plt.show(block=False)
+    plt.show()
 
 
 def load_pep_HLA_data(datafile="Data/2860_NetMHCIIpan.xls"):
@@ -70,7 +73,8 @@ parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/S
 parser.add_argument("-bs", action="store_true", default=False, help="Sort out significant datapoints under -0.25 PCC/SCC")
 parser.add_argument("-ch", action="store_true", default=False, help="Print charts for permutation test")
 parser.add_argument("-ol", action="store", type=int, default=0, help="Significance sorting: 0: none, 1: SRC sig, 2: PCC sig, 3: both PCC and SRC sig")
-parser.add_argument("-fas_f", action="store", type=str, default=None, help="print fasta of peptides")
+parser.add_argument("-fas_f", action="store", type=str, default=None, help="Print fasta of peptides")
+parser.add_argument("-hm", action="store_true", default=False, help="Changes output to heatmap only")
 
 
 args = parser.parse_args()
@@ -82,6 +86,7 @@ bottom_sort_out = args.bs
 print_charts = args.ch
 outlier_sorting = args.ol
 fasta_name = args.fas_f
+heatmap_switch = args.hm
 
 infile = open(lookup_file, "r")
 lookup_dict = dict()
@@ -207,106 +212,82 @@ else:
 
 pep_HLA_dict = load_pep_HLA_data(hla_file)
 
-outfile_name = "prepped_data/"
-if log_switch:
-    outfile_name += "log_"
-if HLA_sort:
-    outfile_name += "filtered_"
+if heatmap_switch:
+    heatmap(pep_list, donor_list, donor_reaction_dict)
 else:
-    outfile_name += "unfiltered_"
+    outfile_name = "prepped_data/"
+    if log_switch:
+        outfile_name += "log_"
+    if HLA_sort:
+        outfile_name += "filtered_"
+    else:
+        outfile_name += "unfiltered_"
 
-outfile = open(data_dir+outfile_name+"dataset.csv","w")
-for i, ((pep_pair, SI_vals), SCC_sig, PCC_sig) in enumerate(zip(pep_pair_dict.items(), SRC_sig_list, PCC_sig_list)):
-    ori_SI = SI_vals[0]
-    var_SI = SI_vals[1]
-    ori_name = pep_pair.split()[0]
-    var_name = pep_pair.split()[1]
+    outfile = open(data_dir+outfile_name+"dataset.csv","w")
+    for i, ((pep_pair, SI_vals), SCC_sig, PCC_sig) in enumerate(zip(pep_pair_dict.items(), SRC_sig_list, PCC_sig_list)):
+        ori_SI = SI_vals[0]
+        var_SI = SI_vals[1]
+        ori_name = pep_pair.split()[0]
+        var_name = pep_pair.split()[1]
 
-    # Print SI values as chart files for permutation test
-    if print_charts:
-        chartname = "chart{}.txt".format(i)
-        if log_switch:
-            chartname = "log_" + chartname
+        # Print SI values as chart files for permutation test
+        if print_charts:
+            chartname = "chart{}.txt".format(i)
+            if log_switch:
+                chartname = "log_" + chartname
 
-        chartfile = open(data_dir + "charts/" + chartname,"w")
+            chartfile = open(data_dir + "charts/" + chartname,"w")
 
-        for x,y in zip(ori_SI, var_SI):
-            print(x,y,sep="\t",file=chartfile)
-        chartfile.close()
+            for x,y in zip(ori_SI, var_SI):
+                print(x,y,sep="\t",file=chartfile)
+            chartfile.close()
 
 
-    PCC, PCC_p = pearsonr(ori_SI,var_SI)
-    SCC, SCC_p = spearmanr(ori_SI,var_SI)
+        PCC, PCC_p = pearsonr(ori_SI,var_SI)
+        SCC, SCC_p = spearmanr(ori_SI,var_SI)
 
-    Ori_SI_means.append(np.mean(ori_SI))
+        # by SRC significance
+        if outlier_sorting == 1 or outlier_sorting == 3:
+            if SCC_sig > 0.05 and SCC > 0.5:
+                continue
 
-    # by SRC significance
-    if outlier_sorting == 1 or outlier_sorting == 3:
-        if SCC_sig > 0.05 and SCC > 0.5:
+            elif SCC_sig < 0.05 and SCC < -0.25 and bottom_sort_out:
+                continue
+            elif SCC < -0.25 and lower_cutoff:
+                SCC = -0.25
+        # by PCC significance
+        if outlier_sorting == 2 or outlier_sorting == 3:
+            if PCC_sig > 0.05 and PCC > 0.5:
+                continue
+
+            elif PCC_sig < 0.05 and PCC < -0.25 and bottom_sort_out:
+                continue
+            elif PCC < -0.25 and lower_cutoff:
+                PCC = -0.25
+
+        ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
+        var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
+
+        if HLA_sort and not (ori_bind and var_bind):
             continue
 
-        elif SCC_sig < 0.05 and SCC < -0.25 and bottom_sort_out:
-            continue
-        elif SCC < -0.25 and lower_cutoff:
-            SCC = -0.25
-    # by PCC significance
-    if outlier_sorting == 2 or outlier_sorting == 3:
-        if PCC_sig > 0.05 and PCC > 0.5:
-            continue
+        print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
+    outfile.close()
 
-        elif PCC_sig < 0.05 and PCC < -0.25 and bottom_sort_out:
-            continue
-        elif PCC < -0.25 and lower_cutoff:
-            PCC = -0.25
-
-    ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
-    var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
-
-    if HLA_sort and not (ori_bind and var_bind):
-        continue
-
-    print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
-outfile.close()
-
-outfile = open(pep_file, "w")
-
-if fasta_name != None:
-    fasta_file = open(fasta_name, "w")
-
-for pep in pep_list:
-    pep_name = pep[0]
-    pep_seq = pep[1]
-    pep_HLA = pep_HLA_dict[pep_name]
-    pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
+    outfile = open(pep_file, "w")
 
     if fasta_name != None:
-        print(">" + pep_name, file=fasta_file)
-        print(pep_seq, file=fasta_file)
+        fasta_file = open(fasta_name, "w")
+
+    for pep in pep_list:
+        pep_name = pep[0]
+        pep_seq = pep[1]
+        pep_HLA = pep_HLA_dict[pep_name]
+        pep_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA]))
+
+        if fasta_name != None:
+            print(">" + pep_name, file=fasta_file)
+            print(pep_seq, file=fasta_file)
 
 
-    print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)
-
-    ### For file 2
-    # # by SRC significance
-    # if outlier_sorting == 1 or outlier_sorting == 3:
-    #     if SRC_sig > 0.05 and SRC > 0.5:
-    #         continue
-    #
-    #     elif SRC_sig < 0.05 and SRC < -0.25 and bottom_sort_out:
-    #         continue
-    #     elif SRC < -0.25 and lower_cutoff:
-    #         SRC = -0.25
-    # # by PCC significance
-    # if outlier_sorting == 2 or outlier_sorting == 3:
-    #     if PCC_sig > 0.05 and PCC > 0.5:
-    #         continue
-    #
-    #     elif PCC_sig < 0.05 and PCC < -0.25 and bottom_sort_out:
-    #         continue
-    #     elif PCC < -0.25 and lower_cutoff:
-    #         PCC = -0.25
-
-#print(Ori_SI_means)
-#index for all negative corrolations ---> extract corresponding Ori means
-#index for all positive corrolations --> extract corresponding Ori means
-#t.test positive and negative means
+        print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)
