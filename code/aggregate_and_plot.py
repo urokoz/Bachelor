@@ -41,6 +41,7 @@ def hist(x, plot_title, xlabel, ylabel, bar_names = False):
     ax.set_ylabel(ylabel)
     plt.show()
 
+
 def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2):
 
     fig, ax = plt.subplots()
@@ -50,6 +51,7 @@ def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2):
     ax.set_xlabel(xlabel)
     ax.set_title(plot_title + " P-val = %.10f" % p_val)
     plt.show()
+
 
 def load_peptide_pair_significance(filename):
     infile = open(filename, "r")
@@ -205,7 +207,6 @@ x = pep_pair_sims[:,9]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
-
 # xlabel = "Histogram"
 # ylabel = "Count"
 # plot_title = "Histogram"
@@ -283,7 +284,6 @@ x = pep_pair_sims[:,22]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel, blocker=True)
 
-
 fig, ax = plt.subplots()
 p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
 ax.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
@@ -291,8 +291,6 @@ ax.set_yticklabels(["Non-CR", "CR"])
 ax.set_xlabel("Delta rank")
 ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
-
-
 
 xlabel = "Promescuity"
 ylabel1 = "Cross reactive"

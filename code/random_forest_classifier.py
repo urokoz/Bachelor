@@ -35,8 +35,8 @@ parser.add_argument("-train", action="store", dest="train_file", type=str, defau
 parser.add_argument("-test", action="store", dest="test_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
 
 args = parser.parse_args()
-test_file = args.train_file
-train_file = args.test_file
+train_file = args.train_file
+test_file = args.test_file
 
 train_data = np.loadtxt(train_file, delimiter=",", dtype = str)
 test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
