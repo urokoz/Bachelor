@@ -402,7 +402,7 @@ for line in infile:
 
     # local alignment with Smith-Waterman (O2)
     scoring_scheme = blosum50
-    gap_open = -11
+    gap_open = -3
     gap_extension = -1
     P_matrix, Q_matrix, D_matrix, E_matrix, i_max, j_max, max_score = smith_waterman_alignment(ori_pepseq, var_pepseq, scoring_scheme, gap_open, gap_extension)
     aligned_query, aligned_database, sw_matches = smith_waterman_traceback(E_matrix, D_matrix, i_max, j_max, ori_pepseq, var_pepseq, gap_open, gap_extension)
