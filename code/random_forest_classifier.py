@@ -30,16 +30,21 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
     ax.set_ylabel(ylabel)
     plt.show()
 
-parser = ArgumentParser(description="Extracts useful data from data files.")
-parser.add_argument("-train", action="store", dest="train_file", type=str, default="Data/ragweed/metrics/log_filtered_metrics.txt", help="File with data")
-parser.add_argument("-test", action="store", dest="test_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
 
-args = parser.parse_args()
-train_file = args.train_file
-test_file = args.test_file
+def ft_im_heatmap(ft_im, training_features_names, K):
+    fig, ax = plt.subplots()
+    c = plt.imshow(ft_im, interpolation='nearest', aspect = 1)
+    ax.set_title('Feature importance across crossvalidation folds', fontsize=18)
+    ax.set_ylabel("CV-fold", fontsize=12)
+    ax.set_xticks(np.arange(len(training_features_names)))
+    ax.set_xticklabels(training_features_names, fontsize=14)
+    plt.xticks(rotation=90)
+    ax.set_yticks(np.arange(0,K))
+    ax.set_yticklabels(np.arange(1,K+1))
+    plt.colorbar(c)
+    fig.tight_layout()
+    plt.show()
 
-train_data = np.loadtxt(train_file, delimiter=",", dtype = str)
-test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
 
 ## New index overview
 # 0. PCC
@@ -47,87 +52,110 @@ test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
 # 2. Needleman-Wunch naive sim
 # 3. Needleman-Wunch naive score
 # 4. Needleman-Wunch blosum sim
-# 5. Needleman-Wunch blosum score
+# 5. Needleman-Wunch blosum score   *
 # 6. Smith-Waterman sim
 # 7. Smith-Waterman blosum
 # 8. K-mer identity
-# 9. K-mer blosum
-# 10. Pep kernel score
+# 9. K-mer blosum   *
+# 10. Pep kernel score  *
 # 11. Best core vs. best core sim
-# 12. Best core vs. best core blosum
+# 12. Best core vs. best core blosum    *
 # 13. Best ori core vs. corresponding var sim
-# 14. Best ori core vs. corresponding var blosum
+# 14. Best ori core vs. corresponding var blosum    *
 # 15. Best matching cores sim
 # 16. Best matching cores blosum
-# 17. Delta rank best core vs. best core
+# 17. Delta rank best core vs. best core    *
 # 18. Pep 1 best rank
 # 19. Pep 2 best rank
-# 20. Pep 1 promiscuity
-# 21. Pep 2 promiscuity
-# 22. Binders in common
+# 20. Pep 1 promiscuity *
+# 21. Pep 2 promiscuity *
+# 22. Binders in common *
 # 23. nw_naive_sim x (100-delta_rank)
 # 24. combined rank (1/rank1*1/rank2)
 
+all_features = ["PCC", "SCC", "Needleman-Wunch naive sim", "Needleman-Wunch naive score",
+                "Needleman-Wunch blosum sim", "Needleman-Wunch blosum score",
+                "Smith-Waterman sim", "Smith-Waterman blosum", "K-mer identity",
+                "K-mer blosum", "Pep kernel score", "Best core vs. best core sim",
+                "Best core vs. best core blosum", "Best ori core vs. corresponding var sim",
+                "Best ori core vs. corresponding var blosum", "Best matching cores sim",
+                "Best matching cores blosum", "Delta rank best core vs. best core",
+                "Pep 1 best rank", "Pep 2 best rank", "Pep 1 promiscuity",
+                "Pep 2 promiscuity", "Binders in common", "nw_naive_sim x (100-delta_rank)",
+                "combined rank (1/rank1*1/rank2)"]
+
+parser = ArgumentParser(description="Extracts useful data from data files.")
+parser.add_argument("-train", action="store", dest="train_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
+parser.add_argument("-test", action="store", dest="test_file", type=str, default="Data/ragweed/metrics/log_filtered_metrics.txt", help="File with data")
+parser.add_argument("-sf", action="store_true", default=False)
+
+args = parser.parse_args()
+train_file = args.train_file
+test_file = args.test_file
+single_file = args.sf
+
+training_features = [10,14,17,20,21,22]
+training_features_names = np.array(all_features)[training_features]
+
+# K-fold crossvalidation
+K = 5
+CV = model_selection.KFold(K, shuffle=True)
+# K = len(y)
+# CV = model_selection.LeaveOneOut()
+
+train_data = np.loadtxt(train_file, delimiter=",", dtype = str)
 
 train_names = train_data[:,0]
 train_sims = train_data[:,1:].astype(float)
 
-X_train = train_sims[:, [5,9,10,12,14,16,18,19,20,21,22]]
-y_train = train_sims[:,0]
+X = train_sims[:, training_features]
+y = train_sims[:, 0]
 
-test_names = test_data[:,0]
-test_sims = test_data[:,1:].astype(float)
+if not single_file:
+    test_data = np.loadtxt(test_file, delimiter=",", dtype = str)
 
-X_test = test_sims[:, [5,9,10,12,14,16,18,19,20,21,22]]
-y_test = test_sims[:,0]
+    test_names = test_data[:,0]
+    test_sims = test_data[:,1:].astype(float)
 
-# K-fold crossvalidation
-# K = 8
-# CV_outer = model_selection.KFold(K, shuffle=True)
-# # CV_inner = model_selection.KFold(K, shuffle=True)
-# K = len(y)
-# CV_outer = model_selection.LeaveOneOut()
-# CV_inner = model_selection.LeaveOneOut()
+    X_val = test_sims[:, training_features]
+    y_val = test_sims[:, 0]
 
 forest = RandomForestRegressor()
 
-forest.fit(X_train, y_train)
+ft = None
+y_true = []
+y_est = []
+y_val_est = []
+y_val_true = []
+for _ in range(100):
+    for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
+        print("Outer fold: {0}/{1}".format(k + 1, K))
+        # initialize outer CV fold
+        X_train = X[train_index, :]
+        X_test = X[test_index, :]
+        y_train = y[train_index]
+        y_test = y[test_index]
 
-y_est = forest.predict(X_test)
+        forest.fit(X_train, y_train)
+        if ft:
+            ft_im = np.vstack((ft_im, forest.feature_importances_))
+        else:
+            ft_im = forest.feature_importances_
+            ft = True
 
+        y_pred = forest.predict(X_test)
+        y_est.extend(y_pred)
+        y_true.extend(y_test)
 
-# mse = []
-# ft = None
-# y_true = []
-# y_est = []
+        if not single_file:
+            y_val_pred = forest.predict(X_val)
+            y_val_est.extend(y_val_pred)
+            y_val_true.extend(y_val)
 
-# for (kout, (train_index_out, test_index_out)) in enumerate(CV_outer.split(X, y)):
-#     print("Outer fold: {0}/{1}".format(kout + 1, K))
-#     # initialize outer CV fold
-#     X_out_train = X[train_index_out, :]
-#     X_out_test = X[test_index_out, :]
-#     y_out_train = y[train_index_out]
-#     y_out_test = y[test_index_out]
-#
-#     forest.fit(X_out_train, y_out_train)
-#     if ft:
-#         ft_im = np.vstack((ft_im, forest.feature_importances_))
-#     else:
-#         ft_im = forest.feature_importances_
-#         ft = True
-#
-#     y_pred = forest.predict(X_out_test)
-#     y_est.append(y_pred)
-#     y_true.append(y_out_test)
-#
-#     mse.append(mean_squared_error(y_out_test, y_pred, squared=False))
-#
-# print(np.mean(ft_im,axis=0))
-print(forest.feature_importances_)
+# ft_im_heatmap(ft_im, training_features_names, K)
 
-xlabel = "Y est"
-ylabel = "Y true"
-plot_title = ylabel +" vs. " + xlabel
-
-sim_scatterplot(y_est, y_test, plot_title, xlabel, ylabel)
-# print(np.mean(mse))
+pearson_training = pearsons_cc(y_true, y_est)
+print("Pearson for training set across CV folds:", pearson_training)
+if not single_file:
+    pearson_val = pearsons_cc(y_val_true, y_val_est)
+    print("Pearson for validation set across CV folds:", pearson_val)

@@ -10,7 +10,7 @@ def heatmap(pep_list, donor_list, donor_reaction_dict):
     # Heatmap generation
     print("n peptides:", len(pep_list))
     print("n donors:", len(donor_list))
-    
+
     donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
     for i in range(len(pep_list)):
         for j in range(len(donor_list)):
@@ -118,7 +118,6 @@ unique_seqs = set()
 allergen_dict = dict()
 pep_dict = dict()
 pep_id_name = dict()
-
 
 
 infile = open(data_file, "r")
