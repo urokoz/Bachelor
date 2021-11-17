@@ -180,17 +180,31 @@ pep_pair_sims = data[:,1:].astype(float)
 
 xlabel = "% Similarity - Pairwise Global Alignment (BLOSUM50)"
 ylabel = "SRC"
-plot_title = ""
-x = pep_pair_sims[:,4]
-y = pep_pair_sims[:,0]
+plot_title = "Global BLOSUM50"
+x = pep_pair_sims[:,5]
+y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+print(pearsons_cc(pep_pair_sims[:,2], pep_pair_sims[:,0]))
+print(pearsons_cc(pep_pair_sims[:,3], pep_pair_sims[:,0]))
+print(pearsons_cc(pep_pair_sims[:,4], pep_pair_sims[:,0]))
+print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
+print(pearsons_cc(pep_pair_sims[:,2], pep_pair_sims[:,1]))
+print(pearsons_cc(pep_pair_sims[:,3], pep_pair_sims[:,1]))
+print(pearsons_cc(pep_pair_sims[:,4], pep_pair_sims[:,1]))
+print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,1]))
+
 
 xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
 ylabel = "SRC"
-plot_title = ""
+plot_title = "Local BLOSUM50"
 x = pep_pair_sims[:,7]
-y = pep_pair_sims[:,0]
+y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,0]))
+print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
+print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,1]))
+print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,1]))
+
 
 
 xlabel = "9-mere % Identity"
