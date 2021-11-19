@@ -96,6 +96,7 @@ data = np.loadtxt(data_file, delimiter=",", dtype = str)
 # 24. combined rank (1/rank1*1/rank2)
 # 25. Promiscuity product (Pep 1 promiscuity * Pep 2 promiscuity)
 # 26. nw_blosum + promiscuity product
+# 27. bvc_and_prod_promis
 
 
 pep_pair_names = data[:,0]
