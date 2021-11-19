@@ -31,10 +31,10 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
     plt.show()
 
 
-def ft_im_heatmap(ft_im, training_features_names, K):
+def ft_im_heatmap(ft_im, training_features_names, K, train_species):
     fig, ax = plt.subplots()
     c = plt.imshow(ft_im, interpolation='nearest', aspect = 1)
-    ax.set_title('Feature importance across crossvalidation folds', fontsize=18)
+    ax.set_title('Feature importance across crossvalidation folds - ' + train_species, fontsize=18)
     ax.set_ylabel("CV-fold", fontsize=12)
     ax.set_xticks(np.arange(len(training_features_names)))
     ax.set_xticklabels(training_features_names, fontsize=14)
@@ -77,24 +77,27 @@ all_features = ["PCC", "SCC", "Needleman-Wunch naive sim", "Needleman-Wunch naiv
                 "Needleman-Wunch blosum sim", "Needleman-Wunch blosum score",
                 "Smith-Waterman sim", "Smith-Waterman blosum", "K-mer identity",
                 "K-mer blosum", "Pep kernel score", "Best core vs. best core sim",
-                "Best core vs. best core blosum", "Best ori core vs. corresponding var sim",
-                "Best ori core vs. corresponding var blosum", "Best matching cores sim",
+                "Best core vs. best core blosum", "Best core vs. corresponding sim",
+                "Best core vs. corresponding blosum", "Best matching cores sim",
                 "Best matching cores blosum", "Delta rank best core vs. best core",
                 "Pep 1 best rank", "Pep 2 best rank", "Pep 1 promiscuity",
                 "Pep 2 promiscuity", "Binders in common", "nw_naive_sim x (100-delta_rank)",
                 "combined rank (1/rank1*1/rank2)"]
 
 parser = ArgumentParser(description="Extracts useful data from data files.")
-parser.add_argument("-train", action="store", dest="train_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
-parser.add_argument("-test", action="store", dest="test_file", type=str, default="Data/ragweed/metrics/log_filtered_metrics.txt", help="File with data")
+parser.add_argument("-train", action="store", dest="train_species", type=str, default="birch", help="File with data")
+parser.add_argument("-test", action="store", dest="test_species", type=str, default="ragweed", help="File with data")
 parser.add_argument("-sf", action="store_true", default=False)
 
 args = parser.parse_args()
-train_file = args.train_file
-test_file = args.test_file
+train_species = args.train_species
+test_species = args.test_species
 single_file = args.sf
 
-training_features = [10,14,17,20,21,22]
+train_file = "Data/" + train_species + "/metrics/log_filtered_metrics.txt"
+test_file = "Data/" + test_species + "/metrics/log_filtered_metrics.txt"
+
+training_features = [10,12,14,17,20,21,22]
 training_features_names = np.array(all_features)[training_features]
 
 # K-fold crossvalidation
@@ -127,35 +130,35 @@ y_true = []
 y_est = []
 y_val_est = []
 y_val_true = []
-for _ in range(100):
-    for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
-        print("Outer fold: {0}/{1}".format(k + 1, K))
-        # initialize outer CV fold
-        X_train = X[train_index, :]
-        X_test = X[test_index, :]
-        y_train = y[train_index]
-        y_test = y[test_index]
+for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
+    print("Outer fold: {0}/{1}".format(k + 1, K))
+    # initialize outer CV fold
+    X_train = X[train_index, :]
+    X_test = X[test_index, :]
+    y_train = y[train_index]
+    y_test = y[test_index]
 
-        forest.fit(X_train, y_train)
-        if ft:
-            ft_im = np.vstack((ft_im, forest.feature_importances_))
-        else:
-            ft_im = forest.feature_importances_
-            ft = True
+    forest.fit(X_train, y_train)
+    if ft:
+        ft_im = np.vstack((ft_im, forest.feature_importances_))
+    else:
+        ft_im = forest.feature_importances_
+        ft = True
 
-        y_pred = forest.predict(X_test)
-        y_est.extend(y_pred)
-        y_true.extend(y_test)
+    y_pred = forest.predict(X_test)
+    y_est.extend(y_pred)
+    y_true.extend(y_test)
 
-        if not single_file:
-            y_val_pred = forest.predict(X_val)
-            y_val_est.extend(y_val_pred)
-            y_val_true.extend(y_val)
+    if not single_file:
+        y_val_pred = forest.predict(X_val)
+        y_val_est.extend(y_val_pred)
+        y_val_true.extend(y_val)
 
-# ft_im_heatmap(ft_im, training_features_names, K)
 
 pearson_training = pearsons_cc(y_true, y_est)
-print("Pearson for training set across CV folds:", pearson_training)
+print("Pearson for training set(" + train_species + ") across CV folds:", pearson_training)
 if not single_file:
     pearson_val = pearsons_cc(y_val_true, y_val_est)
-    print("Pearson for validation set across CV folds:", pearson_val)
+    print("Pearson for validation set(" + test_species + ") across CV folds:", pearson_val)
+
+ft_im_heatmap(ft_im, training_features_names, K, train_species)
