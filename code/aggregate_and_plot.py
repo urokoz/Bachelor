@@ -42,7 +42,7 @@ def hist(x, plot_title, xlabel, ylabel, bar_names = False):
     plt.show()
 
 
-def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2):
+def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2, blocker=False):
 
     fig, ax = plt.subplots()
     p_val = st.ttest_ind(x,y, equal_var=False)[1]
@@ -271,7 +271,7 @@ ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
 x = pep_pair_sims[:,22]
 y = pep_pair_sims[:,0]
-sim_scatterplot(x, y, plot_title, xlabel, ylabel, blocker=True)
+sim_scatterplot(x, y, plot_title, xlabel, ylabel, blocker=False)
 
 fig, ax = plt.subplots()
 p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
