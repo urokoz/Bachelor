@@ -68,27 +68,6 @@ data_file = args.data_file
 
 data = np.loadtxt(data_file, delimiter=",", dtype = str)
 
-#Index overview:
-#0. PCC
-#1. SCC
-#2. Needleman-Wunch naive sim
-#3. Needleman-Wunch naive score
-#4. Needleman-Wunch blosum sim
-#5. Needleman-Wunch blosum score
-#6. Smith-Waterman sim
-#7. Smith-Waterman blosum
-#8. K-mer identity
-#9. K-mer blosum
-#10. Best core vs. best core sim
-#11. Best core vs. best core blosum
-#12. Best ori core vs. corresponding var sim
-#13. Best ori core vs. corresponding var blosum
-#14. Best matching cores sim
-#15. Best matching cores blosum
-#16. Delta rank best core vs. best core
-#17. nw_naive_sim x (100-delta_rank)
-#18. Pep kernel score
-
 ## New index overview
 # 0. PCC
 # 1. SCC
@@ -182,16 +161,15 @@ xlabel = "% Similarity - Pairwise Global Alignment (BLOSUM50)"
 ylabel = "SRC"
 plot_title = "Global BLOSUM50"
 x = pep_pair_sims[:,5]
-y = pep_pair_sims[:,1]
+y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-print(pearsons_cc(pep_pair_sims[:,2], pep_pair_sims[:,0]))
-print(pearsons_cc(pep_pair_sims[:,3], pep_pair_sims[:,0]))
-print(pearsons_cc(pep_pair_sims[:,4], pep_pair_sims[:,0]))
+#Global
 print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
-print(pearsons_cc(pep_pair_sims[:,2], pep_pair_sims[:,1]))
-print(pearsons_cc(pep_pair_sims[:,3], pep_pair_sims[:,1]))
-print(pearsons_cc(pep_pair_sims[:,4], pep_pair_sims[:,1]))
-print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,1]))
+#Local
+print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
+#bestvs.corresponding
+print(pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
+
 
 
 xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
@@ -200,10 +178,10 @@ plot_title = "Local BLOSUM50"
 x = pep_pair_sims[:,7]
 y = pep_pair_sims[:,1]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,0]))
-print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
-print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,1]))
-print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,1]))
+#print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,0]))
+#print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
+#print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,1]))
+#print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,1]))
 
 
 
