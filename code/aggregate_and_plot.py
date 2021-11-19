@@ -163,12 +163,7 @@ plot_title = "Global BLOSUM50"
 x = pep_pair_sims[:,5]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#Global
-print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
-#Local
-print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
-#bestvs.corresponding
-print(pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
+
 
 
 
@@ -310,3 +305,24 @@ plot_title = ylabel + " vs. " + xlabel
 x = reci_log
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+#printing all performances (BLOSUM50 + PCC)
+
+#Global
+print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
+#Local
+print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
+#9-mere
+print(pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,0]))
+#pep_kernal
+print(pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,0]))
+#best vs. best
+print(pearsons_cc(pep_pair_sims[:,12], pep_pair_sims[:,0]))
+#bestvs.corresponding
+print(pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
+#best matching cores
+print(pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,0]))
+#naive_sim * (100-delta_rank)
+print(pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
+#combined rank
+print(pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
