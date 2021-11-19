@@ -72,6 +72,8 @@ def ft_im_heatmap(ft_im, training_features_names, K, train_species):
 # 22. Binders in common *
 # 23. nw_naive_sim x (100-delta_rank)
 # 24. combined rank (1/rank1*1/rank2)
+# 25. Promiscuity product (Pep 1 promiscuity * Pep 2 promiscuity)
+# 26. nw_naive_sim + promiscuity product
 
 all_features = ["PCC", "SCC", "Needleman-Wunch naive sim", "Needleman-Wunch naive score",
                 "Needleman-Wunch blosum sim", "Needleman-Wunch blosum score",
@@ -82,7 +84,7 @@ all_features = ["PCC", "SCC", "Needleman-Wunch naive sim", "Needleman-Wunch naiv
                 "Best matching cores blosum", "Delta rank best core vs. best core",
                 "Pep 1 best rank", "Pep 2 best rank", "Pep 1 promiscuity",
                 "Pep 2 promiscuity", "Binders in common", "nw_naive_sim x (100-delta_rank)",
-                "combined rank (1/rank1*1/rank2)"]
+                "combined rank (1/rank1*1/rank2)", "Promiscuity product", "nw_naive_sim + promiscuity product"]
 
 parser = ArgumentParser(description="Extracts useful data from data files.")
 parser.add_argument("-train", action="store", dest="train_species", type=str, default="birch", help="File with data")

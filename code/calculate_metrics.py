@@ -488,8 +488,10 @@ for line in infile:
     # combination metrics
     glob_sim_and_d_rank = nw_naive_sim*(100-delta_rank)
     comb_rank = (1/rank1)*(1/rank2)
+    prod_promis = ori_promis * var_promis
+    glob_sim_and_prod_promis = nw_naive_sim + prod_promis
 
-    sim_list.extend([glob_sim_and_d_rank, comb_rank])
+    sim_list.extend([glob_sim_and_d_rank, comb_rank, prod_promis, glob_sim_and_prod_promis])
 
 
     print(*sim_list, sep=",", file=outfile)
