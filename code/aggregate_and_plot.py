@@ -328,3 +328,5 @@ print(pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,0]))
 print(pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
 #combined rank
 print(pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
+#naive sim + prom
+print(pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))
