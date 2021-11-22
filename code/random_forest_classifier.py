@@ -33,7 +33,7 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
 
 def ft_im_heatmap(ft_im, training_features_names, K, train_species):
     fig, ax = plt.subplots()
-    c = plt.imshow(ft_im, interpolation='nearest', aspect = 1)
+    c = plt.imshow(ft_im, interpolation='nearest', aspect = 1, vmin = 0)
     ax.set_title('Feature importance across crossvalidation folds - ' + train_species, fontsize=18)
     ax.set_ylabel("CV-fold", fontsize=12)
     ax.set_xticks(np.arange(len(training_features_names)))
@@ -101,7 +101,7 @@ single_file = args.sf
 train_file = "Data/" + train_species + "/metrics/log_filtered_metrics.txt"
 test_file = "Data/" + test_species + "/metrics/log_filtered_metrics.txt"
 
-training_features = [10,12,14,17,20,21,22]
+training_features = [10,14,17,25]
 training_features_names = np.array(all_features)[training_features]
 
 # K-fold crossvalidation
@@ -134,29 +134,30 @@ y_true = []
 y_est = []
 y_val_est = []
 y_val_true = []
-for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
-    print("Outer fold: {0}/{1}".format(k + 1, K))
-    # initialize outer CV fold
-    X_train = X[train_index, :]
-    X_test = X[test_index, :]
-    y_train = y[train_index]
-    y_test = y[test_index]
+for _ in range(1):
+    for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
+        print("Outer fold: {0}/{1}".format(k + 1, K))
+        # initialize outer CV fold
+        X_train = X[train_index, :]
+        X_test = X[test_index, :]
+        y_train = y[train_index]
+        y_test = y[test_index]
 
-    forest.fit(X_train, y_train)
-    if ft:
-        ft_im = np.vstack((ft_im, forest.feature_importances_))
-    else:
-        ft_im = forest.feature_importances_
-        ft = True
+        forest.fit(X_train, y_train)
+        if ft:
+            ft_im = np.vstack((ft_im, forest.feature_importances_))
+        else:
+            ft_im = forest.feature_importances_
+            ft = True
 
-    y_pred = forest.predict(X_test)
-    y_est.extend(y_pred)
-    y_true.extend(y_test)
+        y_pred = forest.predict(X_test)
+        y_est.extend(y_pred)
+        y_true.extend(y_test)
 
-    if not single_file:
-        y_val_pred = forest.predict(X_val)
-        y_val_est.extend(y_val_pred)
-        y_val_true.extend(y_val)
+        if not single_file:
+            y_val_pred = forest.predict(X_val)
+            y_val_est.extend(y_val_pred)
+            y_val_true.extend(y_val)
 
 
 pearson_training = pearsons_cc(y_true, y_est)
