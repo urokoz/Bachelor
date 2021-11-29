@@ -61,7 +61,7 @@ def load_peptide_pair_significance(filename):
 
 
 parser = ArgumentParser(description="Extracts useful data from data files.")
-parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/calculated_metrics_2.txt", help="File with data")
+parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
 
 args = parser.parse_args()
 data_file = args.data_file
@@ -312,22 +312,22 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #printing all performances (BLOSUM50 + PCC)
 
 #Global
-print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
+print("Global blosum score", pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
 #Local
-print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
+print("Local blosum score", pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
 #9-mere
-print(pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,0]))
+print("9-mer blosum score", pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,0]))
 #pep_kernal
-print(pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,0]))
+print("Peptide kernel score", pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,0]))
 #best vs. best
-print(pearsons_cc(pep_pair_sims[:,12], pep_pair_sims[:,0]))
+print(pearsons_cc("Best v. best core blosum", pep_pair_sims[:,12], pep_pair_sims[:,0]))
 #bestvs.corresponding
-print(pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
+print(pearsons_cc("Best v. corresponding core blosum", pep_pair_sims[:,14], pep_pair_sims[:,0]))
 #best matching cores
-print(pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,0]))
+print(pearsons_cc("Best matching binding cores", pep_pair_sims[:,16], pep_pair_sims[:,0]))
 #naive_sim * (100-delta_rank)
-print(pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
+print("Naive sim x delta_rank", pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
 #combined rank
-print(pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
-#naive sim + prom
-print(pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))
+print("Combined rank", pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
+#nw_blosum + prom
+print("NW_blosum + prom", pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))

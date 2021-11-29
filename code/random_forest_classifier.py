@@ -101,12 +101,11 @@ single_file = args.sf
 train_file = "Data/" + train_species + "/metrics/log_filtered_metrics.txt"
 test_file = "Data/" + test_species + "/metrics/log_filtered_metrics.txt"
 
-training_features = [10,14,17,25]
+training_features = [7,10,12,14,16,17,23,25,27]
 training_features_names = np.array(all_features)[training_features]
 
 # K-fold crossvalidation
 K = 5
-CV = model_selection.KFold(K, shuffle=True)
 # K = len(y)
 # CV = model_selection.LeaveOneOut()
 
@@ -134,7 +133,8 @@ y_true = []
 y_est = []
 y_val_est = []
 y_val_true = []
-for _ in range(1):
+for _ in range(100):
+    CV = model_selection.KFold(K, shuffle=True)
     for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
         print("Outer fold: {0}/{1}".format(k + 1, K))
         # initialize outer CV fold
@@ -166,4 +166,4 @@ if not single_file:
     pearson_val = pearsons_cc(y_val_true, y_val_est)
     print("Pearson for validation set(" + test_species + ") across CV folds:", pearson_val)
 
-ft_im_heatmap(ft_im, training_features_names, K, train_species)
+#ft_im_heatmap(ft_im, training_features_names, K, train_species)
