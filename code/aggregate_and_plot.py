@@ -26,7 +26,7 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     ax.set_title(plot_title + " PCC: %.3f" % PCC)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    plt.show(block=blocker)
+    plt.show()
 
 
 def hist(x, plot_title, xlabel, ylabel, bar_names = False):
@@ -174,7 +174,7 @@ xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
 ylabel = "SRC"
 plot_title = "Local BLOSUM50"
 x = pep_pair_sims[:,7]
-y = pep_pair_sims[:,1]
+y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #print(pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,0]))
 #print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
@@ -256,7 +256,7 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 xlabel = "Best matching cores (BLOSUM50)"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
-x = pep_pair_sims[:,15]
+x = pep_pair_sims[:,16]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
@@ -280,7 +280,6 @@ ax.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
 ax.set_yticklabels(["Non-CR", "CR"])
 ax.set_xlabel("Delta rank")
 ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
-plt.show()
 
 xlabel = "Promescuity"
 ylabel1 = "Cross reactive"
@@ -309,6 +308,13 @@ x = reci_log
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
+xlabel = "Best vs. Corresponding * prod(Prom1,prom2)"
+ylabel = "PCC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,27]
+y = pep_pair_sims[:,0]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+plt.show()
 #printing all performances (BLOSUM50 + PCC)
 
 #Global
@@ -331,3 +337,5 @@ print(pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
 print(pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
 #naive sim + prom
 print(pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))
+#Best vs. corr + prod(promiscuity)
+print(pearsons_cc(pep_pair_sims[:,27], pep_pair_sims[:,0]))

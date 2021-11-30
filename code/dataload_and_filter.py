@@ -17,8 +17,8 @@ def heatmap(pep_list, donor_list, donor_reaction_dict):
             donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
 
     fig, ax = plt.subplots()
-    c = plt.imshow(donor_reaction_overview, interpolation='nearest', aspect = "auto")
-    ax.set_title('Donor SI per peptide heatmap', fontsize=18)
+    c = plt.imshow(donor_reaction_overview, interpolation='nearest', aspect = "auto", vmax=25, vmin=0)
+    #ax.set_title('Donor SI per peptide heatmap', fontsize=18)
     ax.set_xlabel("Peptides", fontsize=12)
     ax.set_ylabel("Donors", fontsize=12)
     plt.colorbar(c)
@@ -66,7 +66,7 @@ def load_peptide_pair_significance(filename):
 ## Argument parsing:
 
 parser = ArgumentParser(description="Preps and filters the data and peptides")
-parser.add_argument("-f", action="store", dest="data_file", type=str, default = "Data/ragweed/ragweed_lookup_file.txt", help="Lookup file with paths of datafiles")
+parser.add_argument("-f", action="store", dest="data_file", type=str, default = "ragweed_lookup_file.txt", help="Lookup file with paths of datafiles")
 parser.add_argument("-hs", action="store_true", default=False, help="Sort out nonbinders")
 parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
 parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/SCC values under -0.25 to -0.25")
