@@ -14,11 +14,13 @@ def heatmap(pep_list, donor_list, donor_reaction_dict):
     donor_reaction_overview = np.zeros((len(donor_list), len(pep_list)))
     for i in range(len(pep_list)):
         for j in range(len(donor_list)):
-            donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],-1)
+            donor_reaction_overview[j,i] = donor_reaction_dict.get(donor_list[j]).get(pep_list[i][1],np.nan)
 
     fig, ax = plt.subplots()
-    c = plt.imshow(donor_reaction_overview, interpolation='nearest', aspect = "auto")
-    ax.set_title('Donor SI per peptide heatmap', fontsize=18)
+    current_cmap = plt.cm.get_cmap()
+    current_cmap.set_bad(color='grey')
+    current_cmap.set_over(color='red')
+    c = plt.imshow(donor_reaction_overview,vmax=25, interpolation='nearest', aspect = "auto")
     ax.set_xlabel("Peptides", fontsize=12)
     ax.set_ylabel("Donors", fontsize=12)
     plt.colorbar(c)
@@ -66,7 +68,7 @@ def load_peptide_pair_significance(filename):
 ## Argument parsing:
 
 parser = ArgumentParser(description="Preps and filters the data and peptides")
-parser.add_argument("-f", action="store", dest="data_file", type=str, default = "Data/ragweed/ragweed_lookup_file.txt", help="Lookup file with paths of datafiles")
+parser.add_argument("-f", action="store", dest="data_file", type=str, default = "ragweed_lookup_file.txt", help="Lookup file with paths of datafiles")
 parser.add_argument("-hs", action="store_true", default=False, help="Sort out nonbinders")
 parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
 parser.add_argument("-lc", action="store_true", default=False, help="Raise PCC/SCC values under -0.25 to -0.25")
@@ -211,6 +213,9 @@ else:
 
 pep_HLA_dict = load_pep_HLA_data(hla_file)
 
+sig_counter = 0
+HLA_counter = 0
+
 if heatmap_switch:
     heatmap(pep_list, donor_list, donor_reaction_dict)
 else:
@@ -241,6 +246,12 @@ else:
                 print(x,y,sep="\t",file=chartfile)
             chartfile.close()
 
+        ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
+        var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
+
+        if HLA_sort and not (ori_bind and var_bind):
+            HLA_counter += 1
+            continue
 
         PCC, PCC_p = pearsonr(ori_SI,var_SI)
         SCC, SCC_p = spearmanr(ori_SI,var_SI)
@@ -248,27 +259,26 @@ else:
         # by SRC significance
         if outlier_sorting == 1 or outlier_sorting == 3:
             if SCC_sig > 0.05 and SCC > 0.5:
+                sig_counter += 1
                 continue
 
             elif SCC_sig < 0.05 and SCC < -0.25 and bottom_sort_out:
+                sig_counter += 1
                 continue
             elif SCC < -0.25 and lower_cutoff:
                 SCC = -0.25
         # by PCC significance
         if outlier_sorting == 2 or outlier_sorting == 3:
             if PCC_sig > 0.05 and PCC > 0.5:
+                sig_counter += 1
                 continue
 
             elif PCC_sig < 0.05 and PCC < -0.25 and bottom_sort_out:
+                sig_counter += 1
                 continue
             elif PCC < -0.25 and lower_cutoff:
                 PCC = -0.25
 
-        ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
-        var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
-
-        if HLA_sort and not (ori_bind and var_bind):
-            continue
 
         print(ori_name, var_name, ",".join(str(e) for e in ori_SI), ",".join(str(e) for e in var_SI), sep="\t", file=outfile)
     outfile.close()
@@ -290,3 +300,6 @@ else:
 
 
         print(pep_name, pep_seq, " ".join(",".join(str(f) for f in e) for e in pep_HLA), sep="\t", file = outfile)
+
+print("Sig: ", sig_counter)
+print("HLA: ", HLA_counter)

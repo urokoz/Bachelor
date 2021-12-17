@@ -32,6 +32,8 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel):
 
 
 def ft_im_heatmap(ft_im, training_features_names, K, train_species):
+    if train_species == "birch":
+        train_species = "Tree"
     fig, ax = plt.subplots()
     c = plt.imshow(ft_im, interpolation='nearest', aspect = 1, vmin = 0)
     ax.set_title('Feature importance across crossvalidation folds - ' + train_species, fontsize=18)
@@ -101,7 +103,7 @@ single_file = args.sf
 train_file = "Data/" + train_species + "/metrics/log_filtered_metrics.txt"
 test_file = "Data/" + test_species + "/metrics/log_filtered_metrics.txt"
 
-training_features = [7,10,12,14,16,17,23,25,27]
+training_features = [5,10,12,13,17,25]
 training_features_names = np.array(all_features)[training_features]
 
 # K-fold crossvalidation
@@ -133,10 +135,14 @@ y_true = []
 y_est = []
 y_val_est = []
 y_val_true = []
-for _ in range(100):
+
+outer_K = 100
+for outer_k in range(outer_K):
+    print("Outer fold: {0}/{1}".format(outer_k + 1, outer_K))
     CV = model_selection.KFold(K, shuffle=True)
+
     for (k, (train_index, test_index)) in enumerate(CV.split(X, y)):
-        print("Outer fold: {0}/{1}".format(k + 1, K))
+        #print("Inner fold: {0}/{1}".format(k + 1, K))
         # initialize outer CV fold
         X_train = X[train_index, :]
         X_test = X[test_index, :]
@@ -160,10 +166,17 @@ for _ in range(100):
             y_val_true.extend(y_val)
 
 
+    ft_im_heatmap(ft_im, training_features_names, K, train_species)
+    ft = None
+
+for i in training_features_names:
+    print(i)
+
+#print(forest.get_params(deep=True))
+print("Feature importance: ", np.around(np.mean(ft_im, axis=0),3))
+print("Feature importance STD: ",np.around(np.std(ft_im, axis=0),3))
 pearson_training = pearsons_cc(y_true, y_est)
-print("Pearson for training set(" + train_species + ") across CV folds:", pearson_training)
+print("Pearson for training set(" + train_species + ") across CV folds:", round(pearson_training,3))
 if not single_file:
     pearson_val = pearsons_cc(y_val_true, y_val_est)
-    print("Pearson for validation set(" + test_species + ") across CV folds:", pearson_val)
-
-#ft_im_heatmap(ft_im, training_features_names, K, train_species)
+    print("Pearson for validation set(" + test_species + ") across CV folds:", round(pearson_val,3))
