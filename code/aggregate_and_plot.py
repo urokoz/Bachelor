@@ -21,6 +21,7 @@ def pearsons_cc(y_est, y_true):
 
 def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     PCC = pearsons_cc(x,y)
+    #SRC, p = st.spearmanr(x,y)
     fig, ax = plt.subplots()
     ax.scatter(x,y)
     ax.set_title(plot_title + " PCC: %.3f" % PCC)
@@ -61,7 +62,7 @@ def load_peptide_pair_significance(filename):
 
 
 parser = ArgumentParser(description="Extracts useful data from data files.")
-parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/calculated_metrics_2.txt", help="File with data")
+parser.add_argument("-df", action="store", dest="data_file", type=str, default="Data/birch/metrics/log_filtered_metrics.txt", help="File with data")
 
 args = parser.parse_args()
 data_file = args.data_file
@@ -171,7 +172,7 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 
 xlabel = "% Similarity - Pairwise Local Alignment (BLOSUM50)"
-ylabel = "SRC"
+ylabel = "PCC"
 plot_title = "Local BLOSUM50"
 x = pep_pair_sims[:,7]
 y = pep_pair_sims[:,0]
@@ -225,29 +226,29 @@ x = pep_pair_sims[:,10]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
-xlabel = "Best core vs. best core (% Identity)"
-ylabel = "SRC"
-plot_title = ylabel + " vs. " + "(" + xlabel + ")"
+xlabel = "% Identity"
+ylabel = "PCC"
+plot_title = "Best core vs. best core."
 x = pep_pair_sims[:,11]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Best core vs. best core (BLOSUM50)"
-ylabel = "SRC"
+ylabel = "PCC"
 plot_title = ylabel + " vs. " + "(" + xlabel + ")"
 x = pep_pair_sims[:,12]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
-xlabel = "Best ori core vs. corresponding var sim"
-ylabel = "SRC"
-plot_title = ylabel + " vs. " + xlabel
+xlabel = "% Identity"
+ylabel = "PCC"
+plot_title = "Best binding core vs. corresponding binding core"
 x = pep_pair_sims[:,13]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 xlabel = "Best ori core vs. corresponding var (BLOSUM50)"
-ylabel = "SRC"
+ylabel = "PCC"
 plot_title = ylabel + " vs. " + xlabel
 x = pep_pair_sims[:,14]
 y = pep_pair_sims[:,0]
@@ -257,6 +258,13 @@ xlabel = "Best matching cores (BLOSUM50)"
 ylabel = "SRC"
 plot_title = ylabel + " vs. " + xlabel
 x = pep_pair_sims[:,16]
+y = pep_pair_sims[:,0]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Best matching cores (Identity)"
+ylabel = "SRC"
+plot_title = ylabel + " vs. " + xlabel
+x = pep_pair_sims[:,15]
 y = pep_pair_sims[:,0]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
@@ -277,13 +285,13 @@ sim_scatterplot(x, y, plot_title, xlabel, ylabel, blocker=False)
 fig, ax = plt.subplots()
 p_val = st.ttest_ind(NCR_delta_rank,CR_delta_rank, equal_var=False)[1]
 ax.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
-ax.set_yticklabels(["Non-CR", "CR"])
+ax.set_yticklabels(["None-CR", "CR"])
 ax.set_xlabel("Delta rank")
-ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
+ax.set_title("p-val = %.10f" % p_val)
 
 xlabel = "Promescuity"
-ylabel1 = "Cross reactive"
-ylabel2 = "None Cross reactive"
+ylabel1 = "CR"
+ylabel2 = "None CR"
 plot_title = "Promescuity score"
 x = CR_prom
 y = NCR_prom
@@ -292,8 +300,8 @@ mean1, sigma1 = np.mean(CR_prom), st.sem(CR_prom)
 mean2, sigma2 = np.mean(NCR_prom), st.sem(NCR_prom)
 conf_int_CR = st.norm.interval(alpha = 0.95, loc = mean1, scale = sigma1)
 conf_int_NCR = st.norm.interval(alpha = 0.95, loc = mean2, scale = sigma2)
-#print(np.mean(CR_prom))
-#print(np.mean(NCR_prom))
+print(np.mean(CR_prom))
+print(np.mean(NCR_prom))
 #print(conf_int_CR)
 #print(conf_int_NCR)
 #print(len(CR_prom))
@@ -318,24 +326,24 @@ plt.show()
 #printing all performances (BLOSUM50 + PCC)
 
 #Global
-print(pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
+print("Global blosum score", pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
 #Local
-print(pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
+print("Local sim score", pearsons_cc(pep_pair_sims[:,6], pep_pair_sims[:,0]))
+
+print("Local blosum score", pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
 #9-mere
-print(pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,0]))
+print("9-mer blosum score", pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,0]))
 #pep_kernal
-print(pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,0]))
+print("Peptide kernel score", pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,0]))
 #best vs. best
-print(pearsons_cc(pep_pair_sims[:,12], pep_pair_sims[:,0]))
+print("Best v. best core blosum", pearsons_cc( pep_pair_sims[:,12], pep_pair_sims[:,0]))
 #bestvs.corresponding
-print(pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
+print("Best v. corresponding core blosum", pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
 #best matching cores
-print(pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,0]))
+print("Best matching binding cores", pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,0]))
 #naive_sim * (100-delta_rank)
-print(pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
+print("Naive sim x delta_rank", pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
 #combined rank
-print(pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
-#naive sim + prom
-print(pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))
-#Best vs. corr + prod(promiscuity)
-print(pearsons_cc(pep_pair_sims[:,27], pep_pair_sims[:,0]))
+print("Combined rank", pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
+#nw_blosum + prom
+print("NW_blosum + prom", pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))
