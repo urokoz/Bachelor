@@ -486,7 +486,7 @@ for line in infile:
 
 
     # combination metrics
-    glob_sim_and_d_rank = nw_naive_sim*(100-delta_rank)
+    glob_sim_and_d_rank = nw_naive_sim*(10-delta_rank)
     comb_rank = (1/rank1)*(1/rank2)
     prod_promis = ori_promis * var_promis
     glob_blosum_and_prod_promis = nw_blosum_score + prod_promis
