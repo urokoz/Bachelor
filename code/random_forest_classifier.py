@@ -103,7 +103,7 @@ single_file = args.sf
 train_file = "Data/" + train_species + "/metrics/log_filtered_metrics.txt"
 test_file = "Data/" + test_species + "/metrics/log_filtered_metrics.txt"
 
-training_features = [5,10,12,13,17,25]
+training_features = [5,10,16,17,25]
 training_features_names = np.array(all_features)[training_features]
 
 # K-fold crossvalidation
@@ -166,11 +166,25 @@ for outer_k in range(outer_K):
             y_val_true.extend(y_val)
 
 
-    ft_im_heatmap(ft_im, training_features_names, K, train_species)
+    # ft_im_heatmap(ft_im, training_features_names, K, train_species)
     ft = None
 
 for i in training_features_names:
     print(i)
+
+# xlabel = "Y est"
+# ylabel = "Y true"
+# plot_title = ylabel + " vs. " + xlabel
+# x = y_est
+# y = y_true
+# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+#
+# xlabel = "Y est"
+# ylabel = "Y true"
+# plot_title = ylabel + " vs. " + xlabel
+# x = y_val_est
+# y = y_val_true
+# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 
 #print(forest.get_params(deep=True))
 print("Feature importance: ", np.around(np.mean(ft_im, axis=0),3))
