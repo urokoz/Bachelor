@@ -4,8 +4,6 @@ infile = open("HLA_ragweed.csv", "r")
 
 header = infile.readline().strip().split(";")
 
-HLA_set = set()
-
 donor_HLA_dict = dict()
 HLA_count_dict = dict()
 for line in infile:
@@ -21,7 +19,7 @@ for line in infile:
 
         word = ""
 
-        if type == "-" or type == "NA":
+        if type == "-" or type == "NA" or type == "Not Tested":
             continue
 
         for char in type:
@@ -35,10 +33,12 @@ for line in infile:
             elif char == "/":
                 if "-" in word:
                     start, finish = word.split("-")
+
                     for i in range(int(start),int(finish)+1):
                         final_HLA = HLA_type + str(i)
-                        HLA_set.add(final_HLA)
+
                         donor_HLA_dict[donor].append(final_HLA)
+
                         if HLA_count_dict.get(final_HLA):
                             HLA_count_dict[final_HLA] += 1
                         else:
@@ -46,22 +46,48 @@ for line in infile:
 
                 else:
                     final_HLA = HLA_type + word
-                    HLA_set.add(final_HLA)
+
                     donor_HLA_dict[donor].append(final_HLA)
+                    if HLA_count_dict.get(final_HLA):
+                        HLA_count_dict[final_HLA] += 1
+                    else:
+                        HLA_count_dict[final_HLA] = 1
                 word = ""
             else:
                 word += char
+        if not (type == "-" or type == "NA" or type == "Not Tested"):
+            if "-" in word:
+                start, finish = word.split("-")
 
-HLA_list = list(HLA_set)
+                for i in range(int(start),int(finish)+1):
+                    final_HLA = HLA_type + str(i)
 
-HLA_list = sorted(HLA_list)
-i = 0
+                    donor_HLA_dict[donor].append(final_HLA)
+
+                    if HLA_count_dict.get(final_HLA):
+                        HLA_count_dict[final_HLA] += 1
+                    else:
+                        HLA_count_dict[final_HLA] = 1
+
+            else:
+                final_HLA = HLA_type + word
+
+                donor_HLA_dict[donor].append(final_HLA)
+                if HLA_count_dict.get(final_HLA):
+                    HLA_count_dict[final_HLA] += 1
+                else:
+                    HLA_count_dict[final_HLA] = 1
+
+outfile = open("ragweed_HLA_count.txt", "w")
+
 for allele, count in HLA_count_dict.items():
-    if count > 1:
-        print(allele, count, sep="\t")
-        i += 1
+    print(allele, count, sep="\t", file = outfile)
 
-print(i)
-#
-# for donor, alleles in donor_HLA_dict.items():
-#     print(donor, alleles, sep="\t")
+outfile.close()
+
+outfile = open("ragweed_donor_HLA.txt", "w")
+
+for donor, alleles in donor_HLA_dict.items():
+    print(donor, ",".join(sorted(alleles)), sep="\t", file = outfile)
+
+outfile.close()
