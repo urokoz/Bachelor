@@ -407,28 +407,28 @@ plt.show()
 # #printing all performances (BLOSUM50 + PCC)
 #
 #Global
-# print("Global naive ident:", pearsons_cc(pep_pair_sims[:,2], pep_pair_sims[:,1]))
-# print("Global naive score:", pearsons_cc(pep_pair_sims[:,3], pep_pair_sims[:,1]))
-# print("Global blosum ident:", pearsons_cc(pep_pair_sims[:,4], pep_pair_sims[:,1]))
-# print("Global blosum score:", pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,1]))
+print("Global naive ident:", pearsons_cc(pep_pair_sims[:,2], pep_pair_sims[:,0]))
+print("Global naive score:", pearsons_cc(pep_pair_sims[:,3], pep_pair_sims[:,0]))
+print("Global blosum ident:", pearsons_cc(pep_pair_sims[:,4], pep_pair_sims[:,0]))
+print("Global blosum score:", pearsons_cc(pep_pair_sims[:,5], pep_pair_sims[:,0]))
 # #Local
-# print("Local blosum score:", pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,1]))
+print("Local blosum score:", pearsons_cc(pep_pair_sims[:,7], pep_pair_sims[:,0]))
 # #9-mere
-# print("9-mer blosum score:", pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,1]))
+print("9-mer blosum score:", pearsons_cc(pep_pair_sims[:,9], pep_pair_sims[:,0]))
 # #pep_kernal
-# print("Peptide kernel score:", pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,1]))
+print("Peptide kernel score:", pearsons_cc(pep_pair_sims[:,10], pep_pair_sims[:,0]))
 # #best vs. best
-# print("Best v. best core ident:", pearsons_cc(pep_pair_sims[:,11], pep_pair_sims[:,1]))
-# print("Best v. best core blosum:", pearsons_cc(pep_pair_sims[:,12], pep_pair_sims[:,1]))
+print("Best v. best core ident:", pearsons_cc(pep_pair_sims[:,11], pep_pair_sims[:,0]))
+print("Best v. best core blosum:", pearsons_cc(pep_pair_sims[:,12], pep_pair_sims[:,0]))
 # #bestvs.corresponding
-# print("Best v. corresponding core ident:", pearsons_cc(pep_pair_sims[:,13], pep_pair_sims[:,1]))
-# print("Best v. corresponding core blosum:", pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,1]))
+print("Best v. corresponding core ident:", pearsons_cc(pep_pair_sims[:,13], pep_pair_sims[:,0]))
+print("Best v. corresponding core blosum:", pearsons_cc(pep_pair_sims[:,14], pep_pair_sims[:,0]))
 # #best matching cores
-# print("Best matching binding cores ident:", pearsons_cc(pep_pair_sims[:,15], pep_pair_sims[:,1]))
-# print("Best matching binding cores blosum:", pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,1]))
+print("Best matching binding cores ident:", pearsons_cc(pep_pair_sims[:,15], pep_pair_sims[:,0]))
+print("Best matching binding cores blosum:", pearsons_cc(pep_pair_sims[:,16], pep_pair_sims[:,0]))
 # #combined rank
-# print("Combined rank:", pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
-# #naive_sim * (100-delta_rank)
-# print("Naive sim x delta_rank:", pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
+print("Combined rank:", pearsons_cc(pep_pair_sims[:,24], pep_pair_sims[:,0]))
+#naive_sim * (100-delta_rank)
+print("Naive sim x delta_rank:", pearsons_cc(pep_pair_sims[:,23], pep_pair_sims[:,0]))
 # #nw_blosum + prom
-# print("NW_blosum + prom:", pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))
+print("NW_blosum + prom:", pearsons_cc(pep_pair_sims[:,26], pep_pair_sims[:,0]))

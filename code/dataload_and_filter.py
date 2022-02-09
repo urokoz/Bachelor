@@ -2,6 +2,7 @@
 
 import sys
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 from scipy.stats import spearmanr, pearsonr
@@ -63,6 +64,28 @@ def load_peptide_pair_significance(filename):
     sig_list = [float(line.split()[-1]) for line in infile]
     infile.close()
     return sig_list
+
+def pearsons_cc(y_est, y_true):
+    n = len(y_est)
+    sum_x = sum(y_est)
+    sum_y = sum(y_true)
+    sum_xy = sum([x*y for x,y in zip(y_est,y_true)])
+    sum_xx = sum([x*x for x in y_est])
+    sum_yy = sum([y*y for y in y_true])
+
+    r_xy = (n*sum_xy - sum_x*sum_y)/(math.sqrt(n*sum_xx-sum_x**2)*math.sqrt(n*sum_yy-sum_y**2))
+    return r_xy
+
+
+def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
+    PCC = pearsons_cc(x,y)
+    #SCC, _ = st.spearmanr(x,y)
+    fig, ax = plt.subplots()
+    ax.scatter(x, y)
+    ax.set_title(plot_title + " PCC: {}".format(round(PCC,3)))
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    plt.show()
 
 
 ## Argument parsing:
@@ -242,9 +265,14 @@ else:
 
             chartfile = open(data_dir + "charts/" + chartname,"w")
 
+            #prints scatterplots args: (x,y,plot_title, xlabel, ylabel)
+            print(sim_scatterplot(ori_SI, var_SI, ori_name + "vs." + var_name, ori_name, var_name))
+
+
             for x,y in zip(ori_SI, var_SI):
                 print(x,y,sep="\t",file=chartfile)
             chartfile.close()
+
 
         ori_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[ori_name]]))
         var_bind = bool(sum([rank <= 5 for [rank, core] in pep_HLA_dict[var_name]]))
