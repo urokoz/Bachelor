@@ -43,7 +43,7 @@ def hist(x, plot_title, xlabel, ylabel, bar_names = False):
     plt.show()
 
 
-def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2, blocker=False):
+def boxplot(x, y, plot_title, xlabel, ylabel1, ylabel2, blocker=True):
 
     fig, ax = plt.subplots()
     p_val = st.ttest_ind(x,y, equal_var=False)[1]
@@ -98,6 +98,8 @@ data = np.loadtxt(data_file, delimiter=",", dtype = str)
 # 25. Promiscuity product (Pep 1 promiscuity * Pep 2 promiscuity)
 # 26. nw_blosum + promiscuity product
 # 27. bvc_and_prod_promis
+
+print(len(data[data[:,1].astype(float) > 0.5,:]))
 
 pep_pair_names = data[:,0]
 pep_pair_sims = data[:,1:].astype(float)
@@ -162,6 +164,20 @@ pep_pair_sims = data[:,1:].astype(float)
 # ax1.set_ylabel("PCC")
 # plt.show()
 #################################################################################
+#
+# mean_u50 = np.mean(pep_pair_sims[pep_pair_sims[:,13] < 50, 0] > 0.5)
+# mean_u80 = np.mean(pep_pair_sims[(pep_pair_sims[:,13] >= 50) & (pep_pair_sims[:,13] <= 80), 0] > 0.5)
+# mean_o80 = np.mean(pep_pair_sims[pep_pair_sims[:,13] > 80, 0] > 0.5)
+# mean_CR = [mean_u50, mean_u80, mean_o80]
+#
+# fig, ax = plt.subplots()
+# ax.set_title("Best core vs. corresponding core - Tree")
+# ax.bar(["<50%", "50%-80%", ">=80%"], mean_CR)
+# ax.set_xlabel("% binding core similarity", labelpad=5)
+# ax.set_ylabel("Fraction significant")
+# plt.show()
+
+
 
 # xlabel = "Naive global alignment (% Identity)"
 # ylabel = "PCC"
@@ -213,7 +229,7 @@ pep_pair_sims = data[:,1:].astype(float)
 # x = pep_pair_sims[:,8]
 # y = pep_pair_sims[:,0]
 # sim_scatterplot(x, y, plot_title, xlabel, ylabel)
-#
+
 # xlabel = "9-mere BLOSUM50 score"
 # ylabel = "PCC"
 # plot_title = ylabel +" vs. " + xlabel
@@ -310,44 +326,46 @@ pep_pair_sims = data[:,1:].astype(float)
 #
 #
 #
-CR_delta_rank = pep_pair_sims[pep_pair_sims[:,0] > 0.5, 17]
-NCR_delta_rank = pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 17]
+# CR_delta_rank = pep_pair_sims[pep_pair_sims[:,0] > 0.5, 17]
+# NCR_delta_rank = pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 17]
+#
 
-CR_prom = np.prod(pep_pair_sims[pep_pair_sims[:,0] > 0.5, 20:22], axis = 1)
-NCR_prom = np.prod(pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 20:22], axis = 1)
-
-fig, ax = plt.subplots()
-p_val = st.ttest_ind(CR_delta_rank,NCR_delta_rank, equal_var=False)[1]
-ax.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
-ax.set_yticklabels(["Non CR", "CR"])
-ax.set_xlabel("Delta rank")
-ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
-#plt.show()
-
+#
+# fig, ax = plt.subplots()
+# p_val = st.ttest_ind(CR_delta_rank,NCR_delta_rank, equal_var=False)[1]
+# ax.boxplot([NCR_delta_rank,CR_delta_rank], vert = 0)
+# ax.set_yticklabels(["Non CR", "CR"])
+# ax.set_xlabel("Delta rank")
+# ax.set_title("Delta rank for CR and non CR. p-val = %.10f" % p_val)
+# #plt.show()
+#
 CR_binder = pep_pair_sims[pep_pair_sims[:,0] > 0.5, 22]
 NCR_binder = pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 22]
 
 fig, ax = plt.subplots()
 p_val = st.ttest_ind(NCR_binder,CR_binder, equal_var=False)[1]
-ax.boxplot([CR_binder,NCR_binder], vert = 0)
+ax.boxplot([NCR_binder,CR_binder], vert = 0)
 ax.set_yticklabels(["Non CR", "CR"])
 ax.set_xlabel("Binders in common")
 ax.set_title("Binders in common for CR and non CR. p-val = %.10f" % p_val)
-mean1, sigma1 = np.mean(CR_binder), st.sem(CR_binder)
-mean2, sigma2 = np.mean(NCR_binder), st.sem(NCR_binder)
-conf_int_CR = st.norm.interval(alpha = 0.95, loc = mean1, scale = sigma1)
-conf_int_NCR = st.norm.interval(alpha = 0.95, loc = mean2, scale = sigma2)
-print(np.mean(CR_binder))
-print(np.mean(NCR_binder))
-print(conf_int_CR)
-print(conf_int_NCR)
-print(len(CR_binder))
-print(len(NCR_binder))
-#plt.show()
-
-
-
-
+# mean1, sigma1 = np.mean(CR_binder), st.sem(CR_binder)
+# mean2, sigma2 = np.mean(NCR_binder), st.sem(NCR_binder)
+# conf_int_CR = st.norm.interval(alpha = 0.95, loc = mean1, scale = sigma1)
+# conf_int_NCR = st.norm.interval(alpha = 0.95, loc = mean2, scale = sigma2)
+# print(np.mean(CR_binder))
+# print(np.mean(NCR_binder))
+# print(conf_int_CR)
+# print(conf_int_NCR)
+# print(len(CR_binder))
+# print(len(NCR_binder))
+plt.show()
+#
+#
+#
+#
+#
+CR_prom = np.prod(pep_pair_sims[pep_pair_sims[:,0] > 0.5, 20:22], axis = 1)
+NCR_prom = np.prod(pep_pair_sims[np.invert(pep_pair_sims[:,0] > 0.5), 20:22], axis = 1)
 
 xlabel = "Promescuity"
 ylabel1 = "CR"
@@ -359,21 +377,21 @@ y = NCR_prom
 
 
 fig, ax = plt.subplots()
-p_val = st.ttest_ind(NCR_prom,CR_prom, equal_var=False)[1]
-ax.boxplot([CR_prom,NCR_prom], vert = 0)
+p_val = st.ttest_ind(CR_prom,NCR_prom, equal_var=False)[1]
+ax.boxplot([NCR_prom,CR_prom], vert = 0)
 ax.set_yticklabels(["Non CR", "CR"])
 ax.set_xlabel("Promescuity score")
 ax.set_title("Promescuity score for CR and non CR. p-val = %.10f" % p_val)
 plt.show()
-
-mean1, sigma1 = np.mean(CR_prom), st.sem(CR_prom)
-mean2, sigma2 = np.mean(NCR_prom), st.sem(NCR_prom)
-conf_int_CR = st.norm.interval(alpha = 0.95, loc = mean1, scale = sigma1)
-conf_int_NCR = st.norm.interval(alpha = 0.95, loc = mean2, scale = sigma2)
-print(np.mean(CR_prom))
-print(np.mean(NCR_prom))
+#
+# mean1, sigma1 = np.mean(CR_prom), st.sem(CR_prom)
+# mean2, sigma2 = np.mean(NCR_prom), st.sem(NCR_prom)
+# conf_int_CR = st.norm.interval(alpha = 0.95, loc = mean1, scale = sigma1)
+# conf_int_NCR = st.norm.interval(alpha = 0.95, loc = mean2, scale = sigma2)
+# print(np.mean(CR_prom))
+# print(np.mean(NCR_prom))
 #print(conf_int_CR)
-#print(conf_int_NCR)
+#print(conf_int_NCR) peptides derived from four related ragweed species: Amb a, Amb p, Amb t & Art v. 
 #print(len(CR_prom))
 #print(len(NCR_prom))
 #
