@@ -17,6 +17,9 @@ for line in infile:
 
         HLA = header[i].split("-")[1]
 
+        if HLA[:3] != "DRB":
+            continue
+
         word = ""
 
         if type == "-" or type == "NA" or type == "Not Tested":
@@ -51,11 +54,12 @@ for line in infile:
                         HLA_count_dict[final_HLA] += 1
                     else:
                         HLA_count_dict[final_HLA] = 1
+                word = ""
                 break
 
             else:
                 word += char
-        if not (type == "-" or type == "NA" or type == "Not Tested"):
+        if not (type == "-" or type == "NA" or type == "Not Tested" or word == ""):
             if "-" in word:
                 start, finish = word.split("-")
 
@@ -79,7 +83,7 @@ for line in infile:
 
 outfile = open("ragweed_HLA_count.txt", "w")
 
-for allele, count in HLA_count_dict.items():
+for allele, count in sorted(HLA_count_dict.items()):
     print(allele, count, sep="\t", file = outfile)
 
 outfile.close()
