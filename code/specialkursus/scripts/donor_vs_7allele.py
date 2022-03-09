@@ -41,11 +41,16 @@ parser.add_argument("-f", action="store", dest="data_file", type=str, help="Raw 
 args = parser.parse_args()
 data_file = args.data_file
 
-HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_7allele_NetMHCIIpan.xls")
-HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor1_NetMHCIIpan.xls", HLA_dict)
-HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor2_NetMHCIIpan.xls", HLA_dict)
+if False:
+    HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_7allele_NetMHCIIpan.xls")
+    HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor1_NetMHCIIpan.xls", HLA_dict)
+    HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor2_NetMHCIIpan.xls", HLA_dict)
+    donor_allele_dict = load_donor_HLA_alleles("../data/ragweed_donor_HLA.txt")
+else:
+    HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/tree_7allele_NetMHCIIpan.xls")
+    HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/tree_donor_NetMHCIIpan.xls", HLA_dict)
+    donor_allele_dict = load_donor_HLA_alleles("../data/tree_donor_HLA.txt")
 
-donor_allele_dict = load_donor_HLA_alleles("../data/ragweed_donor_HLA.txt")
 
 seven_alleles = ["DRB1_0301", "DRB1_0701", "DRB1_1501", "DRB3_0101", "DRB3_0202", "DRB4_0101", "DRB5_0101"]
 
@@ -75,10 +80,10 @@ for line in infile:
     print(donor, peptide, SI, best_7allele_rank, best_donor_rank)
 
 
-xlabel = "Best donor rank"
-ylabel = "7 allele rank"
-plot_title = ylabel + " vs. " + xlabel
-x = rank_list_donor
-y = rank_list_7allele
+# xlabel = "Best donor rank"
+# ylabel = "7 allele rank"
+# plot_title = ylabel + " vs. " + xlabel
+# x = rank_list_donor
+# y = rank_list_7allele
 ##print(sim_scatterplot(SI, best_7allele_rank, "7 Allele vs. SI", "SI", "Rank"))
 #print(sim_scatterplot(SI, best_donor_rank, "Donor rank vs. SI", "SI", "Donor Rank"))
