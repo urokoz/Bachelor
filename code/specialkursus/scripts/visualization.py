@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import numpy as np
 from func_file import *
 import matplotlib.pyplot as plt
+import scipy.stats as st
 
 def pearsons_cc(y_est, y_true):
     n = len(y_est)
@@ -23,22 +24,66 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     ax.set_title(plot_title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    plt.show()
+    plt.show(block=blocker)
+
+
 
 
 
 data = np.loadtxt("donor_data.txt", delimiter=" ", dtype = str)
 
-#indicies:
-#0 = donor nr.
-#1 = allergen
-#2 = SI
-#3 = 7 allele rank
-#4 = donor rank
+data = data[:,2:].astype(float)
+
+# data[:,1:] = 100 - data[:,1:]
+
+if True:
+    data[data == 0] = 0.01
+    data[:,0] = np.log(data[:,0])
+
+# indicies:
+# 0 = SI
+# 1 = 7 allele rank
+# 2 = donor rank
 
 xlabel = "SI"
 ylabel = "Donor rank"
 plot_title = ylabel + " vs. " + xlabel
-x = data[:,2]
-y = data[:,4]
+x = data[:,0]
+y = data[:,2]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "SI"
+ylabel = "7 allele rank"
+plot_title = ylabel + " vs. " + xlabel
+x = data[:,0]
+y = data[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+xlabel = "Donor rank"
+ylabel = "7 allele rank"
+plot_title = ylabel + " vs. " + xlabel
+x = data[:,2]
+y = data[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=True)
+
+
+# react = data[data[:,0] >= np.log(3),:]
+# non_react = data[data[:,0] < np.log(3),:]
+#
+#
+# fig, ax = plt.subplots()
+# p_val = st.ttest_ind(react[:,2],non_react[:,2], equal_var=False)[1]
+# ax.boxplot([non_react[:,2],react[:,2]], vert = 0)
+# ax.set_yticklabels(["Non react", "React"])
+# ax.set_xlabel("Donor rank")
+# ax.set_title("Donor rank for CR(SI>=3) and non CR. p-val = %.10f" % p_val)
+# plt.show(block=False)
+#
+#
+# fig, ax = plt.subplots()
+# p_val = st.ttest_ind(react[:,1],non_react[:,1], equal_var=False)[1]
+# ax.boxplot([non_react[:,1],react[:,1]], vert = 0)
+# ax.set_yticklabels(["Non react", "React"])
+# ax.set_xlabel("7allele rank")
+# ax.set_title("7allele rank for CR(SI>=3) and non CR. p-val = %.10f" % p_val)
+# plt.show()
