@@ -1,0 +1,9 @@
+name  ragweed
+data_dir  Data/ragweed/
+dataset ragweed_Tcell_pairwise.MNi.tab
+pep_file  peptides/peptides.txt
+HLA_file  peptides/2860_NetMHCIIpan.xls
+log_SCC_sig significances/ragweed_log_SCC_sig.txt
+log_PCC_sig significances/ragweed_log_PCC_sig.txt
+SCC_sig significances/ragweed_SCC_sig.txt
+PCC_sig significances/ragweed_PCC_sig.txt
