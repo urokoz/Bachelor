@@ -6,8 +6,11 @@ import numpy as np
 
 parser = ArgumentParser(description="Preps and filters the data and peptides")
 parser.add_argument("-f", action="store", dest="data_file", type=str, help="Raw datafile")
+parser.add_argument("-log", action="store_true", default=False, help="Log-transform SI values")
 
-
+args = parser.parse_args()
+data_file = args.data_file
+log_switch = args.log
 ## Main
 
 # Data format:
@@ -101,6 +104,10 @@ for line in infile:
     if donor_id not in donor_reaction_dict:
         donor_reaction_dict[donor_id] = dict()
 
-    donor_reaction_dict[donor_id][ori_pepseq] = ori_SI
-    donor_reaction_dict[donor_id][var_pepseq] = var_SI
+    donor_reaction_dict[donor_id][pep_id_name[ori_id]] = ori_SI
+    donor_reaction_dict[donor_id][pep_id_name[var_id]] = var_SI
 infile.close()
+
+for donor, value in donor_reaction_dict.items():
+    for pep, SI in value.items():
+        print(donor, pep, SI, sep="\t")

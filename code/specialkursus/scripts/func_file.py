@@ -11,7 +11,6 @@ def load_pep_HLA_data(datafile, pep_HLA_dict = dict()):
     infile = open(datafile,"r")
 
     allele_names = infile.readline().split()
-    print(allele_names)
     infile.readline()
 
     for i, line in enumerate(infile):
