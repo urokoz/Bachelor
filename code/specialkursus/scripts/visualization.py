@@ -3,6 +3,7 @@ import numpy as np
 from func_file import *
 import matplotlib.pyplot as plt
 import scipy.stats as st
+import math as math
 
 def pearsons_cc(y_est, y_true):
     n = len(y_est)
@@ -46,26 +47,26 @@ if False:
 # 1 = 7 allele rank
 # 2 = donor rank
 
-# xlabel = "SI"
-# ylabel = "Donor rank"
-# plot_title = ylabel + " vs. " + xlabel
-# x = data[:,0]
-# y = data[:,2]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+xlabel = "SI"
+ylabel = "Donor rank"
+plot_title = ylabel + " vs. " + xlabel
+x = data[:,0]
+y = data[:,2]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
-# xlabel = "SI"
-# ylabel = "7 allele rank"
-# plot_title = ylabel + " vs. " + xlabel
-# x = data[:,0]
-# y = data[:,1]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+xlabel = "SI"
+ylabel = "7 allele rank"
+plot_title = ylabel + " vs. " + xlabel
+x = data[:,0]
+y = data[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
-# xlabel = "Donor rank"
-# ylabel = "7 allele rank"
-# plot_title = ylabel + " vs. " + xlabel
-# x = data[:,2]
-# y = data[:,1]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=True)
+xlabel = "Donor rank"
+ylabel = "7 allele rank"
+plot_title = ylabel + " vs. " + xlabel
+x = data[:,2]
+y = data[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=True)
 
 
 react = data[data[:,0] >= 2,:]
@@ -88,3 +89,8 @@ ax.set_yticklabels(["Non react", "React"])
 ax.set_xlabel("7allele rank")
 ax.set_title("7allele rank for CR(SI>=2) and non CR. p-val = %.10f" % p_val)
 plt.show()
+
+
+print("SI vs. donor rank:", pearsons_cc(data[:,0], data[:,2]))
+print("SI vs. 7 allele:", pearsons_cc(data[:,0], data[:,1]))
+print("Donor rank vs. 7 allele rank:", pearsons_cc(data[:,2], data[:,1]))
