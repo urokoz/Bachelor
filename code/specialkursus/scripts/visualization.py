@@ -72,9 +72,8 @@ react = data[data[:,0] >= 2,:]
 non_react = data[data[:,0] < 2,:]
 
 print(np.sort(react[:,1]))
-
 print(np.sort(non_react[:,1]))
-# 
+#
 # fig, ax = plt.subplots()
 # p_val = st.ttest_ind(react[:,2],non_react[:,2], equal_var=False)[1]
 # ax.boxplot([non_react[:,2],react[:,2]], vert = 0)
