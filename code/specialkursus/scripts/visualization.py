@@ -30,7 +30,7 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
 
 
 
-data = np.loadtxt("../data/tree_donor_data.txt", delimiter=" ", dtype = str)
+data = np.loadtxt("donor_data.txt", delimiter=" ", dtype = str)
 
 data = data[:,2:].astype(float)
 
@@ -71,22 +71,22 @@ if False:
 react = data[data[:,0] >= 2,:]
 non_react = data[data[:,0] < 2,:]
 
-print(np.sort(react[:,1]))
-print(np.sort(non_react[:,1]))
-#
-# fig, ax = plt.subplots()
-# p_val = st.ttest_ind(react[:,2],non_react[:,2], equal_var=False)[1]
-# ax.boxplot([non_react[:,2],react[:,2]], vert = 0)
-# ax.set_yticklabels(["Non react", "React"])
-# ax.set_xlabel("Donor rank")
-# ax.set_title("Donor rank for CR(SI>=2) and non CR. p-val = %.10f" % p_val)
-# plt.show(block=False)
-#
-#
-# fig, ax = plt.subplots()
-# p_val = st.ttest_ind(react[:,1],non_react[:,1], equal_var=False)[1]
-# ax.boxplot([non_react[:,1],react[:,1]], vert = 0)
-# ax.set_yticklabels(["Non react", "React"])
-# ax.set_xlabel("7allele rank")
-# ax.set_title("7allele rank for CR(SI>=2) and non CR. p-val = %.10f" % p_val)
-# plt.show()
+# print(np.sort(react[:,1]))
+# print(np.sort(non_react[:,1]))
+
+fig, ax = plt.subplots()
+p_val = st.ttest_ind(react[:,2],non_react[:,2], equal_var=False)[1]
+ax.boxplot([non_react[:,2],react[:,2]], vert = 0)
+ax.set_yticklabels(["Non react", "React"])
+ax.set_xlabel("Donor rank")
+ax.set_title("Donor rank for CR(SI>=2) and non CR. p-val = %.10f" % p_val)
+plt.show(block=False)
+
+
+fig, ax = plt.subplots()
+p_val = st.ttest_ind(react[:,1],non_react[:,1], equal_var=False)[1]
+ax.boxplot([non_react[:,1],react[:,1]], vert = 0)
+ax.set_yticklabels(["Non react", "React"])
+ax.set_xlabel("7allele rank")
+ax.set_title("7allele rank for CR(SI>=2) and non CR. p-val = %.10f" % p_val)
+plt.show()

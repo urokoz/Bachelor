@@ -41,7 +41,7 @@ parser.add_argument("-f", action="store", dest="data_file", type=str, help="Raw 
 args = parser.parse_args()
 data_file = args.data_file
 
-if False:
+if True:
     HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_7allele_NetMHCIIpan.xls")
     HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor1_NetMHCIIpan.xls", HLA_dict)
     HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor2_NetMHCIIpan.xls", HLA_dict)
@@ -72,10 +72,11 @@ for line in infile:
 
     best_donor_rank = 100
     for allele in donor_allele_dict[donor]:
-        rank = HLA_dict[peptide][allele][0]
+        if "DRB1" in allele:
+            rank = HLA_dict[peptide][allele][0]
 
-        if rank < best_donor_rank:
-            best_donor_rank = rank
+            if rank < best_donor_rank:
+                best_donor_rank = rank
 
     print(donor, peptide, SI, best_7allele_rank, best_donor_rank)
 
