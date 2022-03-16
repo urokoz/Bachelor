@@ -27,7 +27,12 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     plt.show(block=blocker)
 
 
-
+def barplot(x, y, plot_title, xlabel):
+    fig, ax = plt.subplots()
+    ax.bar(x, y)
+    ax.set_title(plot_title)
+    ax.set_xlabel(xlabel)
+    plt.show()
 
 
 data = np.loadtxt("donor_data.txt", delimiter=" ", dtype = str)
@@ -89,4 +94,16 @@ ax.boxplot([non_react[:,1],react[:,1]], vert = 0)
 ax.set_yticklabels(["Non react", "React"])
 ax.set_xlabel("7allele rank")
 ax.set_title("7allele rank for CR(SI>=2) and non CR. p-val = %.10f" % p_val)
+plt.show()
+
+
+HLA_data = np.loadtxt("../results/donor/tree_HLA_count.txt", delimiter = "\t", dtype = str)
+
+fig, ax = plt.subplots()
+ax.bar(HLA_data[:,0], HLA_data[:,1].astype(float))
+ax.set_xlabel("HLA class II allele")
+ax.set_ylabel("Count")
+ax.set_title("HLA class II allele occurence in ragweed dataset")
+ax.set_xticklabels(HLA_data[:,0], rotation=45)
+ax.legend(fontsize=5, title_fontsize=15)
 plt.show()
