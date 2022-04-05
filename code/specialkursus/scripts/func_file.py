@@ -48,3 +48,7 @@ def load_donor_HLA_alleles(donor_file):
         HLA_dict[donor] = alleles.split(",")
 
     return HLA_dict
+
+
+def percent_v_bg(rank, HLA_allele, bg_dict):
+    return 100*np.mean([int(bg_rank < rank) for bg_rank in bg_dict[HLA_allele]])

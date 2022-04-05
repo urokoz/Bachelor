@@ -56,6 +56,9 @@ seven_alleles = ["DRB1_0301", "DRB1_0701", "DRB1_1501", "DRB3_0101", "DRB3_0202"
 
 infile = open(data_file)
 
+with open("../data/bg_HLA_dict.pkl", 'rb') as f:
+    bg_dict = pickle.load(f)
+
 for line in infile:
     donor, peptide, SI = line.split()
 
@@ -66,17 +69,20 @@ for line in infile:
     for allele in seven_alleles:
         rank = HLA_dict[peptide][allele][0]
 
-        if rank < best_7allele_rank:
-            best_7allele_rank = rank
+        corrected_rank = percent_v_bg(rank, allele, bg_dict)
+
+        if corrected_rank < best_7allele_rank:
+            best_7allele_rank = corrected_rank
 
 
     best_donor_rank = 100
     for allele in donor_allele_dict[donor]:
-        if "DRB1" in allele:
-            rank = HLA_dict[peptide][allele][0]
+        rank = HLA_dict[peptide][allele][0]
 
-            if rank < best_donor_rank:
-                best_donor_rank = rank
+        corrected_rank = percent_v_bg(rank, allele, bg_dict)
+
+        if corrected_rank < best_donor_rank:
+            best_donor_rank = corrected_rank
 
     print(donor, peptide, SI, best_7allele_rank, best_donor_rank)
 
