@@ -3,6 +3,7 @@ import numpy as np
 from func_file import *
 import matplotlib.pyplot as plt
 import scipy.stats as st
+import pandas as pd
 
 def pearsons_cc(y_est, y_true):
     n = len(y_est)
@@ -16,12 +17,13 @@ def pearsons_cc(y_est, y_true):
     return r_xy
 
 
+
 def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     #PCC = pearsons_cc(x,y)
-    #SCC, _ = st.spearmanr(x,y)
+    SCC, _ = st.spearmanr(x,y)
     fig, ax = plt.subplots()
     ax.scatter(x, y)
-    ax.set_title(plot_title)
+    ax.set_title(plot_title + " SCC: {}".format(round(SCC,3)))
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     plt.show(block=blocker)
@@ -35,11 +37,22 @@ def barplot(x, y, plot_title, xlabel):
     plt.show()
 
 
-data = np.loadtxt("donor_data.txt", delimiter=" ", dtype = str)
+parser = ArgumentParser(description="Preps and filters the data and peptides")
+parser.add_argument("-f", action="store", dest="data_file", type=str, help="Raw datafile")
+parser.add_argument("-Amb_a", action="store_true", default=False, help="Amb_a filter")
+
+args = parser.parse_args()
+data_file = args.data_file
+amb_switch = args.Amb_a
+
+data = np.loadtxt(data_file, delimiter=" ", dtype = str)
+
+if amb_switch:
+    data = data[np.char.startswith(data[:,1], "Amb_a"),:]
 
 data = data[:,2:].astype(float)
 
-# data[:,1:] = 100 - data[:,1:]
+
 
 if False:
     data[data == 0] = 0.01
@@ -51,20 +64,23 @@ if False:
 # 1 = 7 allele rank
 # 2 = donor rank
 
-# xlabel = "SI"
-# ylabel = "Donor rank"
-# plot_title = ylabel + " vs. " + xlabel
-# x = data[:,0]
-# y = data[:,2]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+
+
+xlabel = "Donor rank"
+ylabel = "SI"
+plot_title = ylabel + " vs. " + xlabel
+y = data[:,0]
+x = data[:,2]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
-# xlabel = "SI"
-# ylabel = "7 allele rank"
-# plot_title = ylabel + " vs. " + xlabel
-# x = data[:,0]
-# y = data[:,1]
-# sim_scatterplot(x, y, plot_title, xlabel, ylabel)
+xlabel = "7 allele rank"
+ylabel = "SI"
+plot_title = ylabel + " vs. " + xlabel
+y = data[:,0]
+x = data[:,1]
+sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
+plt.show()
 # xlabel = "Donor rank"
 # ylabel = "7 allele rank"
 # plot_title = ylabel + " vs. " + xlabel
@@ -105,5 +121,5 @@ ax.set_xlabel("HLA class II allele")
 ax.set_ylabel("Count")
 ax.set_title("HLA class II allele occurence in ragweed dataset")
 ax.set_xticklabels(HLA_data[:,0], rotation=45)
-ax.legend(fontsize=5, title_fontsize=15)
+#ax.legend(fontsize=5, title_fontsize=15)
 plt.show()
