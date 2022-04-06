@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import numpy as np
 
+
+import numpy as np
+
+
 def load_pep_HLA_data(datafile, pep_HLA_dict = dict()):
     """ Reads predicted MHCII binding for different HLA allels and outputs
         it as a dict.
