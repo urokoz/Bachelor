@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-#!/usr/bin/env python
-
 from argparse import ArgumentParser
 import numpy as np
 from func_file import *
 import matplotlib.pyplot as plt
+import pickle
 
-#----- funcktions -------
+#----- functions -------
 
 #def pearsons_cc(y_est, y_true):
     #n = len(y_est)
@@ -41,7 +40,7 @@ parser.add_argument("-f", action="store", dest="data_file", type=str, help="Raw 
 args = parser.parse_args()
 data_file = args.data_file
 
-if True:
+if False:
     HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_7allele_NetMHCIIpan.xls")
     HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor1_NetMHCIIpan.xls", HLA_dict)
     HLA_dict = load_pep_HLA_data("../data/NetMHCIIpan/ragweed_donor2_NetMHCIIpan.xls", HLA_dict)
@@ -66,25 +65,33 @@ for line in infile:
         continue
 
     best_7allele_rank = 100
+    best_cor_7allele_rank = 100
     for allele in seven_alleles:
         rank = HLA_dict[peptide][allele][0]
 
+        if rank < best_7allele_rank:
+            best_7allele_rank = rank
+
         corrected_rank = percent_v_bg(rank, allele, bg_dict)
 
-        if corrected_rank < best_7allele_rank:
-            best_7allele_rank = corrected_rank
+        if corrected_rank < best_cor_7allele_rank:
+            best_cor_7allele_rank = corrected_rank
 
 
     best_donor_rank = 100
+    best_cor_donor_rank = 100
     for allele in donor_allele_dict[donor]:
         rank = HLA_dict[peptide][allele][0]
 
+        if rank < best_donor_rank:
+            best_donor_rank = rank
+
         corrected_rank = percent_v_bg(rank, allele, bg_dict)
 
-        if corrected_rank < best_donor_rank:
-            best_donor_rank = corrected_rank
+        if corrected_rank < best_cor_donor_rank:
+            best_cor_donor_rank = corrected_rank
 
-    print(donor, peptide, SI, best_7allele_rank, best_donor_rank)
+    print(donor, peptide, SI, best_7allele_rank, best_donor_rank, round(best_cor_7allele_rank, 3), round(best_cor_donor_rank, 3), sep="\t")
 
 
 # xlabel = "Best donor rank"
