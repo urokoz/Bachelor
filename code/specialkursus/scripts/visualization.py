@@ -45,13 +45,12 @@ args = parser.parse_args()
 data_file = args.data_file
 amb_switch = args.Amb_a
 
-data = np.loadtxt(data_file, delimiter=" ", dtype = str)
+data = np.loadtxt(data_file, delimiter="\t", dtype = str)
 
 if amb_switch:
     data = data[np.char.startswith(data[:,1], "Amb_a"),:]
 
 data = data[:,2:].astype(float)
-
 
 
 if False:
@@ -63,6 +62,8 @@ if False:
 # 0 = SI
 # 1 = 7 allele rank
 # 2 = donor rank
+# 3 = 7 allele normalized
+# 4 = donor normalized
 
 
 
@@ -70,14 +71,14 @@ xlabel = "Donor rank"
 ylabel = "SI"
 plot_title = ylabel + " vs. " + xlabel
 y = data[:,0]
-x = data[:,2]
+x = data[:,4]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
 xlabel = "7 allele rank"
 ylabel = "SI"
 plot_title = ylabel + " vs. " + xlabel
 y = data[:,0]
-x = data[:,1]
+x = data[:,3]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
 plt.show()
