@@ -2,6 +2,7 @@
 
 from argparse import ArgumentParser
 import numpy as np
+import pickle
 
 
 parser = ArgumentParser(description="Preps and filters the data and peptides")
@@ -11,6 +12,8 @@ parser.add_argument("-log", action="store_true", default=False, help="Log-transf
 args = parser.parse_args()
 data_file = args.data_file
 log_switch = args.log
+
+species = data_file.split("/")[-1].split("_")[0]
 ## Main
 
 # Data format:
@@ -19,13 +22,13 @@ log_switch = args.log
 
 pep_list = []
 
-pep_pair_dict = dict()
-seen_peptide_pairs = set()
-donor_reaction_dict = dict()
 unique_seqs = set()
+seen_peptide_pairs = set()
+pep_pair_dict = dict()
+donor_reaction_dict = dict()
 allergen_dict = dict()
 pep_id_name = dict()
-
+donor_pep_pair_dict = dict()
 
 infile = open(data_file, "r")
 infile.readline()   # remove header
@@ -99,6 +102,10 @@ for line in infile:
         pep_pair_dict[pep_pair][0].append(var_SI)
         pep_pair_dict[pep_pair][1].append(ori_SI)
 
+    if donor_id not in donor_pep_pair_dict:
+        donor_pep_pair_dict[donor_id] = [(full_ori_name, full_var_name)]
+    else:
+        donor_pep_pair_dict[donor_id].append((full_ori_name, full_var_name))
 
 
     if donor_id not in donor_reaction_dict:
@@ -106,7 +113,12 @@ for line in infile:
 
     donor_reaction_dict[donor_id][pep_id_name[ori_id]] = ori_SI
     donor_reaction_dict[donor_id][pep_id_name[var_id]] = var_SI
+
 infile.close()
+
+with open('../data/dicts/donor_pep_pair_dict_{}.pkl'.format(species), 'wb') as f:
+    pickle.dump(donor_pep_pair_dict, f)
+
 
 for donor, value in donor_reaction_dict.items():
     for pep, SI in value.items():
