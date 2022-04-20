@@ -81,6 +81,7 @@ y = data[:,0]
 x = data[:,3]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
+
 plt.show()
 # xlabel = "Donor rank"
 # ylabel = "7 allele rank"

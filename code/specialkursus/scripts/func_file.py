@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
-
-
-import numpy as np
+import math
 
 
 def load_pep_HLA_data(datafile, pep_HLA_dict = dict()):
@@ -57,3 +55,11 @@ def load_donor_HLA_alleles(donor_file):
 
 def percent_v_bg(rank, HLA_allele, bg_dict):
     return 100*np.mean([int(bg_rank < rank) for bg_rank in bg_dict[HLA_allele]])
+
+
+def sigmoid(si):
+
+    z = np.exp(-si)
+    sig = 1 / (1 + z)
+
+    return sig
