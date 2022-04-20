@@ -42,15 +42,92 @@ def load_pep_HLA_data(datafile, pep_HLA_dict = dict()):
     return pep_HLA_dict
 
 
-def load_donor_HLA_alleles(donor_file):
+def load_donor_HLA_alleles(donor_file, HLA_dict = dict()):
     infile = open(donor_file, "r")
 
-    HLA_dict = dict()
+
     for line in infile:
         donor, alleles = line.split()
         HLA_dict[donor] = alleles.split(",")
 
     return HLA_dict
+
+
+def load_bg_HLA_data(datafile, bg_HLA_dict = dict()):
+    """ Reads predicted MHCII binding for of 10000 random uniprot peptides for
+        different HLA allels and outputs it as a dict.
+
+        output format:
+        bg_HLA_dict[HLA_allele] = [10000 random ranks]
+    """
+
+    infile = open(datafile,"r")
+
+    allele_name = infile.readline().strip()
+    if not bg_HLA_dict.get(allele_name):
+        bg_HLA_dict[allele_name] = []
+
+    infile.readline()
+    old_pep = ""
+    first_flag = True
+    for line in infile:
+        line = line.split()
+        cur_pep = line[2]
+        rank = float(line[6])
+
+        if cur_pep == old_pep:
+            best_rank = min(rank, best_rank)
+        else:
+            if first_flag:
+                best_rank = rank
+                old_pep = cur_pep
+                first_flag = False
+            else:
+                bg_HLA_dict[allele_name].append(best_rank)
+                best_rank = rank
+                old_pep = cur_pep
+
+    bg_HLA_dict[allele_name].append(best_rank)
+
+    infile.close()
+
+    return bg_HLA_dict
+
+
+def load_donor_pep_dict(data_file, donor_allele_dict, pep_HLA_dict, bg_dict, donor_pep_dict = dict()):
+    infile = open(data_file, "r")
+
+    lines = infile.readlines()
+    infile.close()
+
+    n_lines = len(lines)
+    for i, line in enumerate(lines):
+        print("\tReading '{}' line {}/{}".format(data_file, i+1, n_lines), end="\r")
+        donor, peptide, SI = line.split()
+
+        if not donor_allele_dict.get(donor):
+            continue
+
+        best_donor_rank = 100
+        best_cor_donor_rank = 100
+        for allele in donor_allele_dict[donor]:
+            rank, core = pep_HLA_dict[peptide][allele]
+
+            if rank < best_donor_rank:
+                best_donor_rank = rank
+                best_donor_core = core
+
+            corrected_rank = percent_v_bg(rank, allele, bg_dict)
+
+            if corrected_rank < best_cor_donor_rank:
+                best_cor_donor_rank = corrected_rank
+                best_cor_donor_core = core
+
+        if not donor_pep_dict.get(donor):
+            donor_pep_dict[donor] = dict()
+        donor_pep_dict[donor][peptide] = [SI, best_donor_rank, round(best_cor_donor_rank, 3), best_donor_core, best_cor_donor_core]
+    print()
+    return donor_pep_dict
 
 
 def percent_v_bg(rank, HLA_allele, bg_dict):

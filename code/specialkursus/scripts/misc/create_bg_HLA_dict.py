@@ -3,11 +3,11 @@ import glob
 import pickle
 
 def load_bg_HLA_data(datafile, bg_HLA_dict = dict()):
-    """ Reads predicted MHCII binding for different HLA allels and outputs
-        it as a dict.
+    """ Reads predicted MHCII binding for of 10000 random uniprot peptides for
+        different HLA allels and outputs it as a dict.
 
         output format:
-        pep_HLA_dict[pep_name][HLA_allele] = [rank, core]
+        bg_HLA_dict[HLA_allele] = [10000 random ranks]
     """
 
     infile = open(datafile,"r")

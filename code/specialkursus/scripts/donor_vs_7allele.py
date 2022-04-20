@@ -53,11 +53,11 @@ else:
 
 seven_alleles = ["DRB1_0301", "DRB1_0701", "DRB1_1501", "DRB3_0101", "DRB3_0202", "DRB4_0101", "DRB5_0101"]
 
-infile = open(data_file)
 
 with open("../data/bg_HLA_dict.pkl", 'rb') as f:
     bg_dict = pickle.load(f)
 
+infile = open(data_file)
 for line in infile:
     donor, peptide, SI = line.split()
 
