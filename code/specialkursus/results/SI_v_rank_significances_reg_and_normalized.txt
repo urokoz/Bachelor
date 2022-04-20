@@ -1,0 +1,44 @@
+Ragweed:
+
+SI vs 7 allele rank:
+Spearman coefficient for N= 2776 data: -0.12263
+SIGXYCORR from n-samples 1000 -0.122646 0.018909
+Z from n-samples 1000 -6.723967 pval 0.000000
+
+SI vs donor rank:
+Spearman coefficient for N= 2776 data: -0.13300
+SIGXYCORR from n-samples 1000 -0.133573 0.018688
+Z from n-samples 1000 -7.190712 pval 0.000000
+
+SI vs normalized 7 allele rank:
+Spearman coefficient for N= 2776 data: -0.12597
+SIGXYCORR from n-samples 1000 -0.125974 0.018848
+Z from n-samples 1000 -6.869847 pval 0.000000
+
+SI vs normalized donor rank:
+Spearman coefficient for N= 2776 data: -0.13442
+SIGXYCORR from n-samples 1000 -0.134943 0.018664
+Z from n-samples 1000 -7.262074 pval 0.000000
+
+
+Tree:
+
+SI vs 7 allele rank:
+Spearman coefficient for N= 1560 data: -0.01139
+SIGXYCORR from n-samples 1000 -0.011016 0.024122
+Z from n-samples 1000 -0.484770 pval 0.304000
+
+SI vs donor rank:
+Spearman coefficient for N= 1560 data: -0.14531
+SIGXYCORR from n-samples 1000 -0.144154 0.025127
+Z from n-samples 1000 -5.723058 pval 0.000000
+
+SI vs normalized 7 allele rank:
+Spearman coefficient for N= 1560 data: -0.00893
+SIGXYCORR from n-samples 1000 -0.008536 0.024016
+Z from n-samples 1000 -0.385774 pval 0.349000
+
+SI vs normalized donor rank:
+Spearman coefficient for N= 1560 data: -0.14972
+SIGXYCORR from n-samples 1000 -0.148623 0.025151
+Z from n-samples 1000 -5.890992 pval 0.000000
