@@ -142,6 +142,30 @@ def score_cores(core1, core2, blosum50):
     return core_ident, core_blosum
 
 
+def load_blosum50():
+    #alphabet_file = alphabet_upload.values()
+    #alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
+    alphabet_file = "../data/Matrices/alphabet"
+    alphabet = np.loadtxt(alphabet_file, dtype=str)
+
+
+    #blosum_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/blosum50"
+    blosum_file = "../data/Matrices/BLOSUM50"
+    _blosum50 = np.loadtxt(blosum_file, dtype=float).reshape((24, -1)).T
+
+    blosum50 = {}
+
+    for i, letter_1 in enumerate(alphabet):
+
+        blosum50[letter_1] = {}
+
+        for j, letter_2 in enumerate(alphabet):
+
+            blosum50[letter_1][letter_2] = _blosum50[i, j]
+
+    return blosum50
+
+
 def percent_v_bg(rank, HLA_allele, bg_dict):
     return 100*np.mean([int(bg_rank < rank) for bg_rank in bg_dict[HLA_allele]])
 

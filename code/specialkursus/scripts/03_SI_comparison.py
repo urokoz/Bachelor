@@ -6,7 +6,7 @@ import scipy.stats as st
 
 ## donor_pep_pair_dict gives a list of peptide pairs that the donor has data for
 #   donor --> [(pep_pair_1A, pep_pair_1B), ..., (pep_pair_nA, pep_pair_nB)]
-with open("../data/dicts/donor_pep_pair_dict_ragweed.pkl", 'rb') as f:
+with open("../data/dicts/donor_pep_pair_dict_tree.pkl", 'rb') as f:
     donor_pep_pair_dict = pickle.load(f)
 
 ## donor_pep_dict gives data on donors relation to peptide
@@ -14,27 +14,7 @@ with open("../data/dicts/donor_pep_pair_dict_ragweed.pkl", 'rb') as f:
 with open("../data/dicts/donor_pep_dict.pkl", 'rb') as f:
     donor_pep_dict = pickle.load(f)
 
-
-#alphabet_file = alphabet_upload.values()
-#alphabet_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/alphabet"
-alphabet_file = "../data/Matrices/alphabet"
-alphabet = np.loadtxt(alphabet_file, dtype=str)
-
-
-#blosum_file = "https://raw.githubusercontent.com/brunoalvarez89/data/master/algorithms_in_bioinformatics/part_3/blosum50"
-blosum_file = "../data/Matrices/BLOSUM50"
-_blosum50 = np.loadtxt(blosum_file, dtype=float).reshape((24, -1)).T
-
-blosum50 = {}
-
-for i, letter_1 in enumerate(alphabet):
-
-    blosum50[letter_1] = {}
-
-    for j, letter_2 in enumerate(alphabet):
-
-        blosum50[letter_1][letter_2] = _blosum50[i, j]
-
+blosum50 = load_blosum50()
 
 high = []
 low = []
