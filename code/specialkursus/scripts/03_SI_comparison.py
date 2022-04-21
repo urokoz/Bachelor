@@ -33,6 +33,6 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
         low.append(SI_l)
 
 fig, ax = plt.subplots()
-ax.scatter(high, low)
+ax.scatter(sigmoid(high), sigmoid(low))
 
 plt.show()
