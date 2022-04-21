@@ -3,9 +3,13 @@ from func_file import *
 import pickle
 import matplotlib.pyplot as plt
 
+## donor_pep_pair_dict gives a list of peptide pairs that the donor has data for
+#   donor --> [(pep_pair_1A, pep_pair_1B), ..., (pep_pair_nA, pep_pair_nB)]
 with open("../data/dicts/donor_pep_pair_dict_ragweed.pkl", 'rb') as f:
     donor_pep_pair_dict = pickle.load(f)
 
+## donor_pep_dict gives data on donors relation to peptide
+#   donor, pep --> SI, best_rank, best_cor_rank, best_core, best_cor_core
 with open("../data/dicts/donor_pep_dict.pkl", 'rb') as f:
     donor_pep_dict = pickle.load(f)
 
