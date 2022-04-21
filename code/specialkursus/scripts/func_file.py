@@ -130,6 +130,18 @@ def load_donor_pep_dict(data_file, donor_allele_dict, pep_HLA_dict, bg_dict, don
     return donor_pep_dict
 
 
+def score_cores(core1, core2, blosum50):
+    core_matches = 0
+    core_blosum = 0
+    for a,b in zip(core1, core2):
+        core_matches += int(a==b)
+        core_blosum += blosum50[a][b]
+
+        core_ident = core_matches/len(core1)*100
+
+    return core_ident, core_blosum
+
+
 def percent_v_bg(rank, HLA_allele, bg_dict):
     return 100*np.mean([int(bg_rank < rank) for bg_rank in bg_dict[HLA_allele]])
 
