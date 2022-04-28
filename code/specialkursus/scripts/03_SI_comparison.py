@@ -6,7 +6,7 @@ import scipy.stats as st
 
 ## donor_pep_pair_dict gives a list of peptide pairs that the donor has data for
 #   donor --> [(pep_pair_1A, pep_pair_1B), ..., (pep_pair_nA, pep_pair_nB)]
-with open("../data/dicts/donor_pep_pair_dict_tree.pkl", 'rb') as f:
+with open("../data/dicts/donor_pep_pair_dict_ragweed.pkl", 'rb') as f:
     donor_pep_pair_dict = pickle.load(f)
 
 ## donor_pep_dict gives data on donors relation to peptide
@@ -59,14 +59,11 @@ ax.set_xlabel("core similarity")
 ax.set_title("core similarity for high and low p-val = %.10f" % p_val)
 plt.show()
 
-
-#         high.append(SI_h)
-#         low.append(SI_l)
 #
-# fig, ax = plt.subplots()
-# ax.scatter(high, low)
+#fig, ax = plt.subplots()
+#ax.scatter(high, low)
 #
-# plt.show()
+#plt.show()
 
 
 #set threshold: 0.4 (y-axis) and 0.5 (x-axis)
