@@ -62,7 +62,7 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
         low_SI.append(SI_l)
 
         if SI_h >= 0.5:
-            core_id, core_bl = score_cores(core_h, core_l, blosum50, weighting = [3,1,1,3,1,3,1,1,3])
+            core_id, core_bl = score_cores(core_h, core_l, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
 
             if SI_l >= 0.4:
                 high_core.append(core_bl)
