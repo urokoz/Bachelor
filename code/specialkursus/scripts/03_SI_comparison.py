@@ -21,11 +21,13 @@ blosum50 = load_blosum50()
 
 high_core = []
 low_core = []
+none_core = []
 high_SI = []
 low_SI = []
 
 both_binder_high = []
 both_binder_low = []
+both_binder_none = []
 
 rank_split = 5
 for donor, pep_pair_list in donor_pep_pair_dict.items():
@@ -61,22 +63,29 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
         high_SI.append(SI_h)
         low_SI.append(SI_l)
 
+        core_id, core_bl = score_cores(core_h, core_l, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
         if SI_h >= 0.5:
-            core_id, core_bl = score_cores(core_h, core_l, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
 
-            if SI_l >= 0.4:
-                high_core.append(core_id)
+            if SI_l >= 0.5:
+                high_core.append(core_bl)
                 if rank_h < rank_split and rank_l < rank_split:
-                    both_binder_high.append(core_id)
+                    both_binder_high.append(core_bl)
             else:
-                low_core.append(core_id)
+                low_core.append(core_bl)
                 if rank_h < rank_split and rank_l < rank_split:
-                    both_binder_low.append(core_id)
+                    both_binder_low.append(core_bl)
+        else:
+            none_core.append(core_bl)
+            if rank_h < rank_split and rank_l < rank_split:
+                both_binder_none.append(core_bl)
 
 
+print("None both binder:", len(both_binder_none))
 print("Low both binder:", len(both_binder_low))
 print("High both binder:", len(both_binder_high))
-
+print("None all:", len(none_core))
+print("Low all:", len(low_core))
+print("High all:", len(high_core))
 
 # Boxplot of core similarities for SI_h >= 0.5 and SI_l higher or lower than 0.4
 fig, ax = plt.subplots()

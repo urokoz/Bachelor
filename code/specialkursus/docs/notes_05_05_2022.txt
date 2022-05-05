@@ -1,0 +1,18 @@
+check best core vs. corresponding core instead of best v best
+
+medtag flanking hvis muligt (3 aa på hver side)
+
+Leg med sigmoid func og SI threshhold
+
+sigmoid(SI) v rank?
+
+split sigmoid op i 2 functions!
+
+boxplots for high and low for rank i stedet for core sim. For at tjekke at forskellen er core sim og ikke mhc bindings potentiale
+
+
+RAPPORT
+
+hop direkte ind i results!
+
+Vis donor specifik giver mening og er bedre?
