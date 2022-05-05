@@ -65,13 +65,13 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
             core_id, core_bl = score_cores(core_h, core_l, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
 
             if SI_l >= 0.4:
-                high_core.append(core_bl)
+                high_core.append(core_id)
                 if rank_h < rank_split and rank_l < rank_split:
-                    both_binder_high.append(core_bl)
+                    both_binder_high.append(core_id)
             else:
-                low_core.append(core_bl)
+                low_core.append(core_id)
                 if rank_h < rank_split and rank_l < rank_split:
-                    both_binder_low.append(core_bl)
+                    both_binder_low.append(core_id)
 
 
 print("Low both binder:", len(both_binder_low))

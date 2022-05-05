@@ -180,4 +180,7 @@ def percent_v_bg(rank, HLA_allele, bg_dict):
 
 
 def sigmoid(si):
-    return 1 / (1 + np.exp(-(si-6)*0.95))
+    if si > 3.5:
+        return 1 / (1 + np.exp(-(si-3.5)*0.5))
+    else:
+        return 1 / (1 + np.exp(-(si-3.5)*2))
