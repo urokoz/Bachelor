@@ -107,9 +107,6 @@ ax.set_title("core similarity for high and low p-val = %.10f" % p_val)
 plt.show(block = False)
 
 
-#         high.append(SI_h)
-#         low.append(SI_l)
-#
 fig, ax = plt.subplots()
 ax.scatter(high_SI, low_SI)
 plt.show()
