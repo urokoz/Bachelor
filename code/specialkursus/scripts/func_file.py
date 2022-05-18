@@ -108,24 +108,35 @@ def load_donor_pep_dict(data_file, donor_allele_dict, pep_HLA_dict, bg_dict, don
         if not donor_allele_dict.get(donor):
             continue
 
-        best_donor_rank = 100
-        best_cor_donor_rank = 100
+        rank_allele_list = []
         for allele in donor_allele_dict[donor]:
             rank, core = pep_HLA_dict[peptide][allele]
 
-            if rank < best_donor_rank:
-                best_donor_rank = rank
-                best_donor_core = core
-
             corrected_rank = percent_v_bg(rank, allele, bg_dict)
 
-            if corrected_rank < best_cor_donor_rank:
-                best_cor_donor_rank = corrected_rank
-                best_cor_donor_core = core
+
+            rank_allele_list.append([allele, rank, corrected_rank, core])
+
+        # best_donor_rank = 100
+        # best_cor_donor_rank = 100
+        # for allele in donor_allele_dict[donor]:
+        #     rank, core = pep_HLA_dict[peptide][allele]
+        #     corrected_rank = percent_v_bg(rank, allele, bg_dict)
+        #
+        #     if rank < best_donor_rank:
+        #         best_donor_rank = rank
+        #         best_donor_core = core
+        #
+        #     if corrected_rank < best_cor_donor_rank:
+        #         best_cor_donor_rank = corrected_rank
+        #         best_cor_donor_core = core
+        #
 
         if not donor_pep_dict.get(donor):
             donor_pep_dict[donor] = dict()
-        donor_pep_dict[donor][peptide] = [SI, best_donor_rank, round(best_cor_donor_rank, 3), best_donor_core, best_cor_donor_core]
+
+        donor_pep_dict[donor][peptide] = [SI, rank_allele_list]
+        # donor_pep_dict[donor][peptide] = [SI, best_donor_rank, round(best_cor_donor_rank, 3), best_donor_core, best_cor_donor_core]
     print()
     return donor_pep_dict
 

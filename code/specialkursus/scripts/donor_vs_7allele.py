@@ -29,6 +29,7 @@ def sim_scatterplot(x, y, plot_title, xlabel, ylabel,blocker=False):
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     plt.show()
+    
 
 SI_list = []
 rank_list_7allele = {}
