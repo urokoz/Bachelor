@@ -48,67 +48,101 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
         # rank_2 = float(donor_pep_dict[donor][pep_2][2])
 
         ## Best vs best core
-        best_donor_rank_1 = 100
-        best_cor_donor_rank_1 = 100
+        bvb_rank_1 = 100
         for allele, rank, corr_rank, core in rank_allele_list_1:
-            # if rank < best_donor_rank_1:
-            #     best_donor_rank_1 = rank
-            #     best_donor_core_1 = core
+            # if rank < bvb_rank_1:
+            #     bvb_rank_1 = rank
+            #     bvb_core_1 = core
 
-            if corr_rank < best_cor_donor_rank_1:
-                best_cor_donor_rank_1 = corrected_rank
-                best_cor_donor_core_1 = core
+            if corr_rank < bvb_rank_1:
+                bvb_rank_1 = corr_rank
+                bvb_core_1 = core
 
-        best_donor_rank_2 = 100
-        best_cor_donor_rank_2 = 100
+        bvb_rank_2 = 100
         for allele, rank, corr_rank, core in rank_allele_list_2:
-            # if rank < best_donor_rank_2:
-            #     best_donor_rank_2 = rank
-            #     best_donor_core_2 = core
+            # if rank < bvb_rank_2:
+            #     bvb_rank_2 = rank
+            #     bvb_core_2 = core
 
-            if corr_rank < best_cor_donor_rank_2:
-                best_cor_donor_rank_2 = corrected_rank
-                best_cor_donor_core_2 = core
+            if corr_rank < bvb_rank_2:
+                bvb_rank_2 = corr_rank
+                bvb_core_2 = core
 
-        bvb_core_id, bvb_core_bl = score_cores(best_cor_donor_core_1, best_cor_donor_core_2, blosum50)
+        bvb_core_id, bvb_core_bl = score_cores(bvb_core_1, bvb_core_2, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
 
 
         ## Best vs corresponding
+        bvc_rank = 100
+        bvc_collective_rank = 200
+        for [allele1, rank1, corr_rank1, core1], [allele2, rank2, corr_rank2, core2] in zip(rank_allele_list_1, rank_allele_list_2):
+            if min(corr_rank1, corr_rank2) < bvc_rank:
+                bvc_rank = min(corr_rank1, corr_rank2)
+                bvc_rank_1 = corr_rank1
+                bvc_rank_2 = corr_rank2
+                bvc_core_1 = core1
+                bvc_core_2 = core2
 
+            # if (corr_rank1 + corr_rank2) < bvc_collective_rank:
+            #     bvc_collective_rank = corr_rank1 + corr_rank2
+            #     bvc_rank_1 = corr_rank1
+            #     bvc_rank_2 = corr_rank2
+            #     bvc_core_1 = core1
+            #     bvc_core_2 = core2
 
-        # if SI_1 > SI_2:
-        #     SI_h = SI_1
-        #     SI_l = SI_2
-        #     core_h = core_1
-        #     core_l = core_2
-        #     rank_h = rank_1
-        #     rank_l = rank_2
-        # else:
-        #     SI_h = SI_2
-        #     SI_l = SI_1
-        #     core_h = core_2
-        #     core_l = core_1
-        #     rank_h = rank_2
-        #     rank_l = rank_1
-        #
-        # high_SI.append(SI_h)
-        # low_SI.append(SI_l)
-        #
-        # core_id, core_bl = score_cores(core_h, core_l, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
-        # if SI_h >= 0.5:
-        #
-        #     if SI_l >= 0.5:
-        #         high_core.append(core_bl)
-        #         if rank_h < rank_split and rank_l < rank_split:
-        #             both_binder_high.append(core_bl)
-        #     else:
-        #         low_core.append(core_bl)
-        #         if rank_h < rank_split and rank_l < rank_split:
-        #             both_binder_low.append(core_bl)
-        # else:
-        #     none_core.append(core_bl)
-        #     if rank_h < rank_split and rank_l < rank_split:
-        #         both_binder_none.append(core_bl)
+        bvc_core_id, bvc_core_bl = score_cores(bvc_core_1, bvc_core_2, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
+
+        if True:
+            if SI_1 > SI_2:
+                SI_h = SI_1
+                SI_l = SI_2
+                core_h = bvc_core_1
+                core_l = bvc_core_2
+                rank_h = bvc_rank_1
+                rank_l = bvc_rank_2
+            else:
+                SI_h = SI_2
+                SI_l = SI_1
+                core_h = bvc_core_2
+                core_l = bvc_core_1
+                rank_h = bvc_rank_2
+                rank_l = bvc_rank_1
+
+            core_id, core_bl = bvc_core_id, bvc_core_bl
+        else:
+            if SI_1 > SI_2:
+                SI_h = SI_1
+                SI_l = SI_2
+                core_h = bvb_core_1
+                core_l = bvb_core_2
+                rank_h = bvb_rank_1
+                rank_l = bvb_rank_2
+            else:
+                SI_h = SI_2
+                SI_l = SI_1
+                core_h = bvb_core_2
+                core_l = bvb_core_1
+                rank_h = bvb_rank_2
+                rank_l = bvb_rank_1
+
+            core_id, core_bl = bvb_core_id, bvb_core_bl
+
+        high_SI.append(SI_h)
+        low_SI.append(SI_l)
+
+        if SI_h >= 0.5:
+
+            if SI_l >= 0.5:
+                high_core.append(core_bl)
+                if rank_h < rank_split and rank_l < rank_split:
+                    both_binder_high.append(core_bl)
+            else:
+                low_core.append(core_bl)
+                if rank_h < rank_split and rank_l < rank_split:
+                    both_binder_low.append(core_bl)
+        else:
+            none_core.append(core_bl)
+            if rank_h < rank_split and rank_l < rank_split:
+                both_binder_none.append(core_bl)
 
 
 print("None both binder:", len(both_binder_none))
