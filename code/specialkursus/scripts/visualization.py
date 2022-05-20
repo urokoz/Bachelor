@@ -68,9 +68,9 @@ if False:
 
 
 xlabel = "Donor rank"
-ylabel = "SI"
+ylabel = "sigmoid(SI)"
 plot_title = ylabel + " vs. " + xlabel
-y = data[:,0]
+y = sigmoid(data[:,0])
 x = data[:,4]
 sim_scatterplot(x, y, plot_title, xlabel, ylabel)
 #
