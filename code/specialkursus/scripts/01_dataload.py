@@ -20,7 +20,7 @@ species = data_file.split("/")[-1].split("_")[0]
 # ['5540', 'Amb', 'a', '1.0101', 'NSDKTIDGRGAKVEIINAGF', '3.74433',
 #          'Amb', 'a', '1.0201', 'NSDKTIDGRGVKVNIVNAGL', '1.12407']
 
-pep_list = []
+pep_dict = dict()
 
 unique_seqs = set()
 seen_peptide_pairs = set()
@@ -66,7 +66,7 @@ for line in infile:
                 allergen_dict[ori_name] = 1
 
             full_ori_name = ori_name + "_" + str(allergen_dict[ori_name])
-            pep_list.append([full_ori_name, ori_pepseq])
+            pep_dict[full_ori_name] = ori_pepseq
             pep_id_name[ori_id] = full_ori_name
 
         if var_id not in unique_seqs:
@@ -78,7 +78,7 @@ for line in infile:
                 allergen_dict[var_name] = 1
 
             full_var_name = var_name + "_" + str(allergen_dict[var_name])
-            pep_list.append([full_var_name, var_pepseq])
+            pep_dict[full_var_name] = var_pepseq
             pep_id_name[var_id] = full_var_name
 
         # Save info about the peptide pairing and prep lists for SI values
@@ -118,6 +118,9 @@ infile.close()
 
 with open('../data/dicts/donor_pep_pair_dict_{}.pkl'.format(species), 'wb') as f:
     pickle.dump(donor_pep_pair_dict, f)
+
+with open('../data/dicts/pep_seq_dict_{}.pkl'.format(species), 'wb') as f:
+    pickle.dump(pep_dict, f)
 
 
 for donor, value in donor_reaction_dict.items():

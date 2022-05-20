@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 import math
+import random
 
 
 def load_pep_HLA_data(datafile, pep_HLA_dict = dict()):
@@ -111,32 +112,13 @@ def load_donor_pep_dict(data_file, donor_allele_dict, pep_HLA_dict, bg_dict, don
         rank_allele_list = []
         for allele in donor_allele_dict[donor]:
             rank, core = pep_HLA_dict[peptide][allele]
-
             corrected_rank = percent_v_bg(rank, allele, bg_dict)
-
-
             rank_allele_list.append([allele, rank, corrected_rank, core])
-
-        # best_donor_rank = 100
-        # best_cor_donor_rank = 100
-        # for allele in donor_allele_dict[donor]:
-        #     rank, core = pep_HLA_dict[peptide][allele]
-        #     corrected_rank = percent_v_bg(rank, allele, bg_dict)
-        #
-        #     if rank < best_donor_rank:
-        #         best_donor_rank = rank
-        #         best_donor_core = core
-        #
-        #     if corrected_rank < best_cor_donor_rank:
-        #         best_cor_donor_rank = corrected_rank
-        #         best_cor_donor_core = core
-        #
 
         if not donor_pep_dict.get(donor):
             donor_pep_dict[donor] = dict()
 
         donor_pep_dict[donor][peptide] = [SI, rank_allele_list]
-        # donor_pep_dict[donor][peptide] = [SI, best_donor_rank, round(best_cor_donor_rank, 3), best_donor_core, best_cor_donor_core]
     print()
     return donor_pep_dict
 
@@ -195,3 +177,8 @@ def sigmoid(si):
         return 1 / (1 + np.exp(-(si-3.5)*0.5))
     else:
         return 1 / (1 + np.exp(-(si-3.5)*2))
+
+
+def random_9mer(seq):
+    idx = random.randint(0, len(seq)-9)
+    return seq[idx:idx+9]
