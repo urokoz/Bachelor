@@ -22,12 +22,17 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
     plt <- ggplot(df, mapping = aes(x = {{variable1}}, 
                                     y = {{variable2}})) +
       
-      geom_point(size = 1, color = ) +
+      geom_point(size = 1) +
       labs(title = title, 
            x = xlab, 
-           y = ylab)
+           y = ylab) +
+      ylim(0, 50)
       
-    plt <- plt + stat_cor(method = "spearman")
+    plt <- plt + stat_cor(method = "spearman", 
+                          digits = 3,
+                          size = 4.5,
+                          hjust = -0.9,
+                          vjust = 1)
   }
   
   else {
@@ -37,9 +42,14 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
       geom_point(size = 1) +
       labs(title = title, 
            x = xlab, 
-           y = ylab)
+           y = ylab) +
+      ylim(0, 50)
     
-    plt <- plt + stat_cor(method = "spearman")
+    plt <- plt + stat_cor(method = "spearman", 
+                          digits = 3,
+                          size = 4.5,
+                          hjust = -0.9,
+                          vjust = 1)
   }
   
   return(plt)
@@ -48,15 +58,20 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
 #function for boxplots ----------------------------------------
 boxplot <- function(df, variable_dis, variable_con, title, xlab, ylab) {
   
-  plt <- ggplot(df, mapping = aes(y = {{variable_dis}},
-                                  x = {{variable_con}}, 
+  plt <- ggplot(df, mapping = aes(y = {{variable_con}},
+                                  x = {{variable_dis}}, 
                                   fill = {{variable_dis}})) + 
     geom_boxplot() + 
+    geom_signif(comparisons = list(c("Non Reactive", "Reactive"))) +
     labs(title = title, 
          x = xlab,
          y = ylab) +
-    theme_classic()
+    theme_classic() 
   
+  #plt = plt + stat_compare_means(method = "t.test", 
+                                 #size = 4,
+                                 #hjust = -1.5,
+                                 #vjust = 1)
   return(plt)
 }
 
