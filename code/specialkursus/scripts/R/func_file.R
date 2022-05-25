@@ -62,17 +62,18 @@ boxplot <- function(df, variable_dis, variable_con, title, xlab, ylab) {
   plt <- ggplot(df, mapping = aes(y = {{variable_con}},
                                   x = {{variable_dis}}, 
                                   fill = {{variable_dis}})) + 
-    geom_boxplot() + 
+    geom_violin() + 
+    geom_boxplot(width = 0.05,
+                 color = "black",
+                 fill = "white",
+                 outlier.shape = NA) +
     geom_signif(comparisons = list(c("Non Reactive", "Reactive"))) +
     labs(title = title, 
          x = xlab,
          y = ylab) +
-    theme_classic() 
-  
-  #plt = plt + stat_compare_means(method = "t.test", 
-                                 #size = 4,
-                                 #hjust = -1.5,
-                                 #vjust = 1)
+    theme_classic() +
+    theme(legend.position="none")
+
   return(plt)
 }
 
