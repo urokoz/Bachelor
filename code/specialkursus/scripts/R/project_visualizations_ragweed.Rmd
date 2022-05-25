@@ -114,6 +114,11 @@ boxplot_7_allele_norm <- ragweed %>%
 boxplot_donor_norm <- ragweed %>% 
   boxplot(Reactivity, normalized_donor, "", "Reactivity", "Normalized Donor Rank" )
 
+ggsave(filename = "../../results/report/boxplots_norm.png", 
+       plot = (boxplot_7_allele_norm + boxplot_donor_norm),
+       width = 9, 
+       height = 4.5)
+
 ```
 
 
