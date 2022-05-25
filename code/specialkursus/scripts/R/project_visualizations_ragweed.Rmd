@@ -56,17 +56,23 @@ ragweed <- ragweed %>%
          best_7_allele_rank = X4, 
          best_donor_rank = X5, 
          normalized_7_allele = X6, 
-         normalized_donor = X7)
+         normalized_donor = X7) %>% 
+  mutate(sig_si = case_when(si >= 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.5)), 
+                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.2))))
 ```
 
 
 ```{r}
-#function: scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab, ylab)
-
 scatter_7_allele <- ragweed %>% 
-  scatter_plot(best_7_allele_rank, si, si_filter = TRUE, "Stimulation idex as a function of 7 allele rank", "7 alelle rank", "sigmoid(SI)" )
+  scatter_plot(best_7_allele_rank, sig_si, si_filter = TRUE,      "Stimulation idex as a function of 7 allele rank", "7 alelle rank", "Sigmoid transformed SI")
 
 scatter_7_allele
+
+# Save plot to results.
+ggsave(filename = "results/report_figures/7allele_vs_si_ragweed.png",
+       plot = scatter_7_allele,
+       width = 10,
+       height = 10)
 
 ```
 
