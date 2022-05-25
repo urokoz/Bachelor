@@ -1,0 +1,34 @@
+---
+title: "project_visualization_tree"
+output: html_document
+date: '2022-05-18'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#libraries
+```{r}
+library(tidyverse)
+library(ggpubr)
+```
+
+#dataload
+```{r}
+tree <- read_tsv("../../data/normalized_donor_data_tree.tab", col_names = FALSE)
+```
+
+#renaming col names
+```{r}
+tree <- tree %>% 
+  rename(donor = X1, 
+         peptide = X2, 
+         si = X3, 
+         best_7_allele_rank = X4, 
+         best_donor_rank = X5, 
+         normalized_7_allele = X6, 
+         normalized_donor = X7)
+```
+
