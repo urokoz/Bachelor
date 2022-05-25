@@ -1,0 +1,101 @@
+---
+title: "project_visualizations"
+output: html_document
+date: '2022-05-18'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#libraries
+```{r}
+library(tidyverse)
+library(ggpubr)
+source("func_file.R")
+```
+
+#dataload
+```{r, include = FALSE}
+ragweed <- read_tsv("../../data/normalized_donor_data_ragweed.tab", col_names = FALSE)
+
+ragweed_flat <- read_tsv("../../data/core_similarity_data_flat_ragweed.tab", col_names = TRUE)
+```
+
+#renaming col names
+```{r}
+ragweed <- ragweed %>% 
+  rename(donor = X1, 
+         peptide = X2, 
+         si = X3, 
+         best_7_allele_rank = X4, 
+         best_donor_rank = X5, 
+         normalized_7_allele = X6, 
+         normalized_donor = X7)
+```
+
+
+```{r}
+#function: scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab, ylab)
+
+scatter_7_allele <- ragweed %>% 
+  scatter_plot(best_7_allele_rank, si, si_filter = TRUE, "Stimulation idex as a function of 7 allele rank", "7 alelle rank", "sigmoid(SI)" )
+
+scatter_7_allele
+
+```
+
+
+#scatterplot of SI vs. rank
+```{r}
+scatter_7_allele <- ragweed %>% 
+  ggplot(aes(x = best_7_allele_rank, 
+             y = si)) +
+    geom_point(size = 1) + 
+    labs(title = "Stimulation idex as a function of 7 allele rank", 
+         x = "7 alelle rank", 
+         y = "SI") +
+  theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+scatter_7_allele + stat_cor(method = "spearman", digits = 3)
+
+#scatterplot for tree
+scatter_donor <- ragweed %>% 
+  ggplot(aes(x = best_donor_rank, 
+             y = si)) +
+    geom_point(size = 1) + 
+    labs(title = "Stimulation idex as a function of donor rank", 
+         x = "Donor rank", 
+         y = "SI") 
+
+scatter_donor + stat_cor(method = "spearman", digits = 3)
+```
+
+
+#scatterplot (normalized data)
+```{r}
+scatter_7allele_norm <- ragweed %>% 
+  ggplot(aes(x = normalized_7_allele, 
+             y = si)) +
+    geom_point(size = 1) + 
+    labs(title = "Stimulation idex as a function of normalized 7 allele rank", 
+         x = "Normalized 7 allele rank", 
+         y = "SI") +
+  theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+scatter_7allele_norm + stat_cor(method = "spearman", digits = 3)
+
+scatter_donor_norm <- ragweed %>% 
+  ggplot(aes(x = normalized_donor, 
+             y = si)) +
+    geom_point(size = 1) + 
+    labs(title = "Stimulation idex as a function of normalized donor rank", 
+         x = "Normalized donor rank", 
+         y = "SI") 
+
+scatter_donor_norm + stat_cor(method = "spearman", digits = 3)
+
+```
+
+
+
