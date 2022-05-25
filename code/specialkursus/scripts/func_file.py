@@ -173,22 +173,7 @@ def percent_v_bg(rank, HLA_allele, bg_dict):
 
 
 def sigmoid(si):
-<<<<<<< HEAD
     if (si >= 3.5).any():
         return 1 / (1 + np.exp(-(si-3.5)*0.5))
     else:
         return 1 / (1 + np.exp(-(si-3.5)*0.2))
-=======
-    if si > 3.5:
-        return 1 / (1 + np.exp(-(si-3.5)*0.5))
-    else:
-        return 1 / (1 + np.exp(-(si-3.5)*2))
-<<<<<<< HEAD
-
-
-def random_9mer(seq):
-    idx = random.randint(0, len(seq)-9)
-    return seq[idx:idx+9]
-=======
->>>>>>> 45ec8beb369bbe56ea1898ea6db8f0acd984f6cf
->>>>>>> c8c2f80a1e40997a0d229ec4f025822e68836632
