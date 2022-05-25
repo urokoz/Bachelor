@@ -39,18 +39,15 @@ ragweed <- ragweed %>%
 
 ```{r}
 scatter_7_allele <- ragweed %>% 
-  scatter_plot(best_7_allele_rank, sig_si, si_filter = TRUE,      "Stimulation idex as a function of 7 allele rank", "7 alelle rank", "Sigmoid transformed SI")
-
-scatter_7_allele
+  scatter_plot(best_7_allele_rank, sig_si, si_filter = TRUE, "Stimulation idex as a function of 7 allele rank", "7 alelle rank", "Sigmoid transformed SI")
 
 # Save plot to results.
-ggsave(filename = "results/report_figures/7allele_vs_si_ragweed.png",
+ggsave(filename = "results/report/7allele_vs_si_ragweed.png",
        plot = scatter_7_allele,
        width = 10,
        height = 10)
 
 ```
-
 
 #scatterplot of SI vs. rank
 ```{r}
@@ -100,6 +97,11 @@ scatter_donor_norm <- ragweed %>%
          y = "SI") 
 
 scatter_donor_norm + stat_cor(method = "spearman", digits = 3)
+
+ggsave(filename = "results/report_figures/scatter_7allele_norm.png",
+       plot = scatter_7_allele,
+       width = 10,
+       height = 10)
 
 ```
 

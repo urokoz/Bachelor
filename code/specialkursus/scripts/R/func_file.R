@@ -22,7 +22,7 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
     plt <- ggplot(df, mapping = aes(x = {{variable1}}, 
                                     y = {{variable2}})) +
       
-      geom_point(size = 1, color = ) +
+      geom_point(size = 1) +
       labs(title = title, 
            x = xlab, 
            y = ylab)
@@ -39,7 +39,10 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
            x = xlab, 
            y = ylab)
     
-    plt <- plt + stat_cor(method = "spearman")
+    plt <- plt + stat_cor(method = "spearman", 
+                          size = 8,
+                          hjust = -1.5,
+                          vjust = 1)
   }
   
   return(plt)
