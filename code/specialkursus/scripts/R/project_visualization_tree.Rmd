@@ -32,10 +32,11 @@ tree_HLA_plot <- tree_HLA_data %>%
   geom_col() +
   geom_text(aes(label = n), 
             hjust = -0.5) +
-  xlim(0,11) +
+  xlim(0,9) +
   theme_minimal() +
   labs(title = "HLA coverage tree") +
   theme(plot.title = element_text(size = 20),
+        axis.text.y = element_text(size=12),
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank(), 
         axis.title.x = element_blank(),
@@ -46,7 +47,7 @@ tree_HLA_plot <- tree_HLA_data %>%
 ggsave(filename = "../../results/report/tree_HLA_plot.png", 
        plot = tree_HLA_plot,
        width = 6,
-       height = 10)
+       height = 4.1)
 ```
 
 #renaming col names
