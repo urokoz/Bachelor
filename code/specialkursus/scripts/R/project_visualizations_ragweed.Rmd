@@ -40,7 +40,8 @@ ragweed_HLA_plot <- ragweed_HLA_data %>%
         axis.title.y = element_blank())
 
 # Save plot to results.
-ggsave(filename = "../../results/ragweed_HLA_plot.png", 
+
+ggsave(filename = "../../results/report/ragweed_HLA_plot.png", 
        plot = ragweed_HLA_plot,
        width = 5,
        height = 10)
