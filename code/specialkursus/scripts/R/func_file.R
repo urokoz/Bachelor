@@ -43,12 +43,13 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
       labs(title = title, 
            x = xlab, 
            y = ylab) +
-      ylim(0, 50)
+      ylim(0, 50) + 
+      theme(plot.title = element_text(size=15))
     
     plt <- plt + stat_cor(method = "spearman", 
-                          digits = 3,
-                          size = 4.5,
-                          hjust = -0.9,
+                          digits = 4,
+                          size = 2,
+                          hjust = -2,
                           vjust = 1)
   }
   

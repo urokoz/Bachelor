@@ -96,12 +96,11 @@ scatter_donor_norm <- ragweed %>%
 ```{r}
 ggsave(filename = "../../results/report/si_vs_rank_ragweed.png",
        plot = (scatter_7_allele + scatter_donor),
-       width = 10,
-       height = 7)
+       width = 9,
+       height = 4.5)
 
 
 ```
-
 
 #boxplots
 ```{r}
