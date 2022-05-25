@@ -74,11 +74,11 @@ ragweed <- ragweed %>%
 ```{r}
 #scatterplot si vs. 7 allele rank
 scatter_7_allele <- ragweed %>% 
-  scatter_plot(best_7_allele_rank, si, si_filter = FALSE, "SI as a function of 7 allele rank", "7 alelle rank", "SI")
+  scatter_plot(best_7_allele_rank, si, si_filter = FALSE, "SI as a function of 7 allele rank", "7 allele rank", "SI")
 
 #scatterplot si. 7 allele rank normalized
 scatter_7_allele_norm <- ragweed %>% 
-  scatter_plot(normalized_7_allele, si, si_filter = FALSE, "SI as a function of normalized 7 allele rank", "Normalized 7 allel rank", "SI")
+  scatter_plot(normalized_7_allele, si, si_filter = FALSE, "SI as a function of normalized 7 allele rank", "Normalized 7 allele rank", "SI")
 
 ```
 
@@ -86,21 +86,24 @@ scatter_7_allele_norm <- ragweed %>%
 ```{r}
 #scatterplot si vs. donor rank 
 scatter_donor <- ragweed %>% 
-  scatter_plot(best_donor_rank, si, si_filter = FALSE, "SI as a function of donor rank", "donor rank", "")
+  scatter_plot(best_donor_rank, si, si_filter = FALSE, "SI as a function of donor rank", "Donor rank", "")
 
 #scatterplot si. vs. donor rank normalized
 scatter_donor_norm <- ragweed %>% 
-  scatter_plot(normalized_donor, si, si_filter = FALSE, "SI as a function of normalized donor rank", "Normalized donor", "")
+  scatter_plot(normalized_donor, si, si_filter = FALSE, "SI as a function of normalized donor rank", "Normalized donor rank", "")
 ```
 
-#saving combined plots w. patchwork: 
+#saving combined scatterplots w. patchwork: 
 ```{r}
 ggsave(filename = "../../results/report/si_vs_rank_ragweed.png",
        plot = (scatter_7_allele + scatter_donor),
        width = 9,
        height = 4.5)
 
-
+ggsave(filename = "../../results/report/si_vs_rank_norm_ragweed.png", 
+       plot = (scatter_7_allele_norm + scatter_donor_norm),
+       width = 9, 
+       height = 4.5)
 ```
 
 #boxplots

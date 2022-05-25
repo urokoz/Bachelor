@@ -48,8 +48,8 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
     
     plt <- plt + stat_cor(method = "spearman", 
                           digits = 4,
-                          size = 2,
-                          hjust = -2,
+                          size = 3,
+                          hjust = -1.4,
                           vjust = 1)
   }
   
