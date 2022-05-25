@@ -22,7 +22,32 @@ ragweed <- read_tsv("../../data/normalized_donor_data_ragweed.tab", col_names = 
 ragweed_flat <- read_tsv("../../data/core_similarity_data_flat_ragweed.tab", col_names = TRUE)
 ```
 
-#renaming col names
+# donor HLA data overview
+```{r}
+ragweed_HLA_data <- read_tsv("../../data/ragweed_donor_HLA_flat.txt", col_names = FALSE)
+
+ragweed_HLA_plot <- ragweed_HLA_data %>% 
+  group_by(X2) %>% 
+  count() %>% 
+  ggplot(mapping = aes(x = n,
+                       y = X2)) +
+  geom_col() +
+  geom_text(aes(label = n), 
+            hjust = -0.5) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+# Save plot to results.
+ggsave(filename = "../../results/ragweed_HLA_plot.png", 
+       plot = ragweed_HLA_plot,
+       width = 5,
+       height = 10)
+```
+
+
+#renaming ragweed col names
 ```{r}
 ragweed <- ragweed %>% 
   rename(donor = X1, 
@@ -96,6 +121,9 @@ scatter_donor_norm <- ragweed %>%
 scatter_donor_norm + stat_cor(method = "spearman", digits = 3)
 
 ```
+
+
+
 
 
 
