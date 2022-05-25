@@ -9,6 +9,7 @@ sigmoid <- function(si) {
   else {
     si = 1 / (1 + exp(-(si-3.5)*0.2))
   }
+  return(si)
 }
 
 
@@ -21,7 +22,7 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
     plt <- ggplot(df, mapping = aes(x = {{variable1}}, 
                                     y = {{variable2}})) +
       
-      geom_point(size = 1) +
+      geom_point(size = 1, color = ) +
       labs(title = title, 
            x = xlab, 
            y = ylab)
