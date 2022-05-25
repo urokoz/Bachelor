@@ -13,6 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(ggpubr)
+library(patchwork)
+source("func_file.R")
 ```
 
 #dataload
@@ -59,6 +61,28 @@ tree <- tree %>%
          best_7_allele_rank = X4, 
          best_donor_rank = X5, 
          normalized_7_allele = X6, 
-         normalized_donor = X7)
+         normalized_donor = X7) %>% 
+  mutate(sig_si = case_when(si >= 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.5)), 
+                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.2)))) %>% 
+  mutate(Reactivity = case_when(si >= 3 ~ "Reactive", 
+                                si < 3 ~ "Non Reactive"))
 ```
+
+
+
+#boxplots for normalized ranks:
+```{r}
+boxplot_7_allele_norm <- tree %>% 
+  boxplot(Reactivity, normalized_7_allele, "", "Reactivity", "Normalized 7 allele rank")
+
+boxplot_donor_norm <- tree %>% 
+  boxplot(Reactivity, normalized_donor, "", "Reactivity", "Normalized Donor Rank" )
+
+ggsave(filename = "../../results/report/boxplots_norm_tree.png", 
+       plot = (boxplot_7_allele_norm + boxplot_donor_norm),
+       width = 9, 
+       height = 4.5)
+```
+
+
 

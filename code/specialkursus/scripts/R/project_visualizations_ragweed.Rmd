@@ -108,6 +108,21 @@ ggsave(filename = "../../results/report/si_vs_rank_norm_ragweed.png",
 
 #boxplots
 ```{r}
+
+
+boxplot_7_allele <- ragweed %>% 
+  boxplot(Reactivity, best_7_allele_rank, "", "Reactivity", "Normalized 7 allele rank")
+
+boxplot_donor <- ragweed %>% 
+  boxplot(Reactivity, best_donor_rank, "", "Reactivity", "Normalized 7 allele rank")
+
+ggsave(filename = "../../results/report/boxplots_std_ragweed.png", 
+       plot = (boxplot_7_allele + boxplot_donor),
+       width = 9, 
+       height = 4.5)
+
+#plots for normalized ranks ----------
+
 boxplot_7_allele_norm <- ragweed %>% 
   boxplot(Reactivity, normalized_7_allele, "", "Reactivity", "Normalized 7 allele rank")
 
