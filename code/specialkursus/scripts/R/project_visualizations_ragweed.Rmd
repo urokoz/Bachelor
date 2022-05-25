@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(ggpubr)
+library(patchwork)
 source("func_file.R")
 ```
 
@@ -47,7 +48,6 @@ ggsave(filename = "../../results/report/ragweed_HLA_plot.png",
        height = 10)
 ```
 
-
 #renaming ragweed col names
 ```{r}
 ragweed <- ragweed %>% 
@@ -59,80 +59,60 @@ ragweed <- ragweed %>%
          normalized_7_allele = X6, 
          normalized_donor = X7) %>% 
   mutate(sig_si = case_when(si >= 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.5)), 
-                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.2))))
-```
-
-
-```{r}
-scatter_7_allele <- ragweed %>% 
-  scatter_plot(best_7_allele_rank, sig_si, si_filter = TRUE, "Stimulation idex as a function of 7 allele rank", "7 alelle rank", "Sigmoid transformed SI")
-
-# Save plot to results.
-ggsave(filename = "results/report/7allele_vs_si_ragweed.png",
-       plot = scatter_7_allele,
-       width = 10,
-       height = 10)
+                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.2)))) %>% 
+  mutate(Reactivity = case_when(si >= 3 ~ "Reactive", 
+                                si < 3 ~ "Non Reactive"))
 
 ```
 
-#scatterplot of SI vs. rank
+#Scatterplots 7 allele
 ```{r}
+#scatterplot si vs. 7 allele rank
 scatter_7_allele <- ragweed %>% 
-  ggplot(aes(x = best_7_allele_rank, 
-             y = si)) +
-    geom_point(size = 1) + 
-    labs(title = "Stimulation idex as a function of 7 allele rank", 
-         x = "7 alelle rank", 
-         y = "SI") +
-  theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust=1))
+  scatter_plot(best_7_allele_rank, si, si_filter = FALSE, "SI as a function of 7 allele rank", "7 alelle rank", "SI")
 
-scatter_7_allele + stat_cor(method = "spearman", digits = 3)
+#scatterplot si. 7 allele rank normalized
+scatter_7_allele_norm <- ragweed %>% 
+  scatter_plot(normalized_7_allele, si, si_filter = FALSE, "SI as a function of normalized 7 allele rank", "Normalized 7 allel rank", "SI")
 
-#scatterplot for tree
+```
+
+#scatterplot donor rank 
+```{r}
+#scatterplot si vs. donor rank 
 scatter_donor <- ragweed %>% 
-  ggplot(aes(x = best_donor_rank, 
-             y = si)) +
-    geom_point(size = 1) + 
-    labs(title = "Stimulation idex as a function of donor rank", 
-         x = "Donor rank", 
-         y = "SI") 
+  scatter_plot(best_donor_rank, si, si_filter = FALSE, "SI as a function of donor rank", "donor rank", "")
 
-scatter_donor + stat_cor(method = "spearman", digits = 3)
-```
-
-
-#scatterplot (normalized data)
-```{r}
-scatter_7allele_norm <- ragweed %>% 
-  ggplot(aes(x = normalized_7_allele, 
-             y = si)) +
-    geom_point(size = 1) + 
-    labs(title = "Stimulation idex as a function of normalized 7 allele rank", 
-         x = "Normalized 7 allele rank", 
-         y = "SI") +
-  theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust=1))
-
-scatter_7allele_norm + stat_cor(method = "spearman", digits = 3)
-
+#scatterplot si. vs. donor rank normalized
 scatter_donor_norm <- ragweed %>% 
-  ggplot(aes(x = normalized_donor, 
-             y = si)) +
-    geom_point(size = 1) + 
-    labs(title = "Stimulation idex as a function of normalized donor rank", 
-         x = "Normalized donor rank", 
-         y = "SI") 
+  scatter_plot(normalized_donor, si, si_filter = FALSE, "SI as a function of normalized donor rank", "Normalized donor", "")
+```
 
-scatter_donor_norm + stat_cor(method = "spearman", digits = 3)
-
-ggsave(filename = "results/report_figures/scatter_7allele_norm.png",
-       plot = scatter_7_allele,
+#saving combined plots w. patchwork: 
+```{r}
+ggsave(filename = "../../results/report/si_vs_rank_ragweed.png",
+       plot = (scatter_7_allele + scatter_donor),
        width = 10,
-       height = 10)
+       height = 7)
+
 
 ```
 
 
+#boxplots
+```{r}
+boxplot_7_allele_norm <- ragweed %>% 
+  boxplot(Reactivity, normalized_7_allele, "", "Reactivity", "Normalized 7 allele rank")
+
+boxplot_donor_norm <- ragweed %>% 
+  boxplot(Reactivity, normalized_donor, "", "Reactivity", "Normalized Donor Rank" )
+
+```
 
 
+#scatterplot: SI(H) vs. SI(L)
+```{r}
+
+```
 
 
