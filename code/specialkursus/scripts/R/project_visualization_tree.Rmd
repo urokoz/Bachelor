@@ -20,6 +20,35 @@ library(ggpubr)
 tree <- read_tsv("../../data/normalized_donor_data_tree.tab", col_names = FALSE)
 ```
 
+# donor HLA data overview
+```{r}
+tree_HLA_data <- read_tsv("../../data/tree_donor_HLA_flat.txt", col_names = FALSE)
+
+tree_HLA_plot <- tree_HLA_data %>% 
+  group_by(X2) %>% 
+  count() %>% 
+  ggplot(mapping = aes(x = n,
+                       y = X2)) +
+  geom_col() +
+  geom_text(aes(label = n), 
+            hjust = -0.5) +
+  xlim(0,11) +
+  theme_minimal() +
+  labs(title = "HLA coverage tree") +
+  theme(plot.title = element_text(size = 20),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+# Save plot to results.
+
+ggsave(filename = "../../results/report/tree_HLA_plot.png", 
+       plot = tree_HLA_plot,
+       width = 6,
+       height = 10)
+```
+
 #renaming col names
 ```{r}
 tree <- tree %>% 
