@@ -177,28 +177,15 @@ boxplot_bvc_core_sim <- ragweed_flat_aug %>%
   filter(Group != "Non reactive") %>% 
   boxplot_core_sim(Group, bvc_core_bl, "", "", "Core similarity")
 
-boxplot_bvb_core_sim <- ragweed_flat_aug %>%  
-  filter(Group != "Non reactive") %>% 
-  boxplot_core_sim(Group, bvb_core_bl, "", "", "Core similarity")
-
 boxplot_rand_core_sim <-ragweed_flat_aug %>%  
   filter(Group != "Non reactive") %>% 
   boxplot_core_sim(Group, rand_core_bl, "", "", "Rand core similarity")
 
-ggsave(filename = "../../results/report/boxplot_bvc_core_sim_ragweed.png", 
-       plot = boxplot_bvc_core_sim,
+ggsave(filename = "../../results/report/boxplot_core_sim_ragweed.png", 
+       plot = (boxplot_bvc_core_sim + boxplot_rand_core_sim),
        width = 9, 
-       height = 8)
+       height = 4.5)
 
-ggsave(filename = "../../results/report/boxplot_bvb_core_sim_ragweed.png", 
-       plot = boxplot_bvb_core_sim,
-       width = 9, 
-       height = 8)
-
-ggsave(filename = "../../results/report/boxplot_rand_core_sim_ragweed.png", 
-       plot = boxplot_rand_core_sim,
-       width = 9, 
-       height = 8)
 ```
 
 
