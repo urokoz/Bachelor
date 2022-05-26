@@ -154,47 +154,51 @@ ragweed_flat_aug <- ragweed_flat %>%
 
 si_vs_si <- ggplot(ragweed_flat_aug, mapping = aes(x = SI_h, 
                                                    y = SI_l, 
-                                                   color = Group)) +
+                                                   color = bvc_core_bl)) +
     
       geom_point(size = 1, alpha = 0.5) + 
       labs(title = "SI low as a function of SI high", 
            x = "SI High", 
            y = "SI low") +
-      theme(plot.title = element_text(size=15))
+      theme(plot.title = element_text(size=15)) +
+    scale_colour_viridis_c()
     
 ggsave(filename = "../../results/report/si_vs_si_ragweed.png", 
        plot = si_vs_si,
        width = 9, 
        height = 4.5)
 
-
+si_vs_si
 
 ```
 
 ```{r}
-boxplot_bvc_core_sim <- ragweed_flat_aug %>% 
+boxplot_bvc_core_sim <- ragweed_flat_aug %>%  
+  filter(Group != "Non reactive") %>% 
   boxplot_core_sim(Group, bvc_core_bl, "", "", "Core similarity")
 
-boxplot_bvb_core_sim <- ragweed_flat_aug %>% 
+boxplot_bvb_core_sim <- ragweed_flat_aug %>%  
+  filter(Group != "Non reactive") %>% 
   boxplot_core_sim(Group, bvb_core_bl, "", "", "Core similarity")
 
-boxplot_rand_core_sim <-ragweed_flat_aug %>% 
+boxplot_rand_core_sim <-ragweed_flat_aug %>%  
+  filter(Group != "Non reactive") %>% 
   boxplot_core_sim(Group, rand_core_bl, "", "", "Rand core similarity")
 
-ggsave(filename = "../../results/report/boxplot_bvc_core_sim.png", 
+ggsave(filename = "../../results/report/boxplot_bvc_core_sim_ragweed.png", 
        plot = boxplot_bvc_core_sim,
        width = 9, 
-       height = 7)
+       height = 8)
 
-ggsave(filename = "../../results/report/boxplot_bvb_core_sim.png", 
+ggsave(filename = "../../results/report/boxplot_bvb_core_sim_ragweed.png", 
        plot = boxplot_bvb_core_sim,
        width = 9, 
-       height = 7)
+       height = 8)
 
-ggsave(filename = "../../results/report/boxplot_rand_core_sim.png", 
+ggsave(filename = "../../results/report/boxplot_rand_core_sim_ragweed.png", 
        plot = boxplot_rand_core_sim,
        width = 9, 
-       height = 7)
+       height = 8)
 ```
 
 

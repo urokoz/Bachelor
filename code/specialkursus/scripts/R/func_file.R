@@ -89,12 +89,8 @@ boxplot_core_sim <- function(df, variable_dis, variable_con, title, xlab, ylab) 
                  color = "black",
                  fill = "white",
                  outlier.shape = NA) +
-    geom_signif(comparisons = list(c("Cross reactive", "Non cross reactive"),
-                                   c("Non cross reactive", "Non reactive")),
-                map_signif_level = TRUE) +
-    geom_signif(comparisons = list(c("Cross reactive", "Non reactive")),
-                map_signif_level = TRUE,
-                y_position = max_val*1.2) +
+    geom_signif(comparisons = list(c("Cross reactive", 
+                                     "Non cross reactive"))) +
     labs(title = title, 
          x = xlab,
          y = ylab) +
