@@ -88,6 +88,9 @@ scatter_7_allele_norm <- ragweed %>%
 scatter_donor <- ragweed %>% 
   scatter_plot(best_donor_rank, si, si_filter = FALSE, "SI as a function of donor rank", "Donor rank", "")
 
+#scatter_norm_sig <- ragweed %>% 
+ # scatter_plot(normalized_donor, sig_si, si_filter = FALSE, "", "Normalized donor  rank", "Sigmoid SI")
+
 #scatterplot si. vs. donor rank normalized
 scatter_donor_norm <- ragweed %>% 
   scatter_plot(normalized_donor, si, si_filter = FALSE, "SI as a function of normalized donor rank", "Normalized donor rank", "")
@@ -145,9 +148,9 @@ scatter_si_vs_si <- ragweed_flat %>%
 scatter_si_vs_si
 
 ragweed_flat_aug <- ragweed_flat %>% 
-  mutate(Group = case_when(SI_l <= 0.5 & SI_h >= 0.5 ~ "Group 1", 
-                           SI_l > 0.5 & SI_h > 0.5 ~ "Group 2", 
-                           SI_l < 0.5 & SI_h < 0.5 ~ "Group 3"))
+  mutate(Group = case_when(SI_l <= 0.5 & SI_h >= 0.5 ~ "Non cross reactive", 
+                           SI_l > 0.5 & SI_h > 0.5 ~ "Cross reactive", 
+                           SI_l < 0.5 & SI_h < 0.5 ~ "Non reactive"))
 
 si_vs_si <- ggplot(ragweed_flat_aug, mapping = aes(x = SI_h, 
                                                    y = SI_l, 
