@@ -85,19 +85,19 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
         bvc_rank = 100
         bvc_collective_rank = 200
         for [allele1, rank1, corr_rank1, core1], [allele2, rank2, corr_rank2, core2] in zip(rank_allele_list_1, rank_allele_list_2):
-            # if min(corr_rank1, corr_rank2) < bvc_rank:
-            #     bvc_rank = min(corr_rank1, corr_rank2)
-            #     bvc_rank_1 = corr_rank1
-            #     bvc_rank_2 = corr_rank2
-            #     bvc_core_1 = core1
-            #     bvc_core_2 = core2
-
-            if (corr_rank1 + corr_rank2) < bvc_collective_rank:
-                bvc_collective_rank = corr_rank1 + corr_rank2
+            if min(corr_rank1, corr_rank2) < bvc_rank:
+                bvc_rank = min(corr_rank1, corr_rank2)
                 bvc_rank_1 = corr_rank1
                 bvc_rank_2 = corr_rank2
                 bvc_core_1 = core1
                 bvc_core_2 = core2
+
+            # if (corr_rank1 + corr_rank2) < bvc_collective_rank:
+            #     bvc_collective_rank = corr_rank1 + corr_rank2
+            #     bvc_rank_1 = corr_rank1
+            #     bvc_rank_2 = corr_rank2
+            #     bvc_core_1 = core1
+            #     bvc_core_2 = core2
 
         bvc_core_id, bvc_core_bl = score_cores(bvc_core_1, bvc_core_2, blosum50)# , weighting = [3,1,1,3,1,3,1,1,3])
 
