@@ -64,7 +64,7 @@ ragweed <- ragweed %>%
          normalized_7_allele = X6, 
          normalized_donor = X7) %>% 
   mutate(sig_si = case_when(si >= 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.5)), 
-                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.2)))) %>% 
+                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*2)))) %>% 
   mutate(Reactivity = case_when(si >= 3 ~ "Reactive", 
                                 si < 3 ~ "Non Reactive"))
 
@@ -167,5 +167,17 @@ ggsave(filename = "../../results/report/si_vs_si_ragweed.png",
 
 
 ```
+
+```{r}
+ragweed_flat_aug %>% 
+  filter(Group != "Group 3") %>% 
+  boxplot(Group, bvc_core_bl, "", "", "Core similarity")
+```
+
+
+
+
+
+
 
 
