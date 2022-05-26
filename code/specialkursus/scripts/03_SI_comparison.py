@@ -34,7 +34,7 @@ both_binder_none = []
 
 print("donor", "pep_h", "pep_l", "SI_h", "SI_l",
       "bvc_core_h", "bvc_core_l", "bvc_rank_h", "bvc_rank_l", "bvc_core_id", "bvc_core_bl",
-      "bvb_core_h", "bvb_core_l", "bvb_rank_h", "bvb_rank_l", "bvc_core_id", "bvc_core_bl",
+      "bvb_core_h", "bvb_core_l", "bvb_rank_h", "bvb_rank_l", "bvb_core_id", "bvb_core_bl",
       "rand_core_id", "rand_core_bl", sep="\t")
 
 rank_split = 5
@@ -135,7 +135,7 @@ for donor, pep_pair_list in donor_pep_pair_dict.items():
 
         print(donor, pep_h, pep_l, SI_h, SI_l,
               bvc_core_h, bvc_core_l, bvc_rank_h, bvc_rank_l, bvc_core_id, bvc_core_bl,
-              bvb_core_h, bvb_core_l, bvb_rank_h, bvb_rank_l, bvc_core_id, bvc_core_bl,
+              bvb_core_h, bvb_core_l, bvb_rank_h, bvb_rank_l, bvb_core_id, bvb_core_bl,
               rand_core_id, rand_core_bl, sep="\t")
 
 
