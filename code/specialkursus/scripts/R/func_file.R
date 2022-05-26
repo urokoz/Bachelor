@@ -39,11 +39,11 @@ scatter_plot <- function(df, variable1, variable2, si_filter = TRUE, title, xlab
     plt <- ggplot(df, mapping = aes(x = {{variable1}}, 
                                     y = {{variable2}})) +
       
-      geom_point(size = 1) +
+      geom_point(size = 1, alpha = 0.2) + 
       labs(title = title, 
            x = xlab, 
            y = ylab) +
-      ylim(0, 50) + 
+      #ylim(0, 50) + 
       theme(plot.title = element_text(size=15))
     
     plt <- plt + stat_cor(method = "spearman", 
