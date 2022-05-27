@@ -79,15 +79,41 @@ tree <- tree %>%
 #boxplots for normalized ranks:
 ```{r}
 boxplot_7_allele_norm <- tree %>% 
-  boxplot(Reactivity, normalized_7_allele, "", "Reactivity", "Normalized 7 allele rank")
+  boxplot(Reactivity, normalized_7_allele, "7 allele method", "Reactivity", "Normalized 7 allele rank")
 
 boxplot_donor_norm <- tree %>% 
-  boxplot(Reactivity, normalized_donor, "", "Reactivity", "Normalized Donor Rank" )
+  boxplot(Reactivity, normalized_donor, "Donor specific method", "Reactivity", "Normalized Donor Rank" )
 
 ggsave(filename = "../../results/report/boxplots_norm_tree.png", 
        plot = (boxplot_7_allele_norm + boxplot_donor_norm),
        width = 9, 
        height = 4.5)
+```
+
+```{r}
+tree_flat_aug <- tree_flat %>% 
+  mutate(Group = case_when(SI_l <= 0.5 & SI_h >= 0.5 ~ "Non cross reactive", 
+                           SI_l > 0.5 & SI_h > 0.5 ~ "Cross reactive", 
+                           SI_l < 0.5 & SI_h < 0.5 ~ "Non reactive"))
+
+boxplot_bvc_core_sim <- tree_flat_aug %>% 
+  filter(Group != "Non reactive") %>% 
+  boxplot_core_sim(Group, bvc_core_bl, "Binding core similarity", "", "Core similarity")
+
+boxplot_rand_core_sim <-tree_flat_aug %>%  
+  filter(Group != "Non reactive") %>% 
+  boxplot_core_sim(Group, rand_core_bl, "Random core similarity", "", "Core similarity")
+
+ggsave(filename = "../../results/report/boxplot_core_sim_tree.png", 
+       plot = (boxplot_bvc_core_sim + boxplot_rand_core_sim),
+       width = 9, 
+       height = 4.5)
+
+boxplot_rank_diff_tree <- tree_flat_aug %>% 
+  mutate(rank_diff = abs(bvc_rank_l-bvc_rank_h)) %>% 
+  filter(Group != "Non reactive") %>% 
+  boxplot_core_sim(Group, rank_diff, "", "", "Difference in rank")
+
 ```
 
 
