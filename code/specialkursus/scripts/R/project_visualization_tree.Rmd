@@ -21,11 +21,8 @@ source("func_file.R")
 ```{r}
 tree <- read_tsv("../../data/normalized_donor_data_tree.tab", col_names = FALSE)
 
-<<<<<<< HEAD
 tree_flat <- read_tsv("../../data/core_similarity_data_flat_tree.tab")
-=======
-tree_flat <- read_tsv("../../data/core_similarity_data_flat_tree.tab", col_names = TRUE)
->>>>>>> 6d07ff3a4ec31bc6e46f8f25e911a6064d2033df
+
 ```
 
 # donor HLA data overview
@@ -75,6 +72,46 @@ tree <- tree %>%
 ```
 
 
+#scatterplot 7 allele
+```{r}
+#scatterplot si vs. 7 allele rank
+scatter_7_allele <- tree %>% 
+  scatter_plot(best_7_allele_rank, si, si_filter = FALSE, "SI as a function of 7 allele rank", "7 allele rank", "SI")
+
+#scatterplot si. 7 allele rank normalized
+scatter_7_allele_norm <- tree %>% 
+  scatter_plot(normalized_7_allele, si, si_filter = FALSE, "SI as a function of normalized 7 allele rank", "Normalized 7 allele rank", "SI")
+
+```
+
+#scatterplot donor rank: 
+
+```{r}
+#scatterplot si vs. donor rank 
+scatter_donor <- tree %>% 
+  scatter_plot(best_donor_rank, si, si_filter = FALSE, "SI as a function of donor rank", "Donor rank", "")
+
+#scatter_norm_sig <- ragweed %>% 
+ # scatter_plot(normalized_donor, sig_si, si_filter = FALSE, "", "Normalized donor  rank", "Sigmoid SI")
+
+#scatterplot si. vs. donor rank normalized
+scatter_donor_norm <- tree %>% 
+  scatter_plot(normalized_donor, si, si_filter = FALSE, "SI as a function of normalized donor rank", "Normalized donor rank", "")
+```
+
+
+```{r}
+ggsave(filename = "../../results/report/si_vs_rank_tree.png",
+       plot = (scatter_7_allele + scatter_donor),
+       width = 9,
+       height = 4.5)
+
+ggsave(filename = "../../results/report/si_vs_rank_norm_tree.png", 
+       plot = (scatter_7_allele_norm + scatter_donor_norm),
+       width = 9, 
+       height = 4.5)
+```
+
 
 #boxplots for normalized ranks:
 ```{r}
@@ -118,7 +155,7 @@ boxplot_rank_diff_tree <- tree_flat_aug %>%
 
 
 ```{r}
-scatter_si_vs_si <- ragweed_flat %>% 
+scatter_si_vs_si <- tree %>% 
   scatter_plot(SI_h, SI_l, si_filter = FALSE, "", "SI low", "SI high")
 
 scatter_si_vs_si
