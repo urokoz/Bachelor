@@ -64,7 +64,7 @@ ragweed <- ragweed %>%
          normalized_7_allele = X6, 
          normalized_donor = X7) %>% 
   mutate(sig_si = case_when(si >= 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.5)), 
-                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*0.2)))) %>% 
+                            si < 3.5 ~ 1 / (1 + exp(-(si-3.5)*2)))) %>% 
   mutate(Reactivity = case_when(si >= 3 ~ "Reactive", 
                                 si < 3 ~ "Non Reactive"))
 
@@ -127,10 +127,10 @@ ggsave(filename = "../../results/report/boxplots_std_ragweed.png",
 #plots for normalized ranks ----------
 
 boxplot_7_allele_norm <- ragweed %>% 
-  boxplot(Reactivity, normalized_7_allele, "", "Reactivity", "Normalized 7 allele rank")
+  boxplot(Reactivity, normalized_7_allele, "7 allele method", "Reactivity", "Normalized 7 allele rank")
 
 boxplot_donor_norm <- ragweed %>% 
-  boxplot(Reactivity, normalized_donor, "", "Reactivity", "Normalized Donor Rank" )
+  boxplot(Reactivity, normalized_donor, "Donor specific method", "Reactivity", "Normalized Donor Rank" )
 
 ggsave(filename = "../../results/report/boxplots_norm.png", 
        plot = (boxplot_7_allele_norm + boxplot_donor_norm),
@@ -154,13 +154,14 @@ ragweed_flat_aug <- ragweed_flat %>%
 
 si_vs_si <- ggplot(ragweed_flat_aug, mapping = aes(x = SI_h, 
                                                    y = SI_l, 
-                                                   color = Group)) +
+                                                   color = bvc_core_bl)) +
     
       geom_point(size = 1, alpha = 0.5) + 
       labs(title = "SI low as a function of SI high", 
            x = "SI High", 
            y = "SI low") +
-      theme(plot.title = element_text(size=15))
+      theme(plot.title = element_text(size=15)) +
+    scale_colour_viridis_c()
     
 ggsave(filename = "../../results/report/si_vs_si_ragweed.png", 
        plot = si_vs_si,
@@ -168,7 +169,33 @@ ggsave(filename = "../../results/report/si_vs_si_ragweed.png",
        height = 4.5)
 
 
+```
+
+```{r}
+boxplot_bvc_core_sim <- ragweed_flat_aug %>%  
+  filter(Group != "Non reactive") %>% 
+  boxplot_core_sim(Group, bvc_core_bl, "Binding core similarity", "", "Core similarity")
+
+boxplot_rand_core_sim <-ragweed_flat_aug %>%  
+  filter(Group != "Non reactive") %>% 
+  boxplot_core_sim(Group, rand_core_bl, "Random core similarity", "", "Core similarity")
+
+ggsave(filename = "../../results/report/boxplot_core_sim_ragweed.png", 
+       plot = (boxplot_bvc_core_sim + boxplot_rand_core_sim),
+       width = 9, 
+       height = 4.5)
+
+boxplot_rank_diff_rag <- ragweed_flat_aug %>% 
+  mutate(rank_diff = abs(bvc_rank_l-bvc_rank_h)) %>% 
+  filter(Group != "Non reactive") %>% 
+  boxplot_core_sim(Group, rank_diff, "", "", "Difference in rank")
 
 ```
+
+
+
+
+
+
 
 
