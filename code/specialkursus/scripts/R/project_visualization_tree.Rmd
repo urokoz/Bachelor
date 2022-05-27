@@ -20,6 +20,8 @@ source("func_file.R")
 #dataload
 ```{r}
 tree <- read_tsv("../../data/normalized_donor_data_tree.tab", col_names = FALSE)
+
+tree_flat <- read_tsv("../../data/core_similarity_data_flat_tree.tab")
 ```
 
 # donor HLA data overview
@@ -83,6 +85,41 @@ ggsave(filename = "../../results/report/boxplots_norm_tree.png",
        width = 9, 
        height = 4.5)
 ```
+
+
+```{r}
+scatter_si_vs_si <- ragweed_flat %>% 
+  scatter_plot(SI_h, SI_l, si_filter = FALSE, "", "SI low", "SI high")
+
+scatter_si_vs_si
+
+tree_flat_aug <- tree_flat %>% 
+  mutate(Group = case_when(SI_l <= 0.5 & SI_h >= 0.5 ~ "Non cross reactive", 
+                           SI_l > 0.5 & SI_h > 0.5 ~ "Cross reactive", 
+                           SI_l < 0.5 & SI_h < 0.5 ~ "Non reactive"))
+
+si_vs_si <- ggplot(tree_flat_aug, mapping = aes(x = SI_h, 
+                                                y = SI_l, 
+                                                color = Group)) +
+    
+      geom_point(size = 1, alpha = 0.5) + 
+      labs(title = "SI low as a function of SI high", 
+           x = "SI High", 
+           y = "SI low") +
+      theme(plot.title = element_text(size=15))
+    
+ggsave(filename = "../../results/report/si_vs_si_tree.png", 
+       plot = si_vs_si,
+       width = 9, 
+       height = 4.5)
+```
+
+
+
+
+
+
+
 
 
 
